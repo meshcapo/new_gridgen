@@ -1,0 +1,2288 @@
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "uname"
+    candidate_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/bin/"
+    searched_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/uname"
+      - "/home/mayank/.local/bin/uname"
+      - "/usr/local/sbin/uname"
+      - "/usr/local/bin/uname"
+    found: "/usr/bin/uname"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      The system is: Linux - 6.19.10-1-cachyos - x86_64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    searched_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/gmake"
+      - "/home/mayank/.local/bin/gmake"
+      - "/usr/local/sbin/gmake"
+      - "/usr/local/bin/gmake"
+      - "/usr/bin/gmake"
+      - "/usr/lib/jvm/default/bin/gmake"
+      - "/usr/bin/site_perl/gmake"
+      - "/usr/bin/vendor_perl/gmake"
+      - "/usr/bin/core_perl/gmake"
+      - "/home/mayank/.local/share/nvim/mason/bin/make"
+      - "/home/mayank/.local/bin/make"
+      - "/usr/local/sbin/make"
+      - "/usr/local/bin/make"
+    found: "/usr/bin/make"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompiler.cmake:115 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:67 (_cmake_find_compiler_path)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER_WITH_PATH"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "clang"
+    candidate_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    searched_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/clang"
+      - "/home/mayank/.local/bin/clang"
+      - "/usr/local/sbin/clang"
+      - "/usr/local/bin/clang"
+    found: "/usr/bin/clang"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:468 (find_file)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:506 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCCompilerId.c.in"
+    candidate_directories:
+      - "/usr/share/cmake/Modules/"
+    found: "/usr/share/cmake/Modules/CMakeCCompilerId.c.in"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /usr/bin/clang 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is Clang, found in:
+        /home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/4.3.1/CompilerIdC/a.out
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-ar"
+      - "ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-ranlib"
+      - "ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-strip"
+      - "strip"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-strip"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld.lld"
+      - "ld"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/ld.lld"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-nm"
+      - "nm"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-nm"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-objdump"
+      - "objdump"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-objdump"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-objcopy"
+      - "objcopy"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-objcopy"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-readelf"
+      - "readelf"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-readelf"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-dlltool"
+      - "dlltool"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-dlltool"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-addr2line"
+      - "addr2line"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    found: "/usr/bin/llvm-addr2line"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tapi"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    searched_directories:
+      - "/usr/bin/tapi"
+      - "/home/mayank/.local/share/nvim/mason/bin/tapi"
+      - "/home/mayank/.local/bin/tapi"
+      - "/usr/local/sbin/tapi"
+      - "/usr/local/bin/tapi"
+      - "/usr/lib/jvm/default/bin/tapi"
+      - "/usr/bin/site_perl/tapi"
+      - "/usr/bin/vendor_perl/tapi"
+      - "/usr/bin/core_perl/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/Compiler/Clang-FindBinUtils.cmake:26 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER_AR"
+    description: "LLVM archiver"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-ar-22.1"
+      - "llvm-ar-22"
+      - "llvm-ar22"
+      - "llvm-ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    searched_directories:
+      - "/usr/bin/llvm-ar-22.1"
+      - "/home/mayank/.local/share/nvim/mason/bin/llvm-ar-22.1"
+      - "/home/mayank/.local/bin/llvm-ar-22.1"
+      - "/usr/local/sbin/llvm-ar-22.1"
+      - "/usr/local/bin/llvm-ar-22.1"
+      - "/usr/lib/jvm/default/bin/llvm-ar-22.1"
+      - "/usr/bin/site_perl/llvm-ar-22.1"
+      - "/usr/bin/vendor_perl/llvm-ar-22.1"
+      - "/usr/bin/core_perl/llvm-ar-22.1"
+      - "/usr/bin/llvm-ar-22"
+      - "/home/mayank/.local/share/nvim/mason/bin/llvm-ar-22"
+      - "/home/mayank/.local/bin/llvm-ar-22"
+      - "/usr/local/sbin/llvm-ar-22"
+      - "/usr/local/bin/llvm-ar-22"
+      - "/usr/lib/jvm/default/bin/llvm-ar-22"
+      - "/usr/bin/site_perl/llvm-ar-22"
+      - "/usr/bin/vendor_perl/llvm-ar-22"
+      - "/usr/bin/core_perl/llvm-ar-22"
+      - "/usr/bin/llvm-ar22"
+      - "/home/mayank/.local/share/nvim/mason/bin/llvm-ar22"
+      - "/home/mayank/.local/bin/llvm-ar22"
+      - "/usr/local/sbin/llvm-ar22"
+      - "/usr/local/bin/llvm-ar22"
+      - "/usr/lib/jvm/default/bin/llvm-ar22"
+      - "/usr/bin/site_perl/llvm-ar22"
+      - "/usr/bin/vendor_perl/llvm-ar22"
+      - "/usr/bin/core_perl/llvm-ar22"
+    found: "/usr/bin/llvm-ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/Compiler/Clang-FindBinUtils.cmake:38 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER_RANLIB"
+    description: "Generate index for LLVM archive"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "llvm-ranlib-22.1"
+      - "llvm-ranlib-22"
+      - "llvm-ranlib22"
+      - "llvm-ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    searched_directories:
+      - "/usr/bin/llvm-ranlib-22.1"
+      - "/home/mayank/.local/share/nvim/mason/bin/llvm-ranlib-22.1"
+      - "/home/mayank/.local/bin/llvm-ranlib-22.1"
+      - "/usr/local/sbin/llvm-ranlib-22.1"
+      - "/usr/local/bin/llvm-ranlib-22.1"
+      - "/usr/lib/jvm/default/bin/llvm-ranlib-22.1"
+      - "/usr/bin/site_perl/llvm-ranlib-22.1"
+      - "/usr/bin/vendor_perl/llvm-ranlib-22.1"
+      - "/usr/bin/core_perl/llvm-ranlib-22.1"
+      - "/usr/bin/llvm-ranlib-22"
+      - "/home/mayank/.local/share/nvim/mason/bin/llvm-ranlib-22"
+      - "/home/mayank/.local/bin/llvm-ranlib-22"
+      - "/usr/local/sbin/llvm-ranlib-22"
+      - "/usr/local/bin/llvm-ranlib-22"
+      - "/usr/lib/jvm/default/bin/llvm-ranlib-22"
+      - "/usr/bin/site_perl/llvm-ranlib-22"
+      - "/usr/bin/vendor_perl/llvm-ranlib-22"
+      - "/usr/bin/core_perl/llvm-ranlib-22"
+      - "/usr/bin/llvm-ranlib22"
+      - "/home/mayank/.local/share/nvim/mason/bin/llvm-ranlib22"
+      - "/home/mayank/.local/bin/llvm-ranlib22"
+      - "/usr/local/sbin/llvm-ranlib22"
+      - "/usr/local/bin/llvm-ranlib22"
+      - "/usr/lib/jvm/default/bin/llvm-ranlib22"
+      - "/usr/bin/site_perl/llvm-ranlib22"
+      - "/usr/bin/vendor_perl/llvm-ranlib22"
+      - "/usr/bin/core_perl/llvm-ranlib22"
+    found: "/usr/bin/llvm-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/Compiler/Clang-FindBinUtils.cmake:50 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER_CLANG_SCAN_DEPS"
+    description: "`clang-scan-deps` dependency scanner"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "clang-scan-deps-22.1"
+      - "clang-scan-deps-22"
+      - "clang-scan-deps22"
+      - "clang-scan-deps"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+    searched_directories:
+      - "/usr/bin/clang-scan-deps-22.1"
+      - "/home/mayank/.local/share/nvim/mason/bin/clang-scan-deps-22.1"
+      - "/home/mayank/.local/bin/clang-scan-deps-22.1"
+      - "/usr/local/sbin/clang-scan-deps-22.1"
+      - "/usr/local/bin/clang-scan-deps-22.1"
+      - "/usr/lib/jvm/default/bin/clang-scan-deps-22.1"
+      - "/usr/bin/site_perl/clang-scan-deps-22.1"
+      - "/usr/bin/vendor_perl/clang-scan-deps-22.1"
+      - "/usr/bin/core_perl/clang-scan-deps-22.1"
+      - "/usr/bin/clang-scan-deps-22"
+      - "/home/mayank/.local/share/nvim/mason/bin/clang-scan-deps-22"
+      - "/home/mayank/.local/bin/clang-scan-deps-22"
+      - "/usr/local/sbin/clang-scan-deps-22"
+      - "/usr/local/bin/clang-scan-deps-22"
+      - "/usr/lib/jvm/default/bin/clang-scan-deps-22"
+      - "/usr/bin/site_perl/clang-scan-deps-22"
+      - "/usr/bin/vendor_perl/clang-scan-deps-22"
+      - "/usr/bin/core_perl/clang-scan-deps-22"
+      - "/usr/bin/clang-scan-deps22"
+      - "/home/mayank/.local/share/nvim/mason/bin/clang-scan-deps22"
+      - "/home/mayank/.local/bin/clang-scan-deps22"
+      - "/usr/local/sbin/clang-scan-deps22"
+      - "/usr/local/bin/clang-scan-deps22"
+      - "/usr/lib/jvm/default/bin/clang-scan-deps22"
+      - "/usr/bin/site_perl/clang-scan-deps22"
+      - "/usr/bin/vendor_perl/clang-scan-deps22"
+      - "/usr/bin/core_perl/clang-scan-deps22"
+    found: "/usr/bin/clang-scan-deps"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/usr/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC"
+      binary: "/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_372b9/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_372b9.dir/build.make CMakeFiles/cmTC_372b9.dir/build
+        make[1]: Entering directory '/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC'
+        Building C object CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o
+        /usr/bin/clang   -v -MD -MT CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
+        clang version 22.1.2
+        Target: x86_64-pc-linux-gnu
+        Thread model: posix
+        InstalledDir: /usr/bin
+        Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-pc-linux-gnu/15.2.1
+        Found candidate GCC installation: /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1
+        Selected GCC installation: /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1
+        Candidate multilib: .;@m64
+        Candidate multilib: 32;@m32
+        Selected multilib: .;@m64
+         (in-process)
+         "/usr/bin/clang-22" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC -v -fcoverage-compilation-dir=/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC -resource-dir /usr/lib/clang/22 -dependency-file CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../x86_64-pc-linux-gnu/include -internal-externc-isystem /include -internal-externc-isystem /usr/include -ferror-limit 19 -stack-protector 2 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake/Modules/CMakeCCompilerABI.c
+        clang -cc1 version 22.1.2 based upon LLVM 22.1.2 default target x86_64-pc-linux-gnu
+        ignoring nonexistent directory "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../x86_64-pc-linux-gnu/include"
+        ignoring nonexistent directory "/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/lib/clang/22/include
+         /usr/local/include
+         /usr/include
+        End of search list.
+        Linking C executable cmTC_372b9
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_372b9.dir/link.txt --verbose=1
+        clang version 22.1.2
+        Target: x86_64-pc-linux-gnu
+        Thread model: posix
+        InstalledDir: /usr/bin
+        Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-pc-linux-gnu/15.2.1
+        Found candidate GCC installation: /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1
+        Selected GCC installation: /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1
+        Candidate multilib: .;@m64
+        Candidate multilib: 32;@m32
+        Selected multilib: .;@m64
+         "/usr/bin/ld" --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_372b9 /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/Scrt1.o /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crti.o /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o -L/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1 -L/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64 -L/lib/../lib64 -L/usr/lib64 -L/lib -L/usr/lib -v CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crtn.o
+        GNU ld (GNU Binutils) 2.46
+        /usr/bin/clang  -v -Wl,-v CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -o cmTC_372b9
+        make[1]: Leaving directory '/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/usr/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/lib/clang/22/include]
+          add: [/usr/local/include]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/lib/clang/22/include] ==> [/usr/lib/clang/22/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/lib/clang/22/include;/usr/local/include;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/usr/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: '/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC']
+        ignore line: []
+        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_372b9/fast]
+        ignore line: [/usr/bin/make  -f CMakeFiles/cmTC_372b9.dir/build.make CMakeFiles/cmTC_372b9.dir/build]
+        ignore line: [make[1]: Entering directory '/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC']
+        ignore line: [Building C object CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/bin/clang   -v -MD -MT CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [clang version 22.1.2]
+        ignore line: [Target: x86_64-pc-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /usr/bin]
+        ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-pc-linux-gnu/15.2.1]
+        ignore line: [Found candidate GCC installation: /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1]
+        ignore line: [Selected GCC installation: /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1]
+        ignore line: [Candidate multilib: .]
+        ignore line: [@m64]
+        ignore line: [Candidate multilib: 32]
+        ignore line: [@m32]
+        ignore line: [Selected multilib: .]
+        ignore line: [@m64]
+        ignore line: [ (in-process)]
+        ignore line: [ "/usr/bin/clang-22" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC -v -fcoverage-compilation-dir=/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/CMakeScratch/TryCompile-35TXuC -resource-dir /usr/lib/clang/22 -dependency-file CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../x86_64-pc-linux-gnu/include -internal-externc-isystem /include -internal-externc-isystem /usr/include -ferror-limit 19 -stack-protector 2 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [clang -cc1 version 22.1.2 based upon LLVM 22.1.2 default target x86_64-pc-linux-gnu]
+        ignore line: [ignoring nonexistent directory "/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../x86_64-pc-linux-gnu/include"]
+        ignore line: [ignoring nonexistent directory "/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/lib/clang/22/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [Linking C executable cmTC_372b9]
+        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_372b9.dir/link.txt --verbose=1]
+        ignore line: [clang version 22.1.2]
+        ignore line: [Target: x86_64-pc-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /usr/bin]
+        ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-pc-linux-gnu/15.2.1]
+        ignore line: [Found candidate GCC installation: /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1]
+        ignore line: [Selected GCC installation: /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1]
+        ignore line: [Candidate multilib: .]
+        ignore line: [@m64]
+        ignore line: [Candidate multilib: 32]
+        ignore line: [@m32]
+        ignore line: [Selected multilib: .]
+        ignore line: [@m64]
+        link line: [ "/usr/bin/ld" --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_372b9 /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/Scrt1.o /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crti.o /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o -L/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1 -L/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64 -L/lib/../lib64 -L/usr/lib64 -L/lib -L/usr/lib -v CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o /usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crtn.o]
+          arg [/usr/bin/ld] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_372b9] ==> ignore
+          arg [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/Scrt1.o] ==> obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/Scrt1.o]
+          arg [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crti.o] ==> obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crti.o]
+          arg [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o] ==> obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o]
+          arg [-L/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1] ==> dir [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1]
+          arg [-L/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64] ==> dir [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64]
+          arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+          arg [-L/usr/lib64] ==> dir [/usr/lib64]
+          arg [-L/lib] ==> dir [/lib]
+          arg [-L/usr/lib] ==> dir [/usr/lib]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_372b9.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [-lgcc] ==> lib [gcc]
+          arg [--as-needed] ==> ignore
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [--no-as-needed] ==> ignore
+          arg [-lc] ==> lib [c]
+          arg [-lgcc] ==> lib [gcc]
+          arg [--as-needed] ==> ignore
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [--no-as-needed] ==> ignore
+          arg [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o] ==> obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o]
+          arg [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crtn.o] ==> obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crtn.o]
+        linker tool for 'C': /usr/bin/ld
+        collapse obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/Scrt1.o] ==> [/usr/lib64/Scrt1.o]
+        collapse obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crti.o] ==> [/usr/lib64/crti.o]
+        collapse obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o] ==> [/usr/lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o]
+        collapse obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o] ==> [/usr/lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o]
+        collapse obj [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64/crtn.o] ==> [/usr/lib64/crtn.o]
+        collapse library dir [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1] ==> [/usr/lib64/gcc/x86_64-pc-linux-gnu/15.2.1]
+        collapse library dir [/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib64] ==> [/usr/lib64]
+        collapse library dir [/lib/../lib64] ==> [/lib64]
+        collapse library dir [/usr/lib64] ==> [/usr/lib64]
+        collapse library dir [/lib] ==> [/lib]
+        collapse library dir [/usr/lib] ==> [/usr/lib]
+        implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+        implicit objs: [/usr/lib64/Scrt1.o;/usr/lib64/crti.o;/usr/lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o;/usr/lib64/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o;/usr/lib64/crtn.o]
+        implicit dirs: [/usr/lib64/gcc/x86_64-pc-linux-gnu/15.2.1;/usr/lib64;/lib64;/lib;/usr/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/usr/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Running the C compiler's linker: "/usr/bin/ld" "-v"
+      GNU ld (GNU Binutils) 2.46
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:517 (find_program)"
+      - "/usr/share/cmake/Modules/FindGSL.cmake:117 (find_package)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "program"
+    variable: "PKG_CONFIG_EXECUTABLE"
+    description: "pkg-config executable"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "pkg-config"
+      - "pkgconf"
+    candidate_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/"
+      - "/usr/bin/"
+      - "/usr/sbin/"
+      - "/usr/"
+      - "/bin/"
+      - "/sbin/"
+      - "/usr/X11R6/bin/"
+      - "/usr/X11R6/sbin/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/bin/"
+      - "/usr/pkg/sbin/"
+      - "/usr/pkg/"
+      - "/opt/bin/"
+      - "/opt/sbin/"
+      - "/opt/"
+    searched_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/pkg-config"
+      - "/home/mayank/.local/share/nvim/mason/bin/pkgconf"
+      - "/home/mayank/.local/bin/pkg-config"
+      - "/home/mayank/.local/bin/pkgconf"
+      - "/usr/local/sbin/pkg-config"
+      - "/usr/local/sbin/pkgconf"
+      - "/usr/local/bin/pkg-config"
+      - "/usr/local/bin/pkgconf"
+    found: "/usr/bin/pkg-config"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:761 (find_library)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
+      - "/usr/share/cmake/Modules/FindGSL.cmake:119 (pkg_check_modules)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "library"
+    variable: "pkgcfg_lib_GSL_gsl"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gsl"
+    candidate_directories:
+      - "/usr/lib/"
+    found: "/usr/lib/libgsl.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:761 (find_library)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
+      - "/usr/share/cmake/Modules/FindGSL.cmake:119 (pkg_check_modules)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "library"
+    variable: "pkgcfg_lib_GSL_gslcblas"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gslcblas"
+    candidate_directories:
+      - "/usr/lib/"
+    found: "/usr/lib/libgslcblas.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:761 (find_library)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
+      - "/usr/share/cmake/Modules/FindGSL.cmake:119 (pkg_check_modules)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "library"
+    variable: "pkgcfg_lib_GSL_m"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "m"
+    candidate_directories:
+      - "/usr/lib/"
+    found: "/usr/lib/libm.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindGSL.cmake:134 (find_path)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "path"
+    variable: "GSL_INCLUDE_DIR"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gsl/gsl_sf.h"
+    candidate_directories:
+      - "/usr/include/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/include/"
+      - "/usr/local/"
+      - "/usr/include/"
+      - "/usr/"
+      - "/include/"
+      - "/usr/X11R6/include/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/include/"
+      - "/usr/pkg/"
+      - "/opt/include/"
+      - "/opt/"
+      - "/usr/include/X11/"
+    found: "/usr/include/"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_INCLUDE_PATH:
+        - "/usr/include/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindGSL.cmake:138 (find_library)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "library"
+    variable: "GSL_LIBRARY"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gsl"
+    candidate_directories:
+      - "/usr/lib/Release/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Release/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Debug/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/Release/"
+      - "/home/mayank/.local/bin/Debug/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/Release/"
+      - "/usr/local/sbin/Debug/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/Release/"
+      - "/usr/local/bin/Debug/"
+      - "/usr/local/bin/"
+      - "/usr/bin/Release/"
+      - "/usr/bin/Debug/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/Release/"
+      - "/usr/lib/jvm/default/bin/Debug/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/Release/"
+      - "/usr/bin/site_perl/Debug/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/Release/"
+      - "/usr/bin/vendor_perl/Debug/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/Release/"
+      - "/usr/bin/core_perl/Debug/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/lib/Release/"
+      - "/usr/local/lib/Debug/"
+      - "/usr/local/lib/"
+      - "/usr/local/Release/"
+      - "/usr/local/Debug/"
+      - "/usr/local/"
+      - "/usr/lib/Release/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/usr/Release/"
+      - "/usr/Debug/"
+      - "/usr/"
+      - "/lib/Release/"
+      - "/lib/Debug/"
+      - "/lib/"
+      - "/usr/X11R6/lib/Release/"
+      - "/usr/X11R6/lib/Debug/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/Release/"
+      - "/usr/X11R6/Debug/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/lib/Release/"
+      - "/usr/pkg/lib/Debug/"
+      - "/usr/pkg/lib/"
+      - "/usr/pkg/Release/"
+      - "/usr/pkg/Debug/"
+      - "/usr/pkg/"
+      - "/opt/lib/Release/"
+      - "/opt/lib/Debug/"
+      - "/opt/lib/"
+      - "/opt/Release/"
+      - "/opt/Debug/"
+      - "/opt/"
+      - "/usr/lib/X11/Release/"
+      - "/usr/lib/X11/Debug/"
+      - "/usr/lib/X11/"
+    searched_directories:
+      - "/usr/lib/Release/"
+      - "/usr/lib/Debug/"
+    found: "/usr/lib/libgsl.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindGSL.cmake:143 (find_library)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "library"
+    variable: "GSL_CBLAS_LIBRARY"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gslcblas"
+      - "cblas"
+    candidate_directories:
+      - "/usr/lib/Release/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Release/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Debug/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/Release/"
+      - "/home/mayank/.local/bin/Debug/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/Release/"
+      - "/usr/local/sbin/Debug/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/Release/"
+      - "/usr/local/bin/Debug/"
+      - "/usr/local/bin/"
+      - "/usr/bin/Release/"
+      - "/usr/bin/Debug/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/Release/"
+      - "/usr/lib/jvm/default/bin/Debug/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/Release/"
+      - "/usr/bin/site_perl/Debug/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/Release/"
+      - "/usr/bin/vendor_perl/Debug/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/Release/"
+      - "/usr/bin/core_perl/Debug/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/lib/Release/"
+      - "/usr/local/lib/Debug/"
+      - "/usr/local/lib/"
+      - "/usr/local/Release/"
+      - "/usr/local/Debug/"
+      - "/usr/local/"
+      - "/usr/lib/Release/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/usr/Release/"
+      - "/usr/Debug/"
+      - "/usr/"
+      - "/lib/Release/"
+      - "/lib/Debug/"
+      - "/lib/"
+      - "/usr/X11R6/lib/Release/"
+      - "/usr/X11R6/lib/Debug/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/Release/"
+      - "/usr/X11R6/Debug/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/lib/Release/"
+      - "/usr/pkg/lib/Debug/"
+      - "/usr/pkg/lib/"
+      - "/usr/pkg/Release/"
+      - "/usr/pkg/Debug/"
+      - "/usr/pkg/"
+      - "/opt/lib/Release/"
+      - "/opt/lib/Debug/"
+      - "/opt/lib/"
+      - "/opt/Release/"
+      - "/opt/Debug/"
+      - "/opt/"
+      - "/usr/lib/X11/Release/"
+      - "/usr/lib/X11/Debug/"
+      - "/usr/lib/X11/"
+    searched_directories:
+      - "/usr/lib/Release/"
+      - "/usr/lib/Debug/"
+    found: "/usr/lib/libgslcblas.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindGSL.cmake:149 (find_library)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "library"
+    variable: "GSL_LIBRARY_DEBUG"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gsld"
+      - "gsl"
+    candidate_directories:
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Debug/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/Debug/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/Debug/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/Debug/"
+      - "/usr/local/bin/"
+      - "/usr/bin/Debug/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/Debug/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/Debug/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/Debug/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/Debug/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/lib/Debug/"
+      - "/usr/local/lib/"
+      - "/usr/local/Debug/"
+      - "/usr/local/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/usr/Debug/"
+      - "/usr/"
+      - "/lib/Debug/"
+      - "/lib/"
+      - "/usr/X11R6/lib/Debug/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/Debug/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/lib/Debug/"
+      - "/usr/pkg/lib/"
+      - "/usr/pkg/Debug/"
+      - "/usr/pkg/"
+      - "/opt/lib/Debug/"
+      - "/opt/lib/"
+      - "/opt/Debug/"
+      - "/opt/"
+      - "/usr/lib/X11/Debug/"
+      - "/usr/lib/X11/"
+    searched_directories:
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Debug/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/Debug/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/Debug/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/Debug/"
+      - "/usr/local/bin/"
+      - "/usr/bin/Debug/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/Debug/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/Debug/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/Debug/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/Debug/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/lib/Debug/"
+      - "/usr/local/lib/"
+      - "/usr/local/Debug/"
+      - "/usr/local/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/usr/Debug/"
+      - "/usr/"
+      - "/lib/Debug/"
+      - "/lib/"
+      - "/usr/X11R6/lib/Debug/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/Debug/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/lib/Debug/"
+      - "/usr/pkg/lib/"
+      - "/usr/pkg/Debug/"
+      - "/usr/pkg/"
+      - "/opt/lib/Debug/"
+      - "/opt/lib/"
+      - "/opt/Debug/"
+      - "/opt/"
+      - "/usr/lib/X11/Debug/"
+      - "/usr/lib/X11/"
+      - "/usr/lib/Debug/"
+    found: "/usr/lib/libgsl.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindGSL.cmake:154 (find_library)"
+      - "CMakeLists.txt:17 (find_package)"
+    mode: "library"
+    variable: "GSL_CBLAS_LIBRARY_DEBUG"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gslcblasd"
+      - "cblasd"
+      - "gslcblas"
+      - "cblas"
+    candidate_directories:
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Debug/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/Debug/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/Debug/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/Debug/"
+      - "/usr/local/bin/"
+      - "/usr/bin/Debug/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/Debug/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/Debug/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/Debug/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/Debug/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/lib/Debug/"
+      - "/usr/local/lib/"
+      - "/usr/local/Debug/"
+      - "/usr/local/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/usr/Debug/"
+      - "/usr/"
+      - "/lib/Debug/"
+      - "/lib/"
+      - "/usr/X11R6/lib/Debug/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/Debug/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/lib/Debug/"
+      - "/usr/pkg/lib/"
+      - "/usr/pkg/Debug/"
+      - "/usr/pkg/"
+      - "/opt/lib/Debug/"
+      - "/opt/lib/"
+      - "/opt/Debug/"
+      - "/opt/"
+      - "/usr/lib/X11/Debug/"
+      - "/usr/lib/X11/"
+    searched_directories:
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Debug/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/Debug/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/Debug/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/Debug/"
+      - "/usr/local/bin/"
+      - "/usr/bin/Debug/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/Debug/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/Debug/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/Debug/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/Debug/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/lib/Debug/"
+      - "/usr/local/lib/"
+      - "/usr/local/Debug/"
+      - "/usr/local/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/usr/Debug/"
+      - "/usr/"
+      - "/lib/Debug/"
+      - "/lib/"
+      - "/usr/X11R6/lib/Debug/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/Debug/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/lib/Debug/"
+      - "/usr/pkg/lib/"
+      - "/usr/pkg/Debug/"
+      - "/usr/pkg/"
+      - "/opt/lib/Debug/"
+      - "/opt/lib/"
+      - "/opt/Debug/"
+      - "/opt/"
+      - "/usr/lib/X11/Debug/"
+      - "/usr/lib/X11/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/home/mayank/.local/share/nvim/mason/bin/Debug/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/Debug/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/Debug/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/Debug/"
+      - "/usr/local/bin/"
+      - "/usr/bin/Debug/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/Debug/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/Debug/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/Debug/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/Debug/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/lib/Debug/"
+      - "/usr/local/lib/"
+      - "/usr/local/Debug/"
+      - "/usr/local/"
+      - "/usr/lib/Debug/"
+      - "/usr/lib/"
+      - "/usr/Debug/"
+      - "/usr/"
+      - "/lib/Debug/"
+      - "/lib/"
+      - "/usr/X11R6/lib/Debug/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/Debug/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/lib/Debug/"
+      - "/usr/pkg/lib/"
+      - "/usr/pkg/Debug/"
+      - "/usr/pkg/"
+      - "/opt/lib/Debug/"
+      - "/opt/lib/"
+      - "/opt/Debug/"
+      - "/opt/"
+      - "/usr/lib/X11/Debug/"
+      - "/usr/lib/X11/"
+      - "/usr/lib/Debug/"
+    found: "/usr/lib/libgslcblas.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:761 (find_library)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
+      - "/usr/share/cmake/Modules/FindLibXml2.cmake:114 (pkg_check_modules)"
+      - "CMakeLists.txt:19 (find_package)"
+    mode: "library"
+    variable: "pkgcfg_lib_PC_LIBXML_xml2"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "xml2"
+    candidate_directories:
+      - "/usr/lib/"
+    found: "/usr/lib/libxml2.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindLibXml2.cmake:117 (find_path)"
+      - "CMakeLists.txt:19 (find_package)"
+    mode: "path"
+    variable: "LIBXML2_INCLUDE_DIR"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "libxml/xpath.h"
+    candidate_directories:
+      - "/usr/include/libxml2/"
+      - "/usr/include/"
+      - "/usr/include/libxml2/libxml2/"
+      - "/usr/include/libxml2/"
+      - "/home/mayank/.local/share/nvim/mason/bin/libxml2/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/libxml2/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/libxml2/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/libxml2/"
+      - "/usr/local/bin/"
+      - "/usr/bin/libxml2/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/libxml2/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/libxml2/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/libxml2/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/libxml2/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/include/libxml2/"
+      - "/usr/local/include/"
+      - "/usr/local/libxml2/"
+      - "/usr/local/"
+      - "/usr/include/libxml2/"
+      - "/usr/include/"
+      - "/usr/libxml2/"
+      - "/usr/"
+      - "/include/libxml2/"
+      - "/include/"
+      - "/usr/X11R6/include/libxml2/"
+      - "/usr/X11R6/include/"
+      - "/usr/X11R6/libxml2/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/include/libxml2/"
+      - "/usr/pkg/include/"
+      - "/usr/pkg/libxml2/"
+      - "/usr/pkg/"
+      - "/opt/include/libxml2/"
+      - "/opt/include/"
+      - "/opt/libxml2/"
+      - "/opt/"
+      - "/usr/include/X11/libxml2/"
+      - "/usr/include/X11/"
+    found: "/usr/include/libxml2/"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_INCLUDE_PATH:
+        - "/usr/include/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindLibXml2.cmake:141 (find_library)"
+      - "CMakeLists.txt:19 (find_package)"
+    mode: "library"
+    variable: "LIBXML2_LIBRARY"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "xml2"
+      - "libxml2"
+      - "libxml2_a"
+    candidate_directories:
+      - "/usr/lib/"
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/lib/"
+      - "/usr/local/"
+      - "/usr/lib/"
+      - "/usr/"
+      - "/lib/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/lib/"
+      - "/usr/pkg/"
+      - "/opt/lib/"
+      - "/opt/"
+      - "/usr/lib/X11/"
+    found: "/usr/lib/libxml2.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindLibXml2.cmake:152 (find_program)"
+      - "CMakeLists.txt:19 (find_package)"
+    mode: "program"
+    variable: "LIBXML2_XMLLINT_EXECUTABLE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "xmllint"
+    candidate_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/"
+      - "/home/mayank/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/"
+      - "/usr/bin/"
+      - "/usr/sbin/"
+      - "/usr/"
+      - "/bin/"
+      - "/sbin/"
+      - "/usr/X11R6/bin/"
+      - "/usr/X11R6/sbin/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/bin/"
+      - "/usr/pkg/sbin/"
+      - "/usr/pkg/"
+      - "/opt/bin/"
+      - "/opt/sbin/"
+      - "/opt/"
+    searched_directories:
+      - "/home/mayank/.local/share/nvim/mason/bin/xmllint"
+      - "/home/mayank/.local/bin/xmllint"
+      - "/usr/local/sbin/xmllint"
+      - "/usr/local/bin/xmllint"
+    found: "/usr/bin/xmllint"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:761 (find_library)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
+      - "/usr/share/cmake/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
+      - "CMakeLists.txt:20 (pkg_check_modules)"
+    mode: "library"
+    variable: "pkgcfg_lib_CRITERION_criterion"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "criterion"
+    candidate_directories:
+      - "/usr/lib/"
+    found: "/usr/lib/libcriterion.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/mayank/.local/share/nvim/mason/bin"
+        - "/home/mayank/.local/bin"
+        - "/home/mayank/.local/share/../bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+...

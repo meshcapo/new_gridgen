@@ -1,0 +1,114 @@
+{
+	"configurations" : 
+	[
+		{
+			"abstractTargets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "GSL::gsl::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GSL__gsl-Debug-9f850039e4f8ded2a1d4.json",
+					"name" : "GSL::gsl",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GSL::gslcblas::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GSL__gslcblas-Debug-3c05a6bc36d00e1fb721.json",
+					"name" : "GSL::gslcblas",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "LibXml2::LibXml2::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-LibXml2__LibXml2-Debug-bf0e0b834a91034ebd6a.json",
+					"name" : "LibXml2::LibXml2",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "LibXml2::xmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-LibXml2__xmllint-Debug-54a1b43460b6ea439efe.json",
+					"name" : "LibXml2::xmllint",
+					"projectIndex" : 0
+				}
+			],
+			"directories" : 
+			[
+				{
+					"abstractTargetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					],
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-fd6451d79dc282e2f566.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"abstractTargetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "gridgen",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "gridexec::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-gridexec-Debug-d881fd9ee073c48c5c9a.json",
+					"name" : "gridexec",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tests_runner::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tests_runner-Debug-3c7e10cd01d56befb48a.json",
+					"name" : "tests_runner",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/mayank/Desktop/new_gridgen/build/Debug",
+		"source" : "/home/mayank/Desktop/new_gridgen"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 10
+	}
+}

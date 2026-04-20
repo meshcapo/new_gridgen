@@ -1,0 +1,110 @@
+[
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang  -I/home/mayank/Desktop/new_gridgen/include -g -std=gnu11 -o CMakeFiles/gridexec.dir/source/errors.c.o -c /home/mayank/Desktop/new_gridgen/source/errors.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/errors.c",
+  "output": "CMakeFiles/gridexec.dir/source/errors.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang  -I/home/mayank/Desktop/new_gridgen/include -g -std=gnu11 -o CMakeFiles/gridexec.dir/source/aux_functions.c.o -c /home/mayank/Desktop/new_gridgen/source/aux_functions.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/aux_functions.c",
+  "output": "CMakeFiles/gridexec.dir/source/aux_functions.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang  -I/home/mayank/Desktop/new_gridgen/include -g -std=gnu11 -o CMakeFiles/gridexec.dir/source/file_operations.c.o -c /home/mayank/Desktop/new_gridgen/source/file_operations.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/file_operations.c",
+  "output": "CMakeFiles/gridexec.dir/source/file_operations.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang  -I/home/mayank/Desktop/new_gridgen/include -g -std=gnu11 -o CMakeFiles/gridexec.dir/source/geometry.c.o -c /home/mayank/Desktop/new_gridgen/source/geometry.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/geometry.c",
+  "output": "CMakeFiles/gridexec.dir/source/geometry.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang  -I/home/mayank/Desktop/new_gridgen/include -g -std=gnu11 -o CMakeFiles/gridexec.dir/source/jacobian_ders.c.o -c /home/mayank/Desktop/new_gridgen/source/jacobian_ders.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/jacobian_ders.c",
+  "output": "CMakeFiles/gridexec.dir/source/jacobian_ders.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang  -I/home/mayank/Desktop/new_gridgen/include -g -std=gnu11 -o CMakeFiles/gridexec.dir/source/newton.c.o -c /home/mayank/Desktop/new_gridgen/source/newton.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/newton.c",
+  "output": "CMakeFiles/gridexec.dir/source/newton.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang  -I/home/mayank/Desktop/new_gridgen/include -g -std=gnu11 -o CMakeFiles/gridexec.dir/source/grid_solvers.c.o -c /home/mayank/Desktop/new_gridgen/source/grid_solvers.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/grid_solvers.c",
+  "output": "CMakeFiles/gridexec.dir/source/grid_solvers.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang  -I/home/mayank/Desktop/new_gridgen/include -g -std=gnu11 -o CMakeFiles/gridexec.dir/source/main.c.o -c /home/mayank/Desktop/new_gridgen/source/main.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/main.c",
+  "output": "CMakeFiles/gridexec.dir/source/main.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/source/errors.c.o -c /home/mayank/Desktop/new_gridgen/source/errors.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/errors.c",
+  "output": "CMakeFiles/tests_runner.dir/source/errors.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/source/aux_functions.c.o -c /home/mayank/Desktop/new_gridgen/source/aux_functions.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/aux_functions.c",
+  "output": "CMakeFiles/tests_runner.dir/source/aux_functions.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/source/file_operations.c.o -c /home/mayank/Desktop/new_gridgen/source/file_operations.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/file_operations.c",
+  "output": "CMakeFiles/tests_runner.dir/source/file_operations.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/source/geometry.c.o -c /home/mayank/Desktop/new_gridgen/source/geometry.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/geometry.c",
+  "output": "CMakeFiles/tests_runner.dir/source/geometry.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/source/jacobian_ders.c.o -c /home/mayank/Desktop/new_gridgen/source/jacobian_ders.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/jacobian_ders.c",
+  "output": "CMakeFiles/tests_runner.dir/source/jacobian_ders.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/source/newton.c.o -c /home/mayank/Desktop/new_gridgen/source/newton.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/newton.c",
+  "output": "CMakeFiles/tests_runner.dir/source/newton.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/source/grid_solvers.c.o -c /home/mayank/Desktop/new_gridgen/source/grid_solvers.c",
+  "file": "/home/mayank/Desktop/new_gridgen/source/grid_solvers.c",
+  "output": "CMakeFiles/tests_runner.dir/source/grid_solvers.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/tests/test_aux_functions.c.o -c /home/mayank/Desktop/new_gridgen/tests/test_aux_functions.c",
+  "file": "/home/mayank/Desktop/new_gridgen/tests/test_aux_functions.c",
+  "output": "CMakeFiles/tests_runner.dir/tests/test_aux_functions.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/tests/test_errors.c.o -c /home/mayank/Desktop/new_gridgen/tests/test_errors.c",
+  "file": "/home/mayank/Desktop/new_gridgen/tests/test_errors.c",
+  "output": "CMakeFiles/tests_runner.dir/tests/test_errors.c.o"
+},
+{
+  "directory": "/home/mayank/Desktop/new_gridgen/build/Debug",
+  "command": "/usr/bin/clang -DHAVE_LIBXML2 -I/home/mayank/Desktop/new_gridgen/include -I/usr/include/libxml2 -g -std=gnu11 -o CMakeFiles/tests_runner.dir/tests/test_file_operations.c.o -c /home/mayank/Desktop/new_gridgen/tests/test_file_operations.c",
+  "file": "/home/mayank/Desktop/new_gridgen/tests/test_file_operations.c",
+  "output": "CMakeFiles/tests_runner.dir/tests/test_file_operations.c.o"
+}
+]

@@ -1,0 +1,4 @@
+/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/gridexec.dir
+/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/tests_runner.dir
+/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/edit_cache.dir
+/home/mayank/Desktop/new_gridgen/build/Debug/CMakeFiles/rebuild_cache.dir
