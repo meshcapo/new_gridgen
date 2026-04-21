@@ -62,7 +62,7 @@ static void free_bhsol2D_1D_wrapper (char *name, void *p)
 /* Parameterized test for allocation and free routines for 1D arrays */
 typedef struct  /* Data type for parameterized test */
 {
-    const char *case_name;
+    char case_name[32];
     int n;
     void *(*alloc_fn)(char *, int);
     void (*free_fn)(char *, void *);
@@ -215,7 +215,7 @@ static void free_bhj2D_2D_wrapper (char *name, int n1, void *p)
 /* Parameterized test for allocation and free routines for 2D arrays */
 typedef struct  /* Data type for parameterized test */
 {
-    const char *case_name;
+    char case_name[32];
     int n1;
     int n2;
     void *(*alloc_fn)(char *, int, int);
@@ -426,10 +426,10 @@ static int verify_zero_ell_jacobian_2D (void)
            r.ddy.x == 0.0L && r.ddy.y == 0.0L;
 }
 
-/* Parameterized test for zero() _Generic macro */ 
-typedef struct 
+/* Parameterized test for zero() _Generic macro */
+typedef struct
 {
-    const char *type_name;
+    char type_name[32];
     int (*verify)(void);
 } zero_case_t;
 
@@ -534,7 +534,7 @@ static int verify_equal_bh_jacobian_2D (void)
 /* Parameterized test for equal() _Generic macro */
 typedef struct
 {
-    const char *type_name;
+    char type_name[32];
     int (*verify)(void);
 } equal_case_t;
 
@@ -609,9 +609,335 @@ Test(aux_functions, identity_ders_ell)
     cr_assert_eq(a.ddy.y, 1.0L, "identity_ders_ell failed: ddy.y expected 1.0");
 }
 
+/* Test for equals_2D_point_2D_array */ 
+Test(aux_functions, equals_2D_point_2D_array)
+{
+    point_2D **a_test, **b;
+    int      i, j;
 
-/* Test for hash: verify 2D-to-1D array index mapping */ 
+    /* Create 1st array */
+    a_test = allocate_2D_point_2D_array ("a_test", 2, 2);
+    for (i = 0; i < 2; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
+            a_test[i][j] = zero (point_2D);
+        }
+    }
+    a_test[1][1].x = 1.0L;
+    a_test[1][1].y = 1.0L;
+
+    /* Call function */ 
+    b = allocate_2D_point_2D_array ("b", 2, 2);
+    equals_2D_point_2D_array(2, 2, a_test, &b);
+
+    /* Test output array */ 
+    cr_assert_float_eq(b[0][0].x, 0.0L, 1e-15L, "b[0][0].x failed: expected 0.0, but got %Lf", b[0][0].x);
+    cr_assert_float_eq(b[0][0].y, 0.0L, 1e-15L, "b[0][0].y failed: expected 0.0, but got %Lf", b[0][0].y);
+    cr_assert_float_eq(b[0][1].x, 0.0L, 1e-15L, "b[0][1].x failed: expected 0.0, but got %Lf", b[0][1].x);
+    cr_assert_float_eq(b[0][1].y, 0.0L, 1e-15L, "b[0][1].y failed: expected 0.0, but got %Lf", b[0][1].y);
+    cr_assert_float_eq(b[1][0].x, 0.0L, 1e-15L, "b[1][0].x failed: expected 0.0, but got %Lf", b[1][0].x);
+    cr_assert_float_eq(b[1][0].y, 0.0L, 1e-15L, "b[1][0].y failed: expected 0.0, but got %Lf", b[1][0].y);
+    cr_assert_float_eq(b[1][1].x, 1.0L, 1e-15L, "b[1][1].x failed: expected 0.0, but got %Lf", b[1][1].x);
+    cr_assert_float_eq(b[1][1].y, 1.0L, 1e-15L, "b[1][1].y failed: expected 0.0, but got %Lf", b[1][1].y);
+
+    /* Free memory */ 
+    free_2D_point_2D_array("a_test", 2, a_test);
+    free_2D_point_2D_array("b", 2, b);
+}
+
+/* Test for array_max_2D_long_double */
+Test(aux_functions, array_max_2D_long_double)
+{
+    long double         **a_test, a_max; 
+    int                 i, j; 
+
+    /* Create array */ 
+    a_test = allocate_2D_long_double_array ("a_test", 3, 3);
+    a_test[0][0] = 31.0L;
+    a_test[0][1] = 95.0L;
+    a_test[0][2] = 91.0L;
+    a_test[1][0] = 18.0L;
+    a_test[1][1] = 63.0L;
+    a_test[1][2] = 66.0L;
+    a_test[2][0] = 70.0L;
+    a_test[2][1] = 23.0L;
+    a_test[2][2] = 63.0L;
+
+    /* Call function */ 
+    a_max = array_max_2D_long_double(3, 3, a_test);
+
+    /* Test value */ 
+    cr_assert_float_eq (a_max, 95.0L, 1e-12L, "2D array max failed: expected 95.0, but got %Lf", a_max);
+
+    /* Free memory */ 
+    free_2D_long_double_array ("a_test", 3, a_test);
+}
+
+/* Test for convert_ell_jacobian_2D */
+Test(aux_functions, convert_ell_jacobian_2D)
+{
+    ell_jacobian_2D **mat;
+    long double     **array;
+
+    /* Allocate input matrix (2x2) and output array (4x4) */
+    mat   = allocate_2D_ell_jacobian_2D_array ("mat", 2, 2);
+    array = allocate_2D_long_double_array ("array", 4, 4);
+
+    /* Fill input matrix */
+    mat[0][0].ddx.x = 1.0L;  mat[0][0].ddx.y = 2.0L;
+    mat[0][0].ddy.x = 3.0L;  mat[0][0].ddy.y = 4.0L;
+
+    mat[0][1].ddx.x = 5.0L;  mat[0][1].ddx.y = 6.0L;
+    mat[0][1].ddy.x = 7.0L;  mat[0][1].ddy.y = 8.0L;
+
+    mat[1][0].ddx.x = 9.0L;  mat[1][0].ddx.y = 10.0L;
+    mat[1][0].ddy.x = 11.0L; mat[1][0].ddy.y = 12.0L;
+
+    mat[1][1].ddx.x = 13.0L; mat[1][1].ddx.y = 14.0L;
+    mat[1][1].ddy.x = 15.0L; mat[1][1].ddy.y = 16.0L;
+
+    /* Call function */
+    convert_ell_jacobian_2D (2, mat, &array);
+
+    /* Test output array */
+    cr_assert_float_eq (array[0][0],  1.0L, 1e-15L, "array[0][0]: expected 1.0, got %Lf",  array[0][0]);
+    cr_assert_float_eq (array[0][1],  3.0L, 1e-15L, "array[0][1]: expected 3.0, got %Lf",  array[0][1]);
+    cr_assert_float_eq (array[0][2],  5.0L, 1e-15L, "array[0][2]: expected 5.0, got %Lf",  array[0][2]);
+    cr_assert_float_eq (array[0][3],  7.0L, 1e-15L, "array[0][3]: expected 7.0, got %Lf",  array[0][3]);
+
+    cr_assert_float_eq (array[1][0],  2.0L, 1e-15L, "array[1][0]: expected 2.0, got %Lf",  array[1][0]);
+    cr_assert_float_eq (array[1][1],  4.0L, 1e-15L, "array[1][1]: expected 4.0, got %Lf",  array[1][1]);
+    cr_assert_float_eq (array[1][2],  6.0L, 1e-15L, "array[1][2]: expected 6.0, got %Lf",  array[1][2]);
+    cr_assert_float_eq (array[1][3],  8.0L, 1e-15L, "array[1][3]: expected 8.0, got %Lf",  array[1][3]);
+
+    cr_assert_float_eq (array[2][0],  9.0L, 1e-15L, "array[2][0]: expected 9.0, got %Lf",  array[2][0]);
+    cr_assert_float_eq (array[2][1], 11.0L, 1e-15L, "array[2][1]: expected 11.0, got %Lf", array[2][1]);
+    cr_assert_float_eq (array[2][2], 13.0L, 1e-15L, "array[2][2]: expected 13.0, got %Lf", array[2][2]);
+    cr_assert_float_eq (array[2][3], 15.0L, 1e-15L, "array[2][3]: expected 15.0, got %Lf", array[2][3]);
+
+    cr_assert_float_eq (array[3][0], 10.0L, 1e-15L, "array[3][0]: expected 10.0, got %Lf", array[3][0]);
+    cr_assert_float_eq (array[3][1], 12.0L, 1e-15L, "array[3][1]: expected 12.0, got %Lf", array[3][1]);
+    cr_assert_float_eq (array[3][2], 14.0L, 1e-15L, "array[3][2]: expected 14.0, got %Lf", array[3][2]);
+    cr_assert_float_eq (array[3][3], 16.0L, 1e-15L, "array[3][3]: expected 16.0, got %Lf", array[3][3]);
+
+    /* Free memory */
+    free_2D_ell_jacobian_2D_array ("mat", 2, mat);
+    free_2D_long_double_array ("array", 4, array);
+}
+
+/* Test for hash: verify 2D-to-1D array index mapping */
 Test(aux_functions, hash)
 {
     cr_assert_eq(hash(1, 1, 5), 0, "hash(1, 1, 5): expected 0, got %d", hash(1, 1, 5));
+}
+
+/* Test for convert_point_2D and convert_to_point_2D */ 
+Test(aux_functions, convert_point_2D)
+{
+    point_2D                *vec_in, *vec_out; 
+    long double             *array; 
+
+    /* Allocate inputs and outputs */ 
+    vec_in = allocate_1D_point_2D_array ("vec_in", 3);
+    vec_out = allocate_1D_point_2D_array ("vec_out", 3);
+    array = allocate_1D_long_double_array ("array", 6);
+
+    /* Fill input vector */ 
+    vec_in[0].x = 1.0L; vec_in[0].y = 2.0L;
+    vec_in[1].x = 3.0L; vec_in[1].y = 4.0L;
+    vec_in[2].x = 5.0L; vec_in[2].y = 6.0L;
+
+    /* Convert point_2D to long double */ 
+    convert_point_2D (3, vec_in, &array);
+
+    /* Test 1D long double array */ 
+    cr_assert_float_eq (array[0], 1.0L, 1e-15L, "long double array[0]: expected 1.0, got %Lf", array[0]);
+    cr_assert_float_eq (array[1], 2.0L, 1e-15L, "long double array[1]: expected 2.0, got %Lf", array[1]);
+    cr_assert_float_eq (array[2], 3.0L, 1e-15L, "long double array[2]: expected 3.0, got %Lf", array[2]);
+    cr_assert_float_eq (array[3], 4.0L, 1e-15L, "long double array[3]: expected 4.0, got %Lf", array[3]);
+    cr_assert_float_eq (array[4], 5.0L, 1e-15L, "long double array[4]: expected 5.0, got %Lf", array[4]);
+    cr_assert_float_eq (array[5], 6.0L, 1e-15L, "long double array[5]: expected 6.0, got %Lf", array[5]);
+
+    /* Convert long double to point_2D */ 
+    convert_to_point_2D (3, array, &vec_out);
+
+    /* Test point_2D array */ 
+    cr_assert_float_eq (vec_out[0].x, 1.0L, 1e-15L, "point_2D vec_out[0].x: expected 1.0, got %Lf", vec_out[0].x);
+    cr_assert_float_eq (vec_out[0].y, 2.0L, 1e-15L, "point_2D vec_out[0].y: expected 2.0, got %Lf", vec_out[0].y);
+    cr_assert_float_eq (vec_out[1].x, 3.0L, 1e-15L, "point_2D vec_out[1].x: expected 3.0, got %Lf", vec_out[1].x);
+    cr_assert_float_eq (vec_out[1].y, 4.0L, 1e-15L, "point_2D vec_out[1].y: expected 4.0, got %Lf", vec_out[1].y);
+    cr_assert_float_eq (vec_out[2].x, 5.0L, 1e-15L, "point_2D vec_out[2].x: expected 5.0, got %Lf", vec_out[2].x);
+    cr_assert_float_eq (vec_out[2].y, 6.0L, 1e-15L, "point_2D vec_out[2].y: expected 6.0, got %Lf", vec_out[2].y);
+
+    /* Free memory */ 
+    free_1D_point_2D_array ("vec_in", vec_in);
+    free_1D_point_2D_array ("vec_out", vec_out);
+    free_1D_long_double_array ("array", array);
+}
+
+/* Test for convert_bh_jacobian_2D */
+Test(aux_functions, convert_bh_jacobian_2D)
+{
+    bh_jacobian_2D  **mat;
+    long double     **array;
+
+    /* Allocate input matrix (1x1) and output array (4x4) */
+    mat   = allocate_2D_bh_jacobian_2D_array ("mat", 1, 1);
+    array = allocate_2D_long_double_array ("array", 4, 4);
+
+    /* Fill input matrix */
+    mat[0][0].ddx.x = 1.0L;  mat[0][0].ddx.y = 2.0L;
+    mat[0][0].ddx.p = 3.0L;  mat[0][0].ddx.q = 4.0L;
+
+    mat[0][0].ddy.x = 5.0L;  mat[0][0].ddy.y = 6.0L;
+    mat[0][0].ddy.p = 7.0L;  mat[0][0].ddy.q = 8.0L;
+
+    mat[0][0].ddp.x = 9.0L;  mat[0][0].ddp.y = 10.0L;
+    mat[0][0].ddp.p = 11.0L; mat[0][0].ddp.q = 12.0L;
+
+    mat[0][0].ddq.x = 13.0L; mat[0][0].ddq.y = 14.0L;
+    mat[0][0].ddq.p = 15.0L; mat[0][0].ddq.q = 16.0L;
+
+    /* Call function */
+    convert_bh_jacobian_2D (1, mat, &array);
+
+    /* Test output array */
+    cr_assert_float_eq (array[0][0],  1.0L, 1e-15L, "array[0][0]: expected 1.0, got %Lf",  array[0][0]);
+    cr_assert_float_eq (array[0][1],  5.0L, 1e-15L, "array[0][1]: expected 5.0, got %Lf",  array[0][1]);
+    cr_assert_float_eq (array[0][2],  9.0L, 1e-15L, "array[0][2]: expected 9.0, got %Lf",  array[0][2]);
+    cr_assert_float_eq (array[0][3], 13.0L, 1e-15L, "array[0][3]: expected 13.0, got %Lf", array[0][3]);
+
+    cr_assert_float_eq (array[1][0],  2.0L, 1e-15L, "array[1][0]: expected 2.0, got %Lf",  array[1][0]);
+    cr_assert_float_eq (array[1][1],  6.0L, 1e-15L, "array[1][1]: expected 6.0, got %Lf",  array[1][1]);
+    cr_assert_float_eq (array[1][2], 10.0L, 1e-15L, "array[1][2]: expected 10.0, got %Lf", array[1][2]);
+    cr_assert_float_eq (array[1][3], 14.0L, 1e-15L, "array[1][3]: expected 14.0, got %Lf", array[1][3]);
+
+    cr_assert_float_eq (array[2][0],  3.0L, 1e-15L, "array[2][0]: expected 3.0, got %Lf",  array[2][0]);
+    cr_assert_float_eq (array[2][1],  7.0L, 1e-15L, "array[2][1]: expected 7.0, got %Lf",  array[2][1]);
+    cr_assert_float_eq (array[2][2], 11.0L, 1e-15L, "array[2][2]: expected 11.0, got %Lf", array[2][2]);
+    cr_assert_float_eq (array[2][3], 15.0L, 1e-15L, "array[2][3]: expected 15.0, got %Lf", array[2][3]);
+
+    cr_assert_float_eq (array[3][0],  4.0L, 1e-15L, "array[3][0]: expected 4.0, got %Lf",  array[3][0]);
+    cr_assert_float_eq (array[3][1],  8.0L, 1e-15L, "array[3][1]: expected 8.0, got %Lf",  array[3][1]);
+    cr_assert_float_eq (array[3][2], 12.0L, 1e-15L, "array[3][2]: expected 12.0, got %Lf", array[3][2]);
+    cr_assert_float_eq (array[3][3], 16.0L, 1e-15L, "array[3][3]: expected 16.0, got %Lf", array[3][3]);
+
+    /* Free memory */
+    free_2D_bh_jacobian_2D_array ("mat", 1, mat);
+    free_2D_long_double_array ("array", 4, array);
+}
+
+/* Test for convert_bh_sol_2D and convert_to_bh_sol_2D (round-trip) */
+Test(aux_functions, convert_bh_sol_2D)
+{
+    bh_sol_2D   *vec_in, *vec_out;
+    long double *array;
+
+    /* Allocate inputs and outputs */
+    vec_in  = allocate_1D_bh_sol_2D_array ("vec_in", 2);
+    vec_out = allocate_1D_bh_sol_2D_array ("vec_out", 2);
+    array   = allocate_1D_long_double_array ("array", 8);
+
+    /* Fill input vector */
+    vec_in[0].x = 1.0L; vec_in[0].y = 2.0L;
+    vec_in[0].p = 3.0L; vec_in[0].q = 4.0L;
+    vec_in[1].x = 5.0L; vec_in[1].y = 6.0L;
+    vec_in[1].p = 7.0L; vec_in[1].q = 8.0L;
+
+    /* Convert bh_sol_2D -> long double */
+    convert_bh_sol_2D (2, vec_in, &array);
+
+    /* Test intermediate long double array */
+    cr_assert_float_eq (array[0], 1.0L, 1e-15L, "array[0]: expected 1.0, got %Lf", array[0]);
+    cr_assert_float_eq (array[1], 2.0L, 1e-15L, "array[1]: expected 2.0, got %Lf", array[1]);
+    cr_assert_float_eq (array[2], 3.0L, 1e-15L, "array[2]: expected 3.0, got %Lf", array[2]);
+    cr_assert_float_eq (array[3], 4.0L, 1e-15L, "array[3]: expected 4.0, got %Lf", array[3]);
+    cr_assert_float_eq (array[4], 5.0L, 1e-15L, "array[4]: expected 5.0, got %Lf", array[4]);
+    cr_assert_float_eq (array[5], 6.0L, 1e-15L, "array[5]: expected 6.0, got %Lf", array[5]);
+    cr_assert_float_eq (array[6], 7.0L, 1e-15L, "array[6]: expected 7.0, got %Lf", array[6]);
+    cr_assert_float_eq (array[7], 8.0L, 1e-15L, "array[7]: expected 8.0, got %Lf", array[7]);
+
+    /* Convert back: long double -> bh_sol_2D */
+    convert_to_bh_sol_2D (2, array, &vec_out);
+
+    /* Test round-trip output */
+    cr_assert_float_eq (vec_out[0].x, 1.0L, 1e-15L, "vec_out[0].x: expected 1.0, got %Lf", vec_out[0].x);
+    cr_assert_float_eq (vec_out[0].y, 2.0L, 1e-15L, "vec_out[0].y: expected 2.0, got %Lf", vec_out[0].y);
+    cr_assert_float_eq (vec_out[0].p, 3.0L, 1e-15L, "vec_out[0].p: expected 3.0, got %Lf", vec_out[0].p);
+    cr_assert_float_eq (vec_out[0].q, 4.0L, 1e-15L, "vec_out[0].q: expected 4.0, got %Lf", vec_out[0].q);
+    cr_assert_float_eq (vec_out[1].x, 5.0L, 1e-15L, "vec_out[1].x: expected 5.0, got %Lf", vec_out[1].x);
+    cr_assert_float_eq (vec_out[1].y, 6.0L, 1e-15L, "vec_out[1].y: expected 6.0, got %Lf", vec_out[1].y);
+    cr_assert_float_eq (vec_out[1].p, 7.0L, 1e-15L, "vec_out[1].p: expected 7.0, got %Lf", vec_out[1].p);
+    cr_assert_float_eq (vec_out[1].q, 8.0L, 1e-15L, "vec_out[1].q: expected 8.0, got %Lf", vec_out[1].q);
+
+    /* Free memory */
+    free_1D_bh_sol_2D_array ("vec_in", vec_in);
+    free_1D_bh_sol_2D_array ("vec_out", vec_out);
+    free_1D_long_double_array ("array", array);
+}
+
+/* Test LU_linear_system_solve */
+Test(aux_functions, LU_solve)
+{
+    int                 n = 3;
+    long double         **M, *b, *x; 
+
+    /* Allocate arrays */ 
+    M = allocate_2D_long_double_array ("LHS matrix", 3, 3);
+    b = allocate_1D_long_double_array ("RHS vector", 3);
+    x = allocate_1D_long_double_array ("Solution vector", 3);
+
+    /* LHS matrix */ 
+    M[0][0] = 2.0L; M[0][1] = 1.0L; M[0][2] = -1.0L;
+    M[1][0] = -3.0L; M[1][1] = -1.0L; M[1][2] = 2.0L;
+    M[2][0] = -2.0L; M[2][1] = 1.0L; M[2][2] = 2.0L;
+
+    /* RHS vector */ 
+    b[0] = 8.0L; b[1] = -11.0L; b[2] = -3.0L; 
+
+    /* Call function */ 
+    LU_linear_system_solve(3, M, b, &x);
+
+    /* Check solution */ 
+    cr_assert_float_eq (x[0], 2.0L, 1e-12L, "LU solve test failed at x[0]: expected 2.0, but got %Lf", x[0]);
+    cr_assert_float_eq (x[1], 3.0L, 1e-12L, "LU solve test failed at x[1]: expected 3.0, but got %Lf", x[1]);
+    cr_assert_float_eq (x[2], -1.0L, 1e-12L, "LU solve test failed at x[2]: expected -1.0, but got %Lf", x[2]);
+
+    /* Free memory */ 
+    free_2D_long_double_array ("LHS matrix", 3, M);
+    free_1D_long_double_array ("RHS vector", b);
+    free_1D_long_double_array ("Solution vector", x);
+}
+
+/* Test for gmres_linear_system_solve */ 
+Test(aux_functions, gmres_linear_system_solve)
+{
+    ell_jacobian_2D         **dFdu; 
+    point_2D                *fu, *del_u; 
+
+    // Allocate inputs and output 
+    dFdu = allocate_2D_ell_jacobian_2D_array ("dFdu", 1, 1);
+    fu = allocate_1D_point_2D_array ("fu", 1);
+    del_u = allocate_1D_point_2D_array ("del_u", 1);
+
+    // Fill Jacobian matrix (diagonal: M = [[2, 0], [0, 3]])
+    dFdu[0][0].ddx.x = 2.0L; dFdu[0][0].ddx.y = 0.0L;
+    dFdu[0][0].ddy.x = 0.0L; dFdu[0][0].ddy.y = 3.0L;
+
+    // Fill RHS vector (b = [4, 9])
+    fu[0].x = 4.0L; 
+    fu[0].y = 9.0L;
+
+    // Call function 
+    gmres_linear_system_solve (0, 1, 1, dFdu, fu, &del_u);
+
+    // Test solution 
+    cr_assert_float_eq (del_u[0].x, 2.0L, 1e-5L, "GMRES system solve failed at del_u[0].x: expected 2.0, got %Lf", del_u[0].x);
+    cr_assert_float_eq (del_u[0].y, 3.0L, 1e-5L, "GMRES system solve failed at del_u[0].y: expected 3.0, got %Lf", del_u[0].y);
+
+    // Free memory 
+    free_2D_ell_jacobian_2D_array ("dFdu", 1, dFdu);
+    free_1D_point_2D_array ("fu", fu);
+    free_1D_point_2D_array ("del_u", del_u);
 }

@@ -53,6 +53,7 @@ if(CRITERION_FOUND)
         ${CRITERION_LIBRARIES} pthread
         GSL::gsl GSL::gslcblas m
     )
+    target_link_options(tests_runner PRIVATE -no-pie)
 
     if(LibXml2_FOUND)
         target_include_directories(tests_runner PRIVATE ${LIBXML2_INCLUDE_DIR})

@@ -41,18 +41,18 @@ static point_2D **make_unit_square_grid(int nx, int ny)
    fatal_error which is tested elsewhere */
 typedef struct  /* Data type for parameterized test */
 {
-    char filename[64]; 
-    const char *expected_extension;
-} ext_case_t; 
+    char filename[64];
+    char expected_extension[16];
+} ext_case_t;
 
 ParameterizedTestParameters (file_operations, get_file_extension_param) /* Generate parameter set */
 {
-    static ext_case_t cases[] = 
+    static ext_case_t cases[] =
     {
         {"grid.x", ".x"},
         {"grid.vts", ".vts"},
     };
-    return cr_make_param_array (ext_case_t, cases, sizeof(cases)/sizeof(*cases));
+    return cr_make_param_array (ext_case_t, cases, sizeof(cases)/sizeof(*cases), NULL);
 }
 
 ParameterizedTest (ext_case_t *param, file_operations, get_file_extension_param)
@@ -137,7 +137,7 @@ Test (file_operations, read_xy_2D)
     long double tol = 1e-12L;
     int i11[9] = {0, 0, 0, 0, 1, 1, 1, 1};
     int i12[9] = {0, 0, 60, 60, 60, 60, 120, 120};
-    long double ref_values_1[9] = {-1.5, 0,0, 0.0, 0.15, 0.0, 0.8, 1.5, 0.8};
+    long double ref_values_1[8] = {-1.5, 0.0, 0.0, 0.15, 0.0, 0.8, 1.5, 0.8};
     int i1, j1, k1;
     for (i1 = 0; i1 < 4; i1++)
     {
@@ -167,7 +167,7 @@ Test (file_operations, read_xy_2D)
     /* Check values */
     int i21[9] = {0, 0, 0, 0, 1, 1, 1, 1};
     int i22[9] = {0, 0, 15, 15, 15, 15, 30, 30};
-    long double ref_values_2[9] = {-1.5, 0,0, -1.5, 0.4, 1.5, 0.4, 1.5, 0.8};
+    long double ref_values_2[8] = {-1.5, 0.0, -1.5, 0.4, 1.5, 0.4, 1.5, 0.8};
     int i2, j2, k2;
     for (i2 = 0; i2 < 4; i2++)
     {
@@ -234,10 +234,10 @@ Test (file_operations, read_xy_2D)
     {
         j4 = 2 * i4;
         k4 = j4 + 1;
-        cr_assert_float_eq (y_normals[i41[j4]][0].x, ref_values_3[j4], tol, "mismatch in y_normals[%d][%d].x: expected %LF, but got %LF", 
-                            i41[j4], 0, ref_values_3[j4], y_normals[i41[j4]][0].x);
-        cr_assert_float_eq (y_normals[i41[k4]][0].y, ref_values_3[k4], tol, "mismatch in y_normals[%d][%d].x: expected %LF, but got %LF", 
-                            i41[k4], 0, ref_values_3[k4], y_normals[i41[k4]][0].y);
+        cr_assert_float_eq (y_normals[i41[j4]][0].x, ref_values_4[j4], tol, "mismatch in y_normals[%d][%d].x: expected %LF, but got %LF",
+                            i41[j4], 0, ref_values_4[j4], y_normals[i41[j4]][0].x);
+        cr_assert_float_eq (y_normals[i41[k4]][0].y, ref_values_4[k4], tol, "mismatch in y_normals[%d][%d].y: expected %LF, but got %LF",
+                            i41[k4], 0, ref_values_4[k4], y_normals[i41[k4]][0].y);
     }
 
 
