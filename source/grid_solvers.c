@@ -284,43 +284,6 @@ void grid_first_ders_2D (int nx, int ny, point_2D **grid, grid_der_2D ***dgrid)
 
 
 /*
-   Compute new values of grid first derivatives
-   at a point (i, j). This is done when using a
-   Gauss-Seidel method where the values of some
-   points with indices i - 1 or j - 1 have already
-   been updated
-
-   Input parameters: dxi        - xi step size
-                     deta       - eta step size
-                     grid_pts   - array containing coordinates of
-                                  points surrounding (i, j) in the
-                                  order: (i - 1, j - 1), (i, j - 1),
-                                  (i + 1, j - 1), (i - 1, j), (i, j),
-                                  (i + 1, j), (i - 1, j + 1), (i, j + 1),
-                                  (i + 1, j + 1)
-*/
-grid_der_2D compute_first_ders_2D_at_ij (long double dxi, long double deta, point_2D *grid_pts)
-{
-    /* Return dij */
-    grid_der_2D             dij;
-
-
-    /* Compute new first ders */
-    dij.x_der.x                         = (grid_pts[5].x - grid_pts[3].x)/(TWO * dxi);
-    dij.x_der.y                         = (grid_pts[5].y - grid_pts[3].y)/(TWO * dxi);
-    dij.y_der.x                         = (grid_pts[7].x - grid_pts[1].x)/(TWO * deta);
-    dij.y_der.y                         = (grid_pts[7].y - grid_pts[1].y)/(TWO * deta);
-
-
-    return dij;
-}
-
-
-
-
-
-
-/*
    Compute coefficients and the Jacobian needed
    for solving the biharmonic equation. These are
    all computed using only the first derivatives
@@ -353,45 +316,6 @@ void first_der_coefficients (int nx, int ny, grid_der_2D **dgrid, coeffs_1 ***co
                                           (dgrid[i][k].x_der.y * dgrid[i][k].y_der.x);
         }
     }
-}
-
-
-
-
-
-
-/*
-   Compute new values of first derivative coefficients
-   at a point (i, j). This is done when using a
-   Gauss-Seidel method where the values of some
-   points with indices i - 1 or j - 1 have already
-   been updated
-
-   Input parameters: dxi        - xi step size
-                     deta       - eta step size
-                     grid_pts   - array containing coordinates of
-                                  points surrounding (i, j) in the
-                                  order: (i - 1, j - 1), (i, j - 1),
-                                  (i + 1, j - 1), (i - 1, j), (i, j),
-                                  (i + 1, j), (i - 1, j + 1), (i, j + 1),
-                                  (i + 1, j + 1)
-*/
-coeffs_1 compute_coeffs_at_ij (grid_der_2D dij)
-{
-    /* Return coeff_ij */
-    coeffs_1                coeff_ij;
-
-
-    coeff_ij.alpha                      = (dij.y_der.x * dij.y_der.x) +
-                                          (dij.y_der.y * dij.y_der.y);
-    coeff_ij.beta                       = (dij.x_der.x * dij.y_der.x) +
-                                          (dij.x_der.y * dij.y_der.y);
-    coeff_ij.gamma                      = (dij.x_der.x * dij.x_der.x) +
-                                          (dij.x_der.y * dij.x_der.y);
-    coeff_ij.J                          = (dij.x_der.x * dij.y_der.y) -
-                                          (dij.x_der.y * dij.y_der.x);
-
-    return coeff_ij;
 }
 
 
@@ -726,51 +650,6 @@ void grid_second_ders_2D (int nx, int ny, point_2D **grid, grid_dder_2D ***d2gri
             (*d2grid)[i][j].y_der       = divide_point_2D ((*d2grid)[i][j].y_der, (deta * deta));
         }
     }
-}
-
-
-
-
-
-
-/*
-   Compute new values of grid second derivatives
-   at a point (i, j). This is done when using a
-   Gauss-Seidel method where the values of some
-   points with indices i - 1 or j - 1 have already
-   been updated
-
-   Input parameters: dxi        - xi step size
-                     deta       - eta step size
-                     grid_pts   - array containing coordinates of
-                                  points surrounding (i, j) in the
-                                  order: (i - 1, j - 1), (i, j - 1),
-                                  (i + 1, j - 1), (i - 1, j), (i, j),
-                                  (i + 1, j), (i - 1, j + 1), (i, j + 1),
-                                  (i + 1, j + 1)
-*/
-grid_dder_2D compute_second_ders_2D_at_ij (long double dxi, long double deta, point_2D *grid_pts)
-{
-    /* Return d2ij */
-    grid_dder_2D            d2ij;
-
-
-    /* Compute new second ders */
-    d2ij.x_der.x                        = (grid_pts[5].x - (TWO * grid_pts[4].x) +
-                                           grid_pts[3].x)/(dxi * dxi);
-    d2ij.x_der.y                        = (grid_pts[5].y - (TWO * grid_pts[4].y) +
-                                           grid_pts[3].y)/(dxi * dxi);
-    d2ij.xy_der.x                       = (grid_pts[8].x - grid_pts[2].x - grid_pts[6].x +
-                                           grid_pts[0].x)/(FOUR * dxi * deta);
-    d2ij.xy_der.y                       = (grid_pts[8].y - grid_pts[2].y - grid_pts[6].y +
-                                           grid_pts[0].y)/(FOUR * dxi * deta);
-    d2ij.y_der.x                        = (grid_pts[7].x - (TWO * grid_pts[4].x) +
-                                           grid_pts[1].x)/(deta * deta);
-    d2ij.y_der.y                        = (grid_pts[7].y - (TWO * grid_pts[4].y) +
-                                           grid_pts[1].y)/(deta * deta);
-
-
-    return d2ij;
 }
 
 
