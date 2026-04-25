@@ -4,3 +4,5 @@ compile_commands.json
 .claude/
 .cache/
 CLAUDE.md
+.vscode/
+output/
