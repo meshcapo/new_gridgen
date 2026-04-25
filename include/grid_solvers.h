@@ -4,6 +4,9 @@
 
 
 
+/* Compute a computational grid in the (\xi, \eta) space */
+point_2D **computational_grid (int, int, int);
+
 /*
    Compute an interpolated 2D algebraic grid given
    boundary points

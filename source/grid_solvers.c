@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <math.h>
-#include <time.h>
-#include <string.h>
 #include "globvar.h"
 #include "types.h"
 #include "aux_functions.h"
@@ -2172,7 +2170,7 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
 
 
 /*
-   Elliptic grid generation with non-zero control
+   Elliptic grid generation with zero control
    functions using pointwise iteration
 
    Input parameters: nx         - number of x points
