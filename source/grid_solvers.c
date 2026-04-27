@@ -1917,45 +1917,57 @@ void compute_steger_sorenson (int nx, int ny, int mode, coeffs_1 **coeffs, grid_
 
 
 /*
-   Compute the Euclidean norm of the residual
-   for a Newton iteration. The residual is
-   computed as the distance between corresponding
-   points between the previous grid and the
-   current grid
+   Compute the maximum per-point Euclidean magnitude of a
+   point_2D array of length nx*ny:
 
-   Input parameters: nx     - number of x points
-                     ny     - number of y points
-                     del_u  - updates of x and y obtained from
-                              Newton's method
+       max_norm = max_i sqrt(v[i].x^2 + v[i].y^2)
+
+   Two intended uses inside the elliptic and Poisson solvers:
+
+     1. Newton step norm. Pass the Newton update del_u; the return
+        value is the largest single grid-point movement this
+        iteration. The caller divides by a reference length
+        (bounding-box diagonal, mean spacing, etc) to form a
+        dimensionless, grid-size-independent step tolerance --
+        the primary stopping criterion for the Newton loop.
+
+     2. Equation residual norm. Pass the Newton RHS fu; the return
+        value is the largest per-point residual of the discretized
+        equation. This is checked once after the Newton loop exits
+        as an honest "did we actually solve it" diagnostic.
+
+   The function itself is just a max-norm over a point_2D array;
+   the meaning of the result depends on what the caller passes in
+
+   Input parameters: nx  - number of x points
+                     ny  - number of y points
+                     v   - flat (length nx*ny) array of point_2D
+                           values (typically Newton update del_u
+                           or RHS fu)
 */
-long double compute_residual_norm (int nx, int ny, point_2D *del_u)
+long double compute_residual_norm (int nx, int ny, point_2D *v)
 {
-    /* Return res_norm */
-    long double             res_norm;
+    /* Return max_norm */
+    long double             max_norm;
 
     /* Local variables */
-    long double             *dist;
+    int                     i;
+    long double             norm_i;
 
 
     /* Initialize residual norm as 0 */
-    res_norm                            = ZERO;
-
-    /* Allocate memory */
-    dist                                = allocate_1D_long_double_array ("dist", nx * ny);
-
-    for (int i = 0; i < nx * ny; i++)
+    max_norm                            = ZERO;
+    for (i = 0; i < nx * ny; i++)
     {
-        dist[i]                         = (long double) sqrt((double) ((del_u[i].x * del_u[i].x) +
-                                                                       (del_u[i].y * del_u[i].y)));
-        res_norm                        += dist[i] * dist[i];
+        norm_i = sqrtl ((v[i].x * v[i].x) + (v[i].y * v[i].y));
+        if (norm_i > max_norm)
+        {
+            max_norm = norm_i;
+        }
     }
-    res_norm                           = (long double) sqrt((double) res_norm);
-
-    /* Free memory */
-    free_1D_long_double_array ("dist", dist);
 
 
-    return res_norm;
+    return max_norm;
 }
 
 
