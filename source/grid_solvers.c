@@ -141,14 +141,16 @@ point_2D **algebraic_grid_2D (int nx, int ny, point_2D **x_bounds, point_2D **y_
 
 
 /*
-   Compute the first derivatives of all (x, y) grid
-   points with respect to the computational grid
-   (xi, eta) using finite differences
+    Compute the first derivatives of all (x, y) grid
+    points with respect to the computational grid
+    (xi, eta) using finite differences
 
-   Input parameters: nx     - number of x points
-                     ny     - number of y points
-                     grid   - (x, y) grid coordinates
-                     dgrid  - array to store derivative
+    Input parameters: nx     - number of x points
+                      ny     - number of y points
+                      grid   - (x, y) grid coordinates
+                      dgrid  - array to store derivative
+
+    TODO: Add checks for nx >= 3 and ny >= 3
 */
 void grid_first_ders_2D (int nx, int ny, point_2D **grid, grid_der_2D ***dgrid)
 {
@@ -545,6 +547,8 @@ point_2D compute_finite_diff_2 (int index, int i, int j, point_2D **array, int d
                      ny     - number of y points
                      grid   - (x, y) grid coordinates
                      d2grid - array containing grid derivatives
+
+    TODO: Add checks for nx >= 4 and ny >= 4
 */
 void grid_second_ders_2D (int nx, int ny, point_2D **grid, grid_dder_2D ***d2grid)
 {
@@ -1778,7 +1782,8 @@ void compute_thomas_middlecoff_alt (int nx, int ny, grid_der_2D **dgrid, grid_dd
                      d2grid - second-order derivatives of (x, y) with
                               respect to (xi, eta)
 */
-void compute_steger_sorenson (int nx, int ny, grid_der_2D **dgrid, grid_dder_2D **d2grid, point_2D ***pq)
+void compute_steger_sorenson (int nx, int ny, int mode, coeffs_1 **coeffs, grid_der_2D **dgrid, 
+                              grid_dder_2D **d2grid, point_2D ***pq)
 {
     /* Local variables */
     int                     i, j;
@@ -1852,7 +1857,7 @@ void compute_steger_sorenson (int nx, int ny, grid_der_2D **dgrid, grid_dder_2D 
             temp3                       = (dgrid[i][j].y_der.x * d2grid[i][j].x_der.x) +
                                           (dgrid[i][j].y_der.y * d2grid[i][j].x_der.y);
             temp4                       = sqr(dgrid[i][j].x_der.x) + sqr(dgrid[i][j].x_der.y);
-            (*pq)[i][j].x               = -(temp1/temp2) - (temp3/temp4);
+            (*pq)[i][j].y               = -(temp1/temp2) - (temp3/temp4);
         }
     }
 
@@ -1867,7 +1872,7 @@ void compute_steger_sorenson (int nx, int ny, grid_der_2D **dgrid, grid_dder_2D 
             temp3                       = (dgrid[i][j].y_der.x * d2grid[i][j].x_der.x) +
                                           (dgrid[i][j].y_der.y * d2grid[i][j].x_der.y);
             temp4                       = sqr(dgrid[i][j].x_der.x) + sqr(dgrid[i][j].x_der.y);
-            (*pq)[i][j].x               = -(temp1/temp2) - (temp3/temp4);
+            (*pq)[i][j].y               = -(temp1/temp2) - (temp3/temp4);
         }
     }
 
@@ -1882,7 +1887,21 @@ void compute_steger_sorenson (int nx, int ny, grid_der_2D **dgrid, grid_dder_2D 
                                           (temp2 * (*pq)[i][0].y) + (xieta[i][j].y * (*pq)[i][ny - 1].y) -
                                           (temp1 * temp2 * (*pq)[0][0].y) - (xieta[i][j].x * temp2 * (*pq)[nx - 1][0].y) -
                                           (temp1 * xieta[i][j].y * (*pq)[0][ny - 1].y) - (xieta[i][j].x * xieta[i][j].y *
-                                           (*pq)[nx - 1][ny - 1].y);
+                                          (*pq)[nx - 1][ny - 1].y);
+        }
+    }
+
+
+    /* Compute (P, Q) representation if needed */
+    if (mode == 0)
+    {
+        for (i = 0; i < nx; i++)
+        {
+            for (j = 0; j < ny; j++)
+            {
+                (*pq)[i][j].x           = (*pq)[i][j].x/coeffs[i][j].gamma;
+                (*pq)[i][j].y           = (*pq)[i][j].y/coeffs[i][j].alpha;
+            }
         }
     }
 
