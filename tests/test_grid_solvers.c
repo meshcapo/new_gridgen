@@ -305,7 +305,7 @@ Test(grid_solvers, grid_first_ders_2D_smoothbump)
     point_2D        **grid;
     grid_der_2D     **dgrid;
 
-    /* Build smoothbump TFI grid */
+    // Build smoothbump TFI grid
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -320,11 +320,11 @@ Test(grid_solvers, grid_first_ders_2D_smoothbump)
         }
     }
 
-    /* Allocate and compute derivatives */
+    // Allocate and compute derivatives
     dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
     grid_first_ders_2D (nx, ny, grid, &dgrid);
 
-    /* Check all points against analytical derivatives */
+    // Check all points against analytical derivatives
     for (i = 0; i < nx; i++)
     {
         xi = (long double) i / (long double)(nx - 1);
@@ -346,7 +346,7 @@ Test(grid_solvers, grid_first_ders_2D_smoothbump)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
 }
@@ -367,13 +367,13 @@ Test(grid_solvers, grid_first_ders_2D_smoothbump)
 */
 Test(grid_solvers, grid_first_ders_2D_pgram_clustered)
 {
-    /* Grid dimensions */
+    // Grid dimensions
     int             nx = 5, ny = 3, i, j;
     long double     xi, eta;
     point_2D        **grid;
     grid_der_2D     **dgrid;
 
-    /* Build quadratically clustered grid */
+    // Build quadratically clustered grid
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -386,11 +386,11 @@ Test(grid_solvers, grid_first_ders_2D_pgram_clustered)
         }
     }
 
-    /* Allocate and compute derivatives */
+    // Allocate and compute derivatives
     dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
     grid_first_ders_2D (nx, ny, grid, &dgrid);
 
-    /* Check all points — exact for quadratic functions */
+    // Check all points — exact for quadratic functions
     for (i = 0; i < nx; i++)
     {
         xi = (long double) i / (long double)(nx - 1);
@@ -409,7 +409,7 @@ Test(grid_solvers, grid_first_ders_2D_pgram_clustered)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
 }
@@ -431,7 +431,7 @@ Test(grid_solvers, grid_second_ders_2D_pgram)
     point_2D        **grid;
     grid_dder_2D    **d2grid;
 
-    /* Build parallelogram grid with x = xi + (0.5 * eta), y = eta */
+    // Build parallelogram grid with x = xi + (0.5 * eta), y = eta
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -444,11 +444,11 @@ Test(grid_solvers, grid_second_ders_2D_pgram)
         }
     }
 
-    /* Allocate and compute second derivatives */
+    // Allocate and compute second derivatives
     d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-    /* Check all points — all second derivatives are zero for linear x and y */
+    // Check all points — all second derivatives are zero for linear x and y
     for (i = 0; i < nx; i++)
     {
         for (j = 0; j < ny; j++)
@@ -468,7 +468,7 @@ Test(grid_solvers, grid_second_ders_2D_pgram)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
 }
@@ -497,7 +497,7 @@ Test(grid_solvers, grid_second_ders_2D_smoothbump)
     point_2D        **grid;
     grid_dder_2D    **d2grid;
 
-    /* Build smoothbump TFI grid */
+    // Build smoothbump TFI grid
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -511,11 +511,11 @@ Test(grid_solvers, grid_second_ders_2D_smoothbump)
         }
     }
 
-    /* Allocate and compute second derivatives */
+    // Allocate and compute second derivatives
     d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-    /* Check all points against analytical second derivatives */
+    // Check all points against analytical second derivatives
     for (i = 0; i < nx; i++)
     {
         xi               = (long double) i / (long double)(nx - 1);
@@ -541,7 +541,7 @@ Test(grid_solvers, grid_second_ders_2D_smoothbump)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
 }
@@ -569,7 +569,7 @@ Test(grid_solvers, grid_second_ders_2D_pgram_clustered)
     point_2D        **grid;
     grid_dder_2D    **d2grid;
 
-    /* Build quadratically clustered grid */
+    // Build quadratically clustered grid
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -582,11 +582,11 @@ Test(grid_solvers, grid_second_ders_2D_pgram_clustered)
         }
     }
 
-    /* Allocate and compute second derivatives */
+    // Allocate and compute second derivatives
     d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-    /* Check all points — exact for quadratic functions */
+    // Check all points — exact for quadratic functions
     for (i = 0; i < nx; i++)
     {
         for (j = 0; j < ny; j++)
@@ -606,7 +606,7 @@ Test(grid_solvers, grid_second_ders_2D_pgram_clustered)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
 }
@@ -643,7 +643,7 @@ Test(grid_solvers, grid_second_ders_2D_pgram_clustered)
 */
 Test(grid_solvers, thomas_middlecoff_pq)
 {
-    /* Grid dimensions and constants */
+    // Grid dimensions and constants
     int             nx = 5, ny = 5, i, j;
     long double     a = 0.3L, b, c = 0.1L;
     long double     xi, eta, gamma_ij, alpha_ij, ac2;
@@ -655,7 +655,7 @@ Test(grid_solvers, thomas_middlecoff_pq)
     b = -a;
     ac2 = (a * a) + (c * c);
 
-    /* Build test grid */
+    // Build test grid
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -668,19 +668,19 @@ Test(grid_solvers, thomas_middlecoff_pq)
         }
     }
 
-    /* Compute first derivatives */
+    // Compute first derivatives
     dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
     grid_first_ders_2D (nx, ny, grid, &dgrid);
 
-    /* Compute second derivatives */
+    // Compute second derivatives
     d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-    /* Compute Thomas-Middlecoff control functions */
+    // Compute Thomas-Middlecoff control functions
     pq = allocate_2D_point_2D_array ("pq", nx, ny);
     compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &pq);
 
-    /* Check all points against analytic formula */
+    // Check all points against analytic formula
     for (i = 0; i < nx; i++)
     {
         xi = (long double) i/(long double) (nx - 1);
@@ -701,7 +701,7 @@ Test(grid_solvers, thomas_middlecoff_pq)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
@@ -735,7 +735,7 @@ Test(grid_solvers, thomas_middlecoff_pq)
 */
 Test(grid_solvers, thomas_middlecoff_phispi)
 {
-    /* Grid dimensions and constants */
+    // Grid dimensions and constants
     int             nx = 5, ny = 5, i, j;
     long double     a = 0.3L, b, c = 0.1L;
     long double     xi, eta, gamma_ij, alpha_ij, ac2;
@@ -747,7 +747,7 @@ Test(grid_solvers, thomas_middlecoff_phispi)
     b = -a;
     ac2 = (a * a) + (c * c);
 
-    /* Build test grid */
+    // Build test grid
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -760,19 +760,19 @@ Test(grid_solvers, thomas_middlecoff_phispi)
         }
     }
 
-    /* Compute first derivatives */
+    // Compute first derivatives
     dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
     grid_first_ders_2D (nx, ny, grid, &dgrid);
 
-    /* Compute second derivatives */
+    // Compute second derivatives
     d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-    /* Compute Thomas-Middlecoff control functions (alpha-phi form) */
+    // Compute Thomas-Middlecoff control functions (alpha-phi form)
     phipsi = allocate_2D_point_2D_array ("phipsi", nx, ny);
     compute_thomas_middlecoff_alt (nx, ny, dgrid, d2grid, &phipsi);
 
-    /* Check all points against analytic formula */
+    // Check all points against analytic formula
     for (i = 0; i < nx; i++)
     {
         xi = (long double) i/(long double) (nx - 1);
@@ -793,7 +793,7 @@ Test(grid_solvers, thomas_middlecoff_phispi)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
@@ -835,7 +835,7 @@ Test(grid_solvers, thomas_middlecoff_phispi)
 */
 Test(grid_solvers, steger_sorenson_pq)
 {
-    /* Grid dimensions and constants */
+    // Grid dimensions and constants
     int             nx = 5, ny = 5, i, j;
     long double     a = 0.3L, b, c = 0.1L;
     long double     xi, eta, gamma_ij, alpha_ij, ac2;
@@ -848,7 +848,7 @@ Test(grid_solvers, steger_sorenson_pq)
     b = -a;
     ac2 = (a * a) + (c * c);
 
-    /* Build test grid */
+    // Build test grid
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -861,23 +861,23 @@ Test(grid_solvers, steger_sorenson_pq)
         }
     }
 
-    /* Compute first derivatives */
+    // Compute first derivatives
     dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
     grid_first_ders_2D (nx, ny, grid, &dgrid);
 
-    /* Compute first-derivative coefficients (alpha, beta, gamma, J) */
+    // Compute first-derivative coefficients (alpha, beta, gamma, J)
     coeffs = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
     first_der_coefficients (nx, ny, dgrid, &coeffs);
 
-    /* Compute second derivatives */
+    // Compute second derivatives
     d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-    /* Compute Steger-Sorenson control functions in (P, Q) form */
+    // Compute Steger-Sorenson control functions in (P, Q) form
     pq = allocate_2D_point_2D_array ("pq", nx, ny);
     compute_steger_sorenson (nx, ny, 0, coeffs, dgrid, d2grid, &pq);
 
-    /* Check all points against analytic formula */
+    // Check all points against analytic formula
     for (i = 0; i < nx; i++)
     {
         xi = (long double) i/(long double) (nx - 1);
@@ -900,7 +900,7 @@ Test(grid_solvers, steger_sorenson_pq)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
     free_2D_coeffs_1_array ("coeffs", nx, coeffs);
@@ -938,7 +938,7 @@ Test(grid_solvers, steger_sorenson_pq)
 */
 Test(grid_solvers, control_steger_sorenson_phipsi)
 {
-    /* Grid dimensions and constants */
+    // Grid dimensions and constants
     int             nx = 5, ny = 5, i, j;
     long double     a = 0.3L, b, c = 0.1L;
     long double     xi, eta, gamma_ij, alpha_ij, ac2;
@@ -951,7 +951,7 @@ Test(grid_solvers, control_steger_sorenson_phipsi)
     b = -a;
     ac2 = (a * a) + (c * c);
 
-    /* Build test grid */
+    // Build test grid
     grid = allocate_2D_point_2D_array ("grid", nx, ny);
     for (i = 0; i < nx; i++)
     {
@@ -964,23 +964,23 @@ Test(grid_solvers, control_steger_sorenson_phipsi)
         }
     }
 
-    /* Compute first derivatives */
+    // Compute first derivatives
     dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
     grid_first_ders_2D (nx, ny, grid, &dgrid);
 
-    /* Compute first-derivative coefficients (alpha, beta, gamma, J) */
+    // Compute first-derivative coefficients (alpha, beta, gamma, J)
     coeffs = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
     first_der_coefficients (nx, ny, dgrid, &coeffs);
 
-    /* Compute second derivatives */
+    // Compute second derivatives
     d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-    /* Compute Steger-Sorenson control functions in (phi, psi) form */
+    // Compute Steger-Sorenson control functions in (phi, psi) form
     phipsi = allocate_2D_point_2D_array ("phipsi", nx, ny);
     compute_steger_sorenson (nx, ny, 1, coeffs, dgrid, d2grid, &phipsi);
 
-    /* Check all points against analytic formula */
+    // Check all points against analytic formula
     for (i = 0; i < nx; i++)
     {
         xi = (long double) i/(long double) (nx - 1);
@@ -1001,7 +1001,7 @@ Test(grid_solvers, control_steger_sorenson_phipsi)
         }
     }
 
-    /* Cleanup */
+    // Cleanup
     free_2D_point_2D_array ("grid", nx, grid);
     free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
     free_2D_coeffs_1_array ("coeffs", nx, coeffs);

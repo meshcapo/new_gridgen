@@ -69,7 +69,7 @@ Test(geometry, get_x_bounds_2D)
 */
 Test(geometry, get_y_bounds_2D)
 {
-    /* Grid dimensions */ 
+    // Grid dimensions
     int                 nx = 21, ny = 31, i, j;
 
     // Manufacture grid 

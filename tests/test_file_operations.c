@@ -67,7 +67,7 @@ ParameterizedTest (ext_case_t *param, file_operations, get_file_extension_param)
 /* Test for plot3D file reading functions */
 Test (file_operations, read_plot3D)
 {
-    /* Compute relative path from test source file */
+    // Compute relative path from test source file
     char src_path[PATH_MAX];
     strncpy (src_path, __FILE__, PATH_MAX - 1);
     src_path[PATH_MAX - 1] = '\0';
@@ -76,19 +76,19 @@ Test (file_operations, read_plot3D)
     char test_file[PATH_MAX];
     snprintf (test_file, sizeof(test_file), "%s/files/smoothbump/initial_grid.x", test_dir);
 
-    /* Check that file exists */
+    // Check that file exists
     if (access (test_file, R_OK) != 0) 
     {
         cr_skip_test ("Test file not found at %s", test_file);
     }
 
-    /* Read quantities from plot3D file */
+    // Read quantities from plot3D file
     long nblks = read_nblocks_from_plot3D (test_file);
     long *npts_x = read_npts_x_from_plot3D ("2D", test_file, nblks);
     long *npts_y = read_npts_y_from_plot3D ("2D", test_file, nblks);
 
-    /* Test number of blocks, number of points in 
-       X-direction and Y-direction */
+    // Test number of blocks, number of points in
+    // X-direction and Y-direction
     cr_assert_eq (nblks, 1L, "Expected 1 block but got %ld", nblks);
     cr_assert_not_null (npts_x, "read_npts_x_from_plot3D returned NULL");
     cr_assert_eq (npts_x[0], 121L, "Expected 121 points in X direction but got %ld", npts_x[0]);
@@ -103,37 +103,37 @@ Test (file_operations, read_plot3D)
 /* Test for (x, y) boundary information file reading functions */
 Test (file_operations, read_xy_2D)
 {
-    /* Compute relative path from test source file */
+    // Compute relative path from test source file
     char src_path[PATH_MAX];    
     strncpy (src_path, __FILE__, PATH_MAX - 1);
     src_path[PATH_MAX - 1] = '\0';
     char *test_dir = dirname (src_path);
 
-    /* Path to smoothbump X-boundaries file */
+    // Path to smoothbump X-boundaries file
     char sbump_dir[PATH_MAX];
     snprintf (sbump_dir, sizeof(sbump_dir), "%s/files/smoothbump", test_dir);
 
-    /* Save current cwd and chdir into smoothbump directory so test finds "x_boundaries.dat" */
+    // Save current cwd and chdir into smoothbump directory so test finds "x_boundaries.dat"
     char oldcwd[PATH_MAX];
     cr_assert_not_null (getcwd (oldcwd, sizeof(oldcwd)), "getcwd failed");
     cr_assert_eq (chdir(sbump_dir), 0, "chdir to %s failed", sbump_dir);
    
     
-    /* X-boundaries */
+    // X-boundaries
     char sbump_x_file[PATH_MAX];
     snprintf (sbump_x_file, sizeof(sbump_x_file), "%s/x_boundaries.dat", sbump_dir);
 
-    /* Check that file exists */
+    // Check that file exists
     if (access (sbump_x_file, R_OK) != 0)
     {
         cr_skip_test ("Test file not found at %s", sbump_x_file);
     }
 
-    /* Call function for reading X-boundaries */
+    // Call function for reading X-boundaries
     point_2D **x_bounds = read_x_bounds_2D (121);
     cr_assert_not_null (x_bounds, "read_x_bounds_2D returned NULL");
 
-    /* Check values */
+    // Check values
     long double tol = 1e-12L;
     int i11[9] = {0, 0, 0, 0, 1, 1, 1, 1};
     int i12[9] = {0, 0, 60, 60, 60, 60, 120, 120};
@@ -150,21 +150,21 @@ Test (file_operations, read_xy_2D)
     }
 
 
-    /* Y-boundaries */
+    // Y-boundaries
     char sbump_y_file[PATH_MAX];
     snprintf (sbump_y_file, sizeof(sbump_y_file), "%s/y_boundaries.dat", sbump_dir);
 
-    /* Check that file exists */
+    // Check that file exists
     if (access (sbump_y_file, R_OK) != 0)
     {
         cr_skip_test ("Test file not found at %s", sbump_y_file);
     }
 
-    /* Call function for reading Y-boundaries */
+    // Call function for reading Y-boundaries
     point_2D **y_bounds = read_y_bounds_2D (31);
     cr_assert_not_null (y_bounds, "read_y_bounds_2D returned NULL");
 
-    /* Check values */
+    // Check values
     int i21[9] = {0, 0, 0, 0, 1, 1, 1, 1};
     int i22[9] = {0, 0, 15, 15, 15, 15, 30, 30};
     long double ref_values_2[8] = {-1.5, 0.0, -1.5, 0.4, 1.5, 0.4, 1.5, 0.8};
@@ -180,21 +180,21 @@ Test (file_operations, read_xy_2D)
     }
 
 
-    /* X-normals */ 
+    // X-normals
     char sbump_xn_file[PATH_MAX];
     snprintf (sbump_xn_file, sizeof(sbump_xn_file), "%s/xbound_normals.dat", sbump_dir);
 
-    /* Check that file exists */
+    // Check that file exists
     if (access (sbump_xn_file, R_OK) != 0)
     {
         cr_skip_test ("Test file not found at %s", sbump_xn_file);
     }
 
-    /* Call function for reading X-normals */
+    // Call function for reading X-normals
     point_2D **x_normals = read_xbound_normals_2D (121);
     cr_assert_not_null (x_normals, "read_xbound_normals_2D returned NULL");
 
-    /* Check values */
+    // Check values
     int i31[13] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
     int i32[13] = {0, 0, 30, 30, 60, 60, 90, 90, 120, 120, 0, 0};
     long double ref_values_3[13] = {0.0, -1.0, 0.0045881492887020, -0.9999894743876582,
@@ -212,21 +212,21 @@ Test (file_operations, read_xy_2D)
     }
 
 
-    /* Y-normals */
+    // Y-normals
     char sbump_yn_file[PATH_MAX];
     snprintf (sbump_yn_file, sizeof(sbump_yn_file), "%s/ybound_normals.dat", sbump_dir);
 
-    /* Check that file exists */
+    // Check that file exists
     if (access (sbump_yn_file, R_OK) != 0)
     {
         cr_skip_test ("Test file not found at %s", sbump_yn_file);
     }
 
-    /* Call function for reading Y-normals */
+    // Call function for reading Y-normals
     point_2D **y_normals = read_ybound_normals_2D (31);
     cr_assert_not_null (y_normals, "read_ybound_normals_2D returned NULL");
 
-    /* Check values */
+    // Check values
     int i41[5] = {0, 0, 1, 1};
     long double ref_values_4[5] = {-1.0, 0.0, 1.0, 0.0};
     int i4, j4, k4;
@@ -241,7 +241,7 @@ Test (file_operations, read_xy_2D)
     }
 
 
-    /* Free memory and restore cwd */
+    // Free memory and restore cwd
     free_2D_point_2D_array ("x_bounds", 2, x_bounds);
     free_2D_point_2D_array ("y_bounds", 2, y_bounds);
     free_2D_point_2D_array ("x_normals", 2, x_normals);
@@ -253,13 +253,13 @@ Test (file_operations, read_xy_2D)
 /* Test for x boundary information file writing function */
 Test(file_operations, write_bounds_2D_x)
 {
-    /* Compute test directory relative to this source file */
+    // Compute test directory relative to this source file
     char src[PATH_MAX];
     strncpy(src, __FILE__, PATH_MAX - 1);
     src[PATH_MAX - 1] = '\0';
     char *tests_dir = dirname(src);
 
-    /* Build path to reference file */
+    // Build path to reference file
     char ref_file[PATH_MAX];
     snprintf(ref_file, sizeof(ref_file), "%s/files/smoothbump/x_boundaries.dat", tests_dir);
 
@@ -267,17 +267,17 @@ Test(file_operations, write_bounds_2D_x)
         cr_skip_test("Reference file not found at %s", ref_file);
     }
    
-    /* Open reference file */
+    // Open reference file
     FILE *ref_f = fopen(ref_file, "r");
     cr_assert_not_null(ref_f, "Cannot open reference file %s", ref_file);
     rewind (ref_f);
 
-    /* Generate boundary array data */
+    // Generate boundary array data
     int nx = 121;
     point_2D **bounds = allocate_2D_point_2D_array ("bounds", 2, nx);
     cr_assert_not_null (bounds, "Failed to allocate bounds array");
 
-    /* Read reference file into bounds array */
+    // Read reference file into bounds array
     for (int i = 0; i < nx; i++)
     {
         int ret = fscanf(ref_f, "%Lf %Lf %Lf %Lf\n",
@@ -287,7 +287,7 @@ Test(file_operations, write_bounds_2D_x)
     }
     fclose (ref_f);
 
-    /* Create temporary directory for output */
+    // Create temporary directory for output
     char tmpdir_template[] = "/tmp/gridgen_write_bounds_XXXXXX";
     char *tmpdir = mkdtemp(tmpdir_template);
     cr_assert_not_null(tmpdir, "mkdtemp failed");
@@ -295,25 +295,25 @@ Test(file_operations, write_bounds_2D_x)
     char out_file[PATH_MAX];
     snprintf(out_file, sizeof(out_file), "%s/x_boundaries_out.dat", tmpdir);
 
-    /* Call write_bounds_2D (writes to relative filename in current dir) */
+    // Call write_bounds_2D (writes to relative filename in current dir)
     write_bounds_2D(out_file, nx, bounds);
     cr_assert_eq(access(out_file, R_OK), 0, "write_bounds_2D output file %s not created", out_file);
 
-    /* Compare output file with reference file line-by-line */
+    // Compare output file with reference file line-by-line
     FILE *out_f = fopen(out_file, "r");
     cr_assert_not_null(out_f, "Cannot open output file %s", out_file);
     rewind (ref_f);
     ref_f = fopen(ref_file, "r");
     cr_assert_not_null (ref_f, "Cannot reopen reference file %s", ref_file);
 
-    /* Test output */
+    // Test output
     char ref_line[512], out_line[512];
     int line_num = 0;
     long double tol = 1E-12L;
     while (fgets(ref_line, sizeof(ref_line), ref_f) != NULL &&
            fgets(out_line, sizeof(out_line), out_f) != NULL) 
     {
-        /* Parse and compare each numeric value with tolerance for floating-point rounding */
+        // Parse and compare each numeric value with tolerance for floating-point rounding
         long double ref_x0, ref_y0, ref_x1, ref_y1;
         long double out_x0, out_y0, out_x1, out_y1;
         
@@ -333,10 +333,10 @@ Test(file_operations, write_bounds_2D_x)
         ++line_num;
     }
 
-    /* Ensure both files read the same number of lines */
+    // Ensure both files read the same number of lines
     cr_assert_eq(line_num, nx, "Output file has %d lines, expected %d", line_num, nx);
 
-    /* Cleanup */
+    // Cleanup
     fclose(out_f);
     fclose(ref_f);
     free_2D_point_2D_array("bounds", 2, bounds);
@@ -348,13 +348,13 @@ Test(file_operations, write_bounds_2D_x)
 /* Test for y boundary information file writing function */
 Test(file_operations, write_bounds_2D_y)
 {
-    /* Compute test directory relative to this source file */
+    // Compute test directory relative to this source file
     char src[PATH_MAX];
     strncpy(src, __FILE__, PATH_MAX - 1);
     src[PATH_MAX - 1] = '\0';
     char *tests_dir = dirname(src);
 
-    /* Build path to reference file */
+    // Build path to reference file
     char ref_file[PATH_MAX];
     snprintf(ref_file, sizeof(ref_file), "%s/files/smoothbump/y_boundaries.dat", tests_dir);
 
@@ -362,17 +362,17 @@ Test(file_operations, write_bounds_2D_y)
         cr_skip_test("Reference file not found at %s", ref_file);
     }
    
-    /* Open reference file */
+    // Open reference file
     FILE *ref_f = fopen(ref_file, "r");
     cr_assert_not_null(ref_f, "Cannot open reference file %s", ref_file);
     rewind (ref_f);
 
-    /* Generate boundary array data */
+    // Generate boundary array data
     int ny = 31;
     point_2D **bounds = allocate_2D_point_2D_array ("bounds", 2, ny);
     cr_assert_not_null (bounds, "Failed to allocate bounds array");
 
-    /* Read reference file into bounds array */
+    // Read reference file into bounds array
     for (int i = 0; i < ny; i++)
     {
         int ret = fscanf(ref_f, "%Lf %Lf %Lf %Lf\n",
@@ -382,7 +382,7 @@ Test(file_operations, write_bounds_2D_y)
     }
     fclose (ref_f);
 
-    /* Create temporary directory for output */
+    // Create temporary directory for output
     char tmpdir_template[] = "/tmp/gridgen_write_bounds_y_XXXXXX";
     char *tmpdir = mkdtemp(tmpdir_template);
     cr_assert_not_null(tmpdir, "mkdtemp failed");
@@ -390,25 +390,25 @@ Test(file_operations, write_bounds_2D_y)
     char out_file[PATH_MAX];
     snprintf(out_file, sizeof(out_file), "%s/y_boundaries_out.dat", tmpdir);
 
-    /* Call write_bounds_2D (writes to relative filename in current dir) */
+    // Call write_bounds_2D (writes to relative filename in current dir)
     write_bounds_2D(out_file, ny, bounds);
     cr_assert_eq(access(out_file, R_OK), 0, "write_bounds_2D output file %s not created", out_file);
 
-    /* Open files */
+    // Open files
     FILE *out_f = fopen(out_file, "r");
     cr_assert_not_null(out_f, "Cannot open output file %s", out_file);
     rewind (ref_f);
     ref_f = fopen(ref_file, "r");
     cr_assert_not_null (ref_f, "Cannot reopen reference file %s", ref_file);
 
-    /* Test output */
+    // Test output
     char ref_line[512], out_line[512];
     int line_num = 0;
     long double tol = 1E-12L;
     while (fgets(ref_line, sizeof(ref_line), ref_f) != NULL &&
            fgets(out_line, sizeof(out_line), out_f) != NULL) 
     {
-        /* Parse and compare each numeric value with tolerance for floating-point rounding */
+        // Parse and compare each numeric value with tolerance for floating-point rounding
         long double ref_x0, ref_y0, ref_x1, ref_y1;
         long double out_x0, out_y0, out_x1, out_y1;
         
@@ -428,10 +428,10 @@ Test(file_operations, write_bounds_2D_y)
         ++line_num;
     }
 
-    /* Ensure both files read the same number of lines */
+    // Ensure both files read the same number of lines
     cr_assert_eq (line_num, ny, "Output file has %d lines, expected %d", line_num, ny);
 
-    /* Cleanup */
+    // Cleanup
     fclose(out_f);
     fclose(ref_f);
     free_2D_point_2D_array("bounds", 2, bounds);
@@ -443,13 +443,13 @@ Test(file_operations, write_bounds_2D_y)
 /* Test for x normal information file writing function */
 Test(file_operations, write_normals_2D_x)
 {
-    /* Compute test directory relative to this source file */
+    // Compute test directory relative to this source file
     char src[PATH_MAX];
     strncpy(src, __FILE__, PATH_MAX - 1);
     src[PATH_MAX - 1] = '\0';
     char *tests_dir = dirname(src);
 
-    /* Build path to reference file */
+    // Build path to reference file
     char ref_file[PATH_MAX];
     snprintf(ref_file, sizeof(ref_file), "%s/files/smoothbump/x_boundaries.dat", tests_dir);
 
@@ -457,17 +457,17 @@ Test(file_operations, write_normals_2D_x)
         cr_skip_test("Reference file not found at %s", ref_file);
     }
    
-    /* Open reference file */
+    // Open reference file
     FILE *ref_f = fopen(ref_file, "r");
     cr_assert_not_null(ref_f, "Cannot open reference file %s", ref_file);
     rewind (ref_f);
 
-    /* Generate boundary array data */
+    // Generate boundary array data
     int nx = 121;
     point_2D **bounds = allocate_2D_point_2D_array ("bounds", 2, nx);
     cr_assert_not_null (bounds, "Failed to allocate bounds array");
 
-    /* Read reference file into bounds array */
+    // Read reference file into bounds array
     for (int i = 0; i < nx; i++)
     {
         int ret = fscanf(ref_f, "%Lf %Lf %Lf %Lf\n",
@@ -477,7 +477,7 @@ Test(file_operations, write_normals_2D_x)
     }
     fclose (ref_f);
 
-    /* Create temporary directory for output */
+    // Create temporary directory for output
     char tmpdir_template[] = "/tmp/gridgen_write_bounds_XXXXXX";
     char *tmpdir = mkdtemp(tmpdir_template);
     cr_assert_not_null(tmpdir, "mkdtemp failed");
@@ -485,25 +485,25 @@ Test(file_operations, write_normals_2D_x)
     char out_file[PATH_MAX];
     snprintf(out_file, sizeof(out_file), "%s/x_boundaries_out.dat", tmpdir);
 
-    /* Call write_bounds_2D (writes to relative filename in current dir) */
+    // Call write_bounds_2D (writes to relative filename in current dir)
     write_bounds_2D(out_file, nx, bounds);
     cr_assert_eq(access(out_file, R_OK), 0, "write_bounds_2D output file %s not created", out_file);
 
-    /* Compare output file with reference file line-by-line */
+    // Compare output file with reference file line-by-line
     FILE *out_f = fopen(out_file, "r");
     cr_assert_not_null(out_f, "Cannot open output file %s", out_file);
     rewind (ref_f);
     ref_f = fopen(ref_file, "r");
     cr_assert_not_null (ref_f, "Cannot reopen reference file %s", ref_file);
 
-    /* Test output */
+    // Test output
     char ref_line[512], out_line[512];
     int line_num = 0;
     long double tol = 1E-12L;
     while (fgets(ref_line, sizeof(ref_line), ref_f) != NULL &&
            fgets(out_line, sizeof(out_line), out_f) != NULL) 
     {
-        /* Parse and compare each numeric value with tolerance for floating-point rounding */
+        // Parse and compare each numeric value with tolerance for floating-point rounding
         long double ref_x0, ref_y0, ref_x1, ref_y1;
         long double out_x0, out_y0, out_x1, out_y1;
         
@@ -523,10 +523,10 @@ Test(file_operations, write_normals_2D_x)
         ++line_num;
     }
 
-    /* Ensure both files read the same number of lines */
+    // Ensure both files read the same number of lines
     cr_assert_eq(line_num, nx, "Output file has %d lines, expected %d", line_num, nx);
 
-    /* Cleanup */
+    // Cleanup
     fclose(out_f);
     fclose(ref_f);
     free_2D_point_2D_array("bounds", 2, bounds);
@@ -539,13 +539,13 @@ Test(file_operations, write_normals_2D_x)
    containing a 2D grid */
 Test (file_operations, read_2D_singleblock_plot3D)
 {
-    /* Compute path to test file relative to this source file */
+    // Compute path to test file relative to this source file
     char src_path[PATH_MAX];
     strncpy (src_path, __FILE__, PATH_MAX - 1);
     src_path[PATH_MAX - 1] = '\0';
     char *test_dir = dirname (src_path);
 
-    /* Determine if file exists */
+    // Determine if file exists
     char test_file[PATH_MAX];
     snprintf (test_file, sizeof(test_file), "%s/files/smoothbump/initial_grid.x", test_dir);
     if (access(test_file, R_OK) != 0)
@@ -553,11 +553,11 @@ Test (file_operations, read_2D_singleblock_plot3D)
         cr_skip_test("Test file not found at %s", test_file);
     }
 
-    /* Read grid and check if it was allocated successfully */ 
+    // Read grid and check if it was allocated successfully
     point_2D **grid = read_2D_singleblock_plot3D(test_file);
     cr_assert_not_null(grid, "read_2D_singleblock_plot3D returned NULL");
 
-    /* Test output */
+    // Test output
     long double tol = 1E-6L;
     cr_assert_float_eq(grid[0][0].x, -1.5, tol, "grid[0][0].x: Expected -1.5, but got %LF", grid[0][0].x);
     cr_assert_float_eq(grid[120][0].x, 1.5, tol, "grid[120][0].x: Expected 1.5, but got %LF", grid[120][0].x);
@@ -565,7 +565,7 @@ Test (file_operations, read_2D_singleblock_plot3D)
     cr_assert_float_eq(grid[120][0].y, 0.0, tol, "grid[120][0].y: Expected 0.0, but got %LF", grid[120][0].y);
     cr_assert_float_eq(grid[120][30].y, 0.8, tol, "grid[120][30].y: Expected 0.8, but got %LF", grid[120][30].y);
 
-    /* Free allocated memory */
+    // Free allocated memory
     free_2D_point_2D_array("grid", 121, grid);
 }
 
@@ -575,13 +575,13 @@ Test (file_operations, read_2D_singleblock_plot3D)
    read it back, and verify all values are preserved */
 Test(file_operations, write_2D_singleblock_plot3D)
 {
-    /* Build a 3x3 uniform grid on a [0, 1] x [0, 1] domain
-       with spacing 0.5 */
+    // Build a 3x3 uniform grid on a [0, 1] x [0, 1] domain
+    // with spacing 0.5
     int i, j, nx = 3, ny = 3;
     point_2D **grid = make_unit_square_grid(nx, ny);
     cr_assert_not_null(grid, "allocate_2D_point_2D_array returned NULL");
 
-    /* Write grid to a temporary file */
+    // Write grid to a temporary file
     char tmpdir_template[] = "/tmp/gridgen_plot3D_XXXXXX";
     char *tmpdir = mkdtemp(tmpdir_template);
     cr_assert_not_null(tmpdir, "mkdtemp failed");
@@ -592,11 +592,11 @@ Test(file_operations, write_2D_singleblock_plot3D)
     write_2D_singleblock_plot3D(out_file, nx, ny, grid);
     cr_assert_eq(access(out_file, R_OK), 0, "Output file not created: %s", out_file);
 
-    /* Read the file back */
+    // Read the file back
     point_2D **grid_read = read_2D_singleblock_plot3D(out_file);
     cr_assert_not_null(grid_read, "read_2D_singleblock_plot3D returned NULL");
 
-    /* Compare every grid point */
+    // Compare every grid point
     long double tol = 1E-12L;
     for (i = 0; i < nx; i++)
     {
@@ -607,7 +607,7 @@ Test(file_operations, write_2D_singleblock_plot3D)
         }
     }
 
-    /* Clean up */
+    // Clean up
     free_2D_point_2D_array("grid", nx, grid);
     free_2D_point_2D_array("grid_read", nx, grid_read);
     unlink(out_file);
@@ -620,15 +620,15 @@ Test(file_operations, write_2D_singleblock_plot3D)
    verify all values are preserved */ 
 Test(file_operations, write_2D_point_2D)
 {
-    /* Local variables */ 
+    // Local variables
     int         i, j, nx = 21, ny = 21;
     long double val_x, val_y, tol = 1E-15L;
 
-    /* Build a nx x ny uniform grid on a [0, 1] x [0, 1] domain */ 
+    // Build a nx x ny uniform grid on a [0, 1] x [0, 1] domain
     point_2D **grid = make_unit_square_grid(nx, ny);
     cr_assert_not_null(grid, "allocate_2D_point_2D_array returned NULL");
 
-    /* Create a temporary directory for output files */  
+    // Create a temporary directory for output files
     char tmpdir_template[] = "/tmp/gridgen_point2D_XXXXXX";
     char *tmpdir = mkdtemp(tmpdir_template);
     cr_assert_not_null(tmpdir, "mkdtemp failed");
@@ -637,12 +637,12 @@ Test(file_operations, write_2D_point_2D)
     snprintf(x_file, sizeof(x_file), "%s/grid_x.dat", tmpdir);
     snprintf(y_file, sizeof(y_file), "%s/grid_y.dat", tmpdir);
 
-    /* Write grid components to files */ 
+    // Write grid components to files
     write_2D_point_2D(x_file, y_file, nx, ny, grid);
     cr_assert_eq(access(x_file, R_OK), 0, "x output file not created: %s", x_file);
     cr_assert_eq(access(y_file, R_OK), 0, "y output file not created: %s", y_file);
 
-    /* Read back and compare */ 
+    // Read back and compare
     FILE *fx = fopen(x_file, "r");
     FILE *fy = fopen(y_file, "r");
     cr_assert_not_null(fx, "Cannot open x output file %s", x_file);
@@ -659,7 +659,7 @@ Test(file_operations, write_2D_point_2D)
         }
     }
 
-    /* Clean up */
+    // Clean up
     fclose(fx);
     fclose(fy);
     free_2D_point_2D_array("grid", nx, grid);
@@ -687,15 +687,15 @@ static xmlNodePtr find_child(xmlNodePtr parent, const char *name)
    to a .vts file, parse with libxml2 and verify coordinate values */
 Test(file_operations, write_2D_singleblock_vts)
 {
-    /* Local variables */
+    // Local variables
     int                 i, j, nx = 21, ny = 21;
     long double         rx, ry, tol = 1E-12L;
 
-    /* Build a nx x ny uniform grid on [0, 1] x [0, 1] domain */ 
+    // Build a nx x ny uniform grid on [0, 1] x [0, 1] domain
     point_2D **grid = make_unit_square_grid(nx, ny);
     cr_assert_not_null(grid, "allocate_2D_point_2D_array returned NULL");
 
-    /* Create a temporary directory and output file path */
+    // Create a temporary directory and output file path
     char tmpdir_template[] = "/tmp/gridgen_vts_XXXXXX";
     char *tmpdir = mkdtemp(tmpdir_template);
     cr_assert_not_null(tmpdir, "mkdtemp failed");
@@ -703,16 +703,16 @@ Test(file_operations, write_2D_singleblock_vts)
     char vts_file[PATH_MAX];
     snprintf(vts_file, sizeof(vts_file), "%s/grid.vts", tmpdir);
 
-    /* Write the grid to a .vts file */
+    // Write the grid to a .vts file
     write_2D_singleblock_vts(vts_file, nx, ny, grid, 1);
     cr_assert_eq(access(vts_file, R_OK), 0, "Output file not created: %s", vts_file);
 
-    /* Parse the XML output file */
+    // Parse the XML output file
     xmlDoc *doc = xmlReadFile(vts_file, NULL, 0);
     cr_assert_not_null(doc, "xmlReadFile failed to parse %s", vts_file);
 
-    /* Navigate to the DataArray node:
-       VTKFile -> StructuredGrid -> Piece -> Points -> Dataarray */ 
+    // Navigate to the DataArray node:
+    // VTKFile -> StructuredGrid -> Piece -> Points -> Dataarray
     xmlNodePtr root = xmlDocGetRootElement(doc);
     xmlNodePtr struct_grid = find_child(root, "StructuredGrid");
     cr_assert_not_null(struct_grid, "StructuredGrid node not found");
@@ -726,7 +726,7 @@ Test(file_operations, write_2D_singleblock_vts)
     xmlNodePtr data_array = find_child(points_node, "DataArray");
     cr_assert_not_null(data_array, "DataArray node not found");
 
-    /* Verify WholeExtent and Piece Extent attributes */
+    // Verify WholeExtent and Piece Extent attributes
     char expected_extent[64];
     snprintf(expected_extent, sizeof(expected_extent), "0 %d 0 %d 0 0", nx - 1, ny - 1);
 
@@ -741,8 +741,8 @@ Test(file_operations, write_2D_singleblock_vts)
     xmlFree(whole_extent);
     xmlFree(piece_extent);
 
-    /* Parse coordinate values from DataArray and compare against 
-       original grid values */
+    // Parse coordinate values from DataArray and compare against
+    // original grid values
     xmlChar *content = xmlNodeGetContent(data_array);
     cr_assert_not_null(content, "DataArray has no text content");
 
@@ -762,7 +762,7 @@ Test(file_operations, write_2D_singleblock_vts)
         }
     }
 
-    /* Clean up */
+    // Clean up
     xmlFree(content);
     xmlFreeDoc(doc);
     xmlCleanupParser();
@@ -777,16 +777,16 @@ Test(file_operations, write_2D_singleblock_vts)
    veify the PointData vector values */
 Test(file_operations, write_point_2D_to_vts)
 {
-    /* Local variables */
+    // Local variables
     int                     i, j, nx = 5, ny = 5;
     long double             tol = 1E-12L;
     const long double       pi = acosl(-1.0L);
 
-    /* Build a nx x ny uniform grid on [0, 1] x [0, 1] domain*/
+    // Build a nx x ny uniform grid on [0, 1] x [0, 1] domain
     point_2D **grid = make_unit_square_grid(nx, ny);
     cr_assert_not_null(grid, "allocate_2D_point_2D_array returned NULL");
 
-    /* Build a manufactured vector field: f(x, y) = (sin(pi*x), cos(pi*y)) */
+    // Build a manufactured vector field: f(x, y) = (sin(pi*x), cos(pi*y))
     point_2D **array = allocate_2D_point_2D_array("array", nx, ny);
     cr_assert_not_null(array, "allocate_2D_point_2D_array returned NULL for array");
 
@@ -799,7 +799,7 @@ Test(file_operations, write_point_2D_to_vts)
         }
     }
 
-    /* Create a temporary director and output file path */ 
+    // Create a temporary director and output file path
     char tmpdir_template[] = "/tmp/gridgen_point2D_vts_XXXXXX";
     char *tmpdir = mkdtemp(tmpdir_template);
     cr_assert_not_null(tmpdir, "mkdtemp failed");
@@ -807,16 +807,16 @@ Test(file_operations, write_point_2D_to_vts)
     char vts_file[PATH_MAX];
     snprintf(vts_file, sizeof(vts_file), "%s/vector.vts", tmpdir);
 
-    /* Write vector field to .vts file */
+    // Write vector field to .vts file
     write_point_2D_to_vts(vts_file, nx, ny, grid, "f", array);
     cr_assert_eq(access(vts_file, R_OK), 0, "Output file not created: %s", vts_file);
 
-    /* Parse the XML output file */
+    // Parse the XML output file
     xmlDoc *doc = xmlReadFile(vts_file, NULL, 0);
     cr_assert_not_null(doc, "xmlReadFile failed to parse %s", vts_file);
 
-    /* Navigate to the PointData DataArray node:
-       VTKFile -> StructuredGrid -> Piece -> PointData -> DataArray */
+    // Navigate to the PointData DataArray node:
+    // VTKFile -> StructuredGrid -> Piece -> PointData -> DataArray
     xmlNodePtr root = xmlDocGetRootElement(doc);
     xmlNodePtr struct_grid = find_child(root, "StructuredGrid");
     cr_assert_not_null(struct_grid, "StructuredGrid node not found");
@@ -827,7 +827,7 @@ Test(file_operations, write_point_2D_to_vts)
     xmlNodePtr point_data = find_child(piece, "PointData");
     cr_assert_not_null(point_data, "PointData node not found");
 
-    /* Verify the Vectors attribute contains the correct field name */
+    // Verify the Vectors attribute contains the correct field name
     xmlChar *vectors_attr = xmlGetProp(point_data, (const xmlChar *)"Vectors");
     cr_assert_not_null(vectors_attr, "Vectors attribute not found on PointData node");
     cr_assert_str_eq((char *)vectors_attr, "f", 
@@ -837,8 +837,8 @@ Test(file_operations, write_point_2D_to_vts)
     xmlNodePtr data_array = find_child(point_data, "DataArray");
     cr_assert_not_null(data_array, "DataArray node not found in PointData");
 
-    /* Parse vector values from DataArray and compare against 
-       manufactured field */
+    // Parse vector values from DataArray and compare against
+    // manufactured field
     xmlChar *content = xmlNodeGetContent(data_array);
     cr_assert_not_null(content, "DataArray has no text content");
 
@@ -863,7 +863,7 @@ Test(file_operations, write_point_2D_to_vts)
         }
     }
 
-    /* Clean-up */
+    // Clean-up
     xmlFree(content);
     xmlFreeDoc(doc);
     xmlCleanupParser();
