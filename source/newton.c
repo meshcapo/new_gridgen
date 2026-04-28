@@ -787,15 +787,15 @@ void ell_construct_newton_rhs_vector (int nx, int ny, point_2D **grid, coeffs_1 
         if ((i == 0 || i == nx - 1) &&
             (j >= 1 && j <= ny - 2))
         {
-            (*rhs)[k].x                 = -grid[i][j].x + y_bounds[i/(nx - 1)][j].x;
-            (*rhs)[k].y                 = -grid[i][j].y + y_bounds[i/(nx - 1)][j].y;
+            (*rhs)[k].x                 = grid[i][j].x - y_bounds[i/(nx - 1)][j].x;
+            (*rhs)[k].y                 = grid[i][j].y - y_bounds[i/(nx - 1)][j].y;
         }
 
         /* eta = 0, 1 boundaries */
         if (j == 0 || j == ny - 1)
         {
-            (*rhs)[k].x                 = -grid[i][j].x + x_bounds[j/(ny - 1)][i].x;
-            (*rhs)[k].y                 = -grid[i][j].y + x_bounds[j/(ny - 1)][i].y;
+            (*rhs)[k].x                 = grid[i][j].x - x_bounds[j/(ny - 1)][i].x;
+            (*rhs)[k].y                 = grid[i][j].y - x_bounds[j/(ny - 1)][i].y;
         }
 
         /* Compute -F(u) since this is the RHS */
@@ -815,14 +815,14 @@ void ell_construct_newton_rhs_vector (int nx, int ny, point_2D **grid, coeffs_1 
 
 
 /*
-   Update the 2D point_2D (x, y) and (p, q)
-   arrays after a Newton iteration using
-   the bh_sol_2D update array
+   Apply a Newton update to the 2D (x, y) grid:
+   grid[i][j] += update[k] for k = i + j*nx
 
    Input parameters: nx     - number of x points
                      ny     - number of y points
-                     update - 1D array of type bh_sol_2D
-                              containing (x, y, p, q) update values
+                     update - 1D array of type point_2D, length
+                              nx*ny, containing the Newton step
+                              Delta_u for each grid point
 */
 void ell_update_solution (int nx, int ny, point_2D *update, point_2D ***grid)
 {
@@ -1007,15 +1007,15 @@ void psn_construct_newton_rhs_vector (int nx, int ny, point_2D **grid, grid_der_
         if ((i == 0 || i == nx - 1) &&
             (j >= 1 && j <= ny - 2))
         {
-            (*rhs)[k].x                 = -grid[i][j].x + y_bounds[i/(nx - 1)][j].x;
-            (*rhs)[k].y                 = -grid[i][j].y + y_bounds[i/(nx - 1)][j].y;
+            (*rhs)[k].x                 = grid[i][j].x - y_bounds[i/(nx - 1)][j].x;
+            (*rhs)[k].y                 = grid[i][j].y - y_bounds[i/(nx - 1)][j].y;
         }
 
         /* eta = 0, 1 boundaries */
         if (j == 0 || j == ny - 1)
         {
-            (*rhs)[k].x                 = -grid[i][j].x + x_bounds[j/(ny - 1)][i].x;
-            (*rhs)[k].y                 = -grid[i][j].y + x_bounds[j/(ny - 1)][i].y;
+            (*rhs)[k].x                 = grid[i][j].x - x_bounds[j/(ny - 1)][i].x;
+            (*rhs)[k].y                 = grid[i][j].y - x_bounds[j/(ny - 1)][i].y;
         }
 
         /* Compute -F(u) since this is the RHS */

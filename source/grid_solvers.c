@@ -1772,17 +1772,60 @@ void compute_thomas_middlecoff_alt (int nx, int ny, grid_der_2D **dgrid, grid_dd
 
 
 /*
-   Compute Steger-Sorenson control functions
-   for the grid generation domain
+   Compute the Steger-Sorenson control functions on the (xi, eta)
+   computational-grid boundaries, then TFI to the interior:
 
-   Input parameters: nx     - number of x points
-                     ny     - number of y points
-                     dgrid  - derivatives of (x, y) with respect to
-                              (xi, eta)
-                     d2grid - second-order derivatives of (x, y) with
-                              respect to (xi, eta)
+       phi = -(r_xi  . r_xixi)  / gamma  -  (r_xi  . r_etaeta) / alpha
+       psi = -(r_eta . r_etaeta) / alpha  -  (r_eta . r_xixi)  / gamma
+
+   These come from dotting the elliptic generation system
+
+       alpha r_xixi - 2 beta r_xieta + gamma r_etaeta
+                                    + alpha gamma (P r_xi + Q r_eta) = 0
+
+   with r_xi and r_eta and assuming orthogonality (beta = 0). The
+   beta = 0 assumption is a recipe-level approximation applied
+   uniformly at every boundary point -- it is NOT specific to corners.
+   Where the user-supplied boundaries are non-orthogonal, the formula
+   is approximate everywhere on the boundary, not just at the corner.
+
+   FD-error structure (verified empirically on a quartic test grid;
+   see ~/Desktop/temp/ss_corner_pre_derivation.txt and the verification
+   driver in the same directory):
+
+     - phi gradients with respect to r_xixi and r_etaeta are both
+       proportional to r_xi. The one-sided FD^2 error in r_xixi
+       (occurring on i = 0 and i = nx-1 boundaries) is amplified,
+       while the one-sided FD^2 error in r_etaeta (j = 0, ny-1) is
+       largely suppressed by the dot-product structure. Result:
+       i-edges dominate phi error; j-edges are quiet for phi.
+     - By symmetry (psi gradients proportional to r_eta), j-edges
+       dominate psi error and i-edges are quiet for psi.
+     - Corners get one-sided FD^2 in both directions and are joint
+       worst, but only marginally so vs. the dominant edge for each
+       function -- they are NOT uniquely pathological.
+     - Interior values are TFI of boundary values. The TFI
+       non-separability error (TFI of analytical-boundary-phi minus
+       analytical interior phi) is h-independent; for non-trivial
+       geometries it can dominate over the O(h^2) FD-propagation
+       term at modest resolutions.
+
+   Input parameters: nx     - number of xi points
+                     ny     - number of eta points
+                     mode   - 0: divide by gamma, alpha to produce
+                                 (P, Q) for the J^2-P solver convention
+                              nonzero: produce (phi, psi) for the
+                                 alpha-phi solver convention
+                     coeffs - per-point alpha, beta, gamma, J;
+                              accessed only when mode = 0
+                     dgrid  - per-point first derivatives of (x, y)
+                              with respect to (xi, eta)
+                     d2grid - per-point second derivatives of (x, y)
+                              with respect to (xi, eta)
+   Output:           pq     - per-point (phi, psi) (mode != 0) or
+                              (P, Q) (mode = 0) values
 */
-void compute_steger_sorenson (int nx, int ny, int mode, coeffs_1 **coeffs, grid_der_2D **dgrid, 
+void compute_steger_sorenson (int nx, int ny, int mode, coeffs_1 **coeffs, grid_der_2D **dgrid,
                               grid_dder_2D **d2grid, point_2D ***pq)
 {
     /* Local variables */
@@ -1973,6 +2016,102 @@ long double compute_residual_norm (int nx, int ny, point_2D *v)
 
 
 
+/*
+   Compute the bounding-box diagonal of a 2D grid:
+       L_ref = sqrt((max_x - min_x)^2 + (max_y - min_y)^2)
+
+   Used as a reference length to non-dimensionalize the Newton
+   step norm in elliptic / Poisson solvers, so the convergence
+   tolerance becomes "max grid-point movement as a fraction of
+   domain size"
+
+   Input parameters: nx   - number of x points
+                     ny   - number of y points
+                     grid - 2D array of point_2D values
+*/
+static long double compute_bbox_diagonal_2D (int nx, int ny, point_2D **grid)
+{
+    long double             min_x, max_x, min_y, max_y, dx, dy;
+    int                     i, j;
+
+
+    min_x = max_x = grid[0][0].x;
+    min_y = max_y = grid[0][0].y;
+
+    for (i = 0; i < nx; i++)
+    {
+        for (j = 0; j < ny; j++)
+        {
+            if (grid[i][j].x < min_x) min_x = grid[i][j].x;
+            if (grid[i][j].x > max_x) max_x = grid[i][j].x;
+            if (grid[i][j].y < min_y) min_y = grid[i][j].y;
+            if (grid[i][j].y > max_y) max_y = grid[i][j].y;
+        }
+    }
+
+    dx = max_x - min_x;
+    dy = max_y - min_y;
+    return sqrtl ((dx * dx) + (dy * dy));
+}
+
+
+
+
+/*
+   Tridiagonal solver via Thomas algorithm. Solves
+       sub[i] * x[i-1] + diag[i] * x[i] + sup[i] * x[i+1] = rhs[i]
+   for i = 0..n-1, with sub[0] and sup[n-1] required to be zero
+   (boundary contributions should be folded into rhs by the caller).
+
+   Two right-hand-sides supported simultaneously (rhs_x, rhs_y) — they
+   share the same matrix factorization, so solving x and y components
+   along a single grid line costs only one forward sweep.
+
+   The arrays diag, rhs_x, rhs_y are MODIFIED in place by the forward
+   sweep. Outputs are written to sol_x and sol_y. sub and sup are
+   unchanged.
+
+   Input/output parameters:
+        n      - number of unknowns
+        sub    - sub-diagonal of length n (sub[0] must be 0)
+        diag   - diagonal of length n (overwritten)
+        sup    - super-diagonal of length n (sup[n-1] must be 0)
+        rhs_x  - x-component RHS, length n (overwritten)
+        rhs_y  - y-component RHS, length n (overwritten)
+        sol_x  - x-component solution, length n
+        sol_y  - y-component solution, length n
+*/
+static void tridiag_solve_2rhs (int n, long double *sub, long double *diag, long double *sup,
+                                long double *rhs_x, long double *rhs_y,
+                                long double *sol_x, long double *sol_y)
+{
+    int                     i;
+    long double             m;
+
+
+    /* Forward sweep: eliminate sub-diagonal */
+    for (i = 1; i < n; i++)
+    {
+        m                               = sub[i]/diag[i - 1];
+        diag[i]                        -= m * sup[i - 1];
+        rhs_x[i]                       -= m * rhs_x[i - 1];
+        rhs_y[i]                       -= m * rhs_y[i - 1];
+    }
+
+
+    /* Back substitution */
+    sol_x[n - 1]                        = rhs_x[n - 1]/diag[n - 1];
+    sol_y[n - 1]                        = rhs_y[n - 1]/diag[n - 1];
+    for (i = n - 2; i >= 0; i--)
+    {
+        sol_x[i]                        = (rhs_x[i] - (sup[i] * sol_x[i + 1]))/diag[i];
+        sol_y[i]                        = (rhs_y[i] - (sup[i] * sol_y[i + 1]))/diag[i];
+    }
+}
+
+
+
+
 
 
 /*
@@ -1993,45 +2132,48 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     grid_der_2D             **dgrid;
     coeffs_1                **coeffs;
     grid_dder_2D            **d2grid;
-    long double             dxi, deta, **lhs_array, *rhs_array, *update, res_norm;
+    long double             dxi, deta, res_norm, L_ref, fu_norm;
     point_2D                *fu, *del_u;
     ell_jacobian_2D         **dFdu;
     char                    file1[256];
     FILE                    *fptr;
-    int                     iiter;
+    int                     iiter, i, j;
+
+    /* Newton convergence parameters */
+    const long double       tol_step  = 1.0E-8L;   /* relative step-norm tolerance */
+    const long double       tol_resid = 1.0E-6L;   /* equation-residual warning threshold */
 
 
     /* Allocate memory for grid arrays */
-    grid                                = allocate_2D_point_2D_array ("elliptic_grid", nx, ny);
-    dgrid                               = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
-    coeffs                              = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
-    d2grid                              = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
+    grid    = allocate_2D_point_2D_array ("elliptic_grid", nx, ny);
+    dgrid   = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
+    coeffs  = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
+    d2grid  = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
 
     /* Allocate memory for Newton's method arrays */
-    dFdu                                = allocate_2D_ell_jacobian_2D_array ("dFdu", nx * ny, nx * ny);
-    fu                                  = allocate_1D_point_2D_array ("fu", nx * ny);
-    lhs_array                           = allocate_2D_long_double_array ("lhs_array", 2 * nx * ny, 2 * nx * ny);
-    rhs_array                           = allocate_1D_long_double_array ("rhs_array", 2 * nx * ny);
-    update                              = allocate_1D_long_double_array ("update", 2 * nx * ny);
-    del_u                               = allocate_1D_point_2D_array ("del_u", nx * ny);
+    dFdu    = allocate_2D_ell_jacobian_2D_array ("dFdu", nx * ny, nx * ny);
+    fu      = allocate_1D_point_2D_array ("fu", nx * ny);
+    del_u   = allocate_1D_point_2D_array ("del_u", nx * ny);
 
 
     /* Set grid array equal to initial grid */
     equals_2D_point_2D_array (nx, ny, init_grid, &grid);
 
     /* Computational grid spacing */
-    dxi                                 = ONE/((long double) (nx - 1));
-    deta                                = ONE/((long double) (ny - 1));
+    dxi  = ONE/((long double) (nx - 1));
+    deta = ONE/((long double) (ny - 1));
+
+    /* Reference length for non-dimensional convergence test */
+    L_ref = compute_bbox_diagonal_2D (nx, ny, grid);
 
 
     /* Solve for elliptic grids with no control functions */
-    fptr                                = fopen ("residuals.dat", "w");
+    fptr = fopen ("residuals.dat", "w");
     write_2D_singleblock_vts ("initial_grid.vts", nx, ny, grid, 1); // Write initial grid to Paraview file
     write_2D_point_2D ("init_x.dat", "init_y.dat", nx, ny, grid); // Write initial grid to .dat files
     for (iiter = 0; iiter < niter; iiter++)
     {
-        /* Compute initial grid derivatives and
-        first derivative coefficients */
+        /* Compute grid derivatives and first derivative coefficients */
         grid_first_ders_2D (nx, ny, grid, &dgrid);
         first_der_coefficients (nx, ny, dgrid, &coeffs);
         grid_second_ders_2D (nx, ny, grid, &d2grid);
@@ -2040,17 +2182,45 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
         ell_construct_newton_matrix (nx, ny, dxi, deta, dgrid, coeffs, d2grid, &dFdu);
         ell_construct_newton_rhs_vector (nx, ny, grid, coeffs, d2grid, &fu, 0);
         gmres_linear_system_solve (0, nx, ny, dFdu, fu, &del_u);
-        res_norm                        = compute_residual_norm (nx, ny, del_u);
-        fprintf (fptr, "%d  %22.16LF\n", iiter + 1, res_norm);
+
+        /* Step-norm convergence check (relative to bbox diagonal) */
+        res_norm = compute_residual_norm (nx, ny, del_u);
+        fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
 
         /* Update 2D (x, y) arrays */
         ell_update_solution (nx, ny, del_u, &grid);
 
-        /* Compute new derivatives */
-        grid_first_ders_2D (nx, ny, grid, &dgrid);
-        first_der_coefficients (nx, ny, dgrid, &coeffs);
-        grid_second_ders_2D (nx, ny, grid, &d2grid);
+        /* Break if Newton step is small relative to domain size */
+        if (res_norm/L_ref < tol_step)
+            break;
     }
+
+    /* Post-loop equation-residual diagnostic */
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    first_der_coefficients (nx, ny, dgrid, &coeffs);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    ell_construct_newton_rhs_vector (nx, ny, grid, coeffs, d2grid, &fu, 0);
+    /* Normalize per-point |F| by the local diagonal coefficient g so the
+       residual is on the same scale as the step-norm (max-norm over
+       interior). Without normalization F has alpha/dxi^2 magnitude and
+       fires false-positive warnings near step-norm convergence. */
+    fu_norm = ZERO;
+    for (i = 1; i < nx - 1; i++)
+    {
+        for (j = 1; j < ny - 1; j++)
+        {
+            long double         g_ij, norm_ij;
+            int                 k = i + (j * nx);
+            g_ij                        = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
+                                                 (coeffs[i][j].gamma/(deta * deta)));
+            norm_ij                     = sqrtl ((fu[k].x * fu[k].x) + (fu[k].y * fu[k].y))/g_ij;
+            if (norm_ij > fu_norm) fu_norm = norm_ij;
+        }
+    }
+    if (fu_norm > tol_resid)
+        fprintf (stderr, "Warning: elliptic_grid_2D equation residual %.6Le above tol %.6Le after %d iterations\n",
+                 fu_norm, tol_resid, iiter + 1);
+
     snprintf (file1, 256, "final_grid_%d.vts", iiter + 1);
     write_2D_singleblock_vts (file1, nx, ny, grid, 1); // Write final grid to Paraview file
     write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid); // Write final grid to .dat files
@@ -2065,9 +2235,6 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     /* Free memory from Newton's method arrays */
     free_2D_ell_jacobian_2D_array ("dFdu", nx * ny, dFdu);
     free_1D_point_2D_array ("fu", fu);
-    free_2D_long_double_array ("lhs_array", 2 * nx * ny, lhs_array);
-    free_1D_long_double_array ("rhs_array", rhs_array);
-    free_1D_long_double_array ("update", update);
     free_1D_point_2D_array ("del_u", del_u);
 
 
@@ -2214,12 +2381,19 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     grid_der_2D             **dgrid;
     coeffs_1                **coeffs;
     grid_dder_2D            **d2grid;
-    long double             dxi, deta, **lhs_array, *rhs_array, *update, res_norm;
-    point_2D                *fu, *del_u, **pq;
+    long double             dxi, deta, res_norm, L_ref, fu_norm;
+    point_2D                *fu, *del_u, **pq, **prev_pq;
     ell_jacobian_2D         **dFdu;
     char                    file1[256];
     FILE                    *fptr;
-    int                     iiter;
+    int                     iiter, i, j;
+
+    /* Newton convergence parameters */
+    const long double       tol_step    = 1.0E-8L;   /* relative step-norm tolerance */
+    const long double       tol_resid   = 1.0E-6L;   /* equation-residual warning threshold */
+    const int               ramp_iters  = 20;        /* outer iters to ramp lambda from 0 to its cap */
+    const long double       lambda_max  = 0.1L;      /* cap on SS contribution; 1.0 = pure SS, 0.0 = pure TM */
+    long double             lambda;                  /* TM->SS ramp parameter, 0..1 */
 
 
     /* Allocate memory for grid arrays */
@@ -2228,13 +2402,11 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     coeffs                              = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
     d2grid                              = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
     pq                                  = allocate_2D_point_2D_array ("pq", nx, ny);
+    prev_pq                             = allocate_2D_point_2D_array ("prev_pq", nx, ny);
 
     /* Allocate memory for Newton's method arrays */
     dFdu                                = allocate_2D_ell_jacobian_2D_array ("dFdu", nx * ny, nx * ny);
     fu                                  = allocate_1D_point_2D_array ("fu", nx * ny);
-    lhs_array                           = allocate_2D_long_double_array ("lhs_array", 2 * nx * ny, 2 * nx * ny);
-    rhs_array                           = allocate_1D_long_double_array ("rhs_array", 2 * nx * ny);
-    update                              = allocate_1D_long_double_array ("lhs_array", 2 * nx * ny);
     del_u                               = allocate_1D_point_2D_array ("del_u", nx * ny);
 
 
@@ -2247,7 +2419,11 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     deta                                = ONE/((long double) (ny - 1));
 
 
-    /* Solve for elliptic grid with control functions */
+    /* Reference length for non-dimensional convergence test */
+    L_ref                               = compute_bbox_diagonal_2D (nx, ny, grid);
+
+
+    /* Solve for Poisson grid with control functions */
     fptr                                = fopen ("residuals.dat", "w"); // File for writing residuals
     write_2D_point_2D ("init_x.dat", "init_y.dat", nx, ny, grid); // Write initial grid to .dat files
     for (iiter = 0; iiter < niter; iiter++)
@@ -2257,27 +2433,95 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
         first_der_coefficients (nx, ny, dgrid, &coeffs);
         grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-        /* Compute control functions (p, q) */
-        compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &pq);
+        /* Compute control functions (p, q) by ramping from TM to SS:
+              pq = (1 - lambda) * pq_TM + lambda * pq_SS
+           lambda ramps linearly from 0 (pure TM) to 1 (pure SS) over the first
+           ramp_iters outer iterations, then is capped at lambda_max. The cap
+           keeps the iteration short of the full SS target, which is unreachable
+           on some geometries (e.g. re-entrant corners). prev_pq is reused as
+           scratch for pq_TM. */
+        lambda                          = (iiter < ramp_iters)
+                                          ? ((long double) iiter)/((long double) ramp_iters)
+                                          : ONE;
+        if (lambda > lambda_max) lambda = lambda_max;
+        compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &prev_pq);                /* pq_TM */
+        compute_steger_sorenson  (nx, ny, 0, coeffs, dgrid, d2grid, &pq);           /* pq_SS */
+        for (i = 0; i < nx; i++)
+        {
+            for (j = 0; j < ny; j++)
+            {
+                pq[i][j].x              = ((ONE - lambda) * prev_pq[i][j].x) + (lambda * pq[i][j].x);
+                pq[i][j].y              = ((ONE - lambda) * prev_pq[i][j].y) + (lambda * pq[i][j].y);
+            }
+        }
         if (iiter == 0)
             write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "pq", pq); // Write initial (p, q) to a Paraview file
 
         /* Newton's method */
         psn_construct_newton_matrix (nx, ny, dxi, deta, dgrid, coeffs, d2grid, pq, &dFdu);
         psn_construct_newton_rhs_vector (nx, ny, grid, dgrid, coeffs, d2grid, pq, &fu);
-        convert_ell_jacobian_2D (nx * ny, dFdu, &lhs_array);
-        convert_point_2D (nx * ny, fu, &rhs_array);
-        LU_linear_system_solve (2 * nx * ny, lhs_array, rhs_array, &update);
-        convert_to_point_2D (nx * ny, update, &del_u);
-        //gmres_linear_system_solve (0, nx, ny, dFdu, fu, &del_u);
+        gmres_linear_system_solve (0, nx, ny, dFdu, fu, &del_u);
+
+        /* Step-norm convergence check (relative to bbox diagonal) */
         res_norm                        = compute_residual_norm (nx, ny, del_u);
-        fprintf (fptr, "%d    %22.16LF\n", iiter + 1, res_norm);
+        fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
 
         /* Update 2D (x, y) arrays */
         ell_update_solution (nx, ny, del_u, &grid);
+
+        /* Break if Newton step is small relative to domain size */
+        if (res_norm/L_ref < tol_step)
+            break;
     }
-    snprintf (file1, 256, "final_pq_%d.vts", iiter);
+
+    /* Post-loop equation-residual diagnostic. Use the SAME blended (P, Q)
+       the iteration converged with (at the final, capped lambda). Computing
+       residual against pure SS would give a misleading warning since the
+       iteration's fixed point is the blended-target one, not pure SS. */
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    first_der_coefficients (nx, ny, dgrid, &coeffs);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    {
+        long double lambda_final        = (iiter < ramp_iters)
+                                          ? ((long double) iiter)/((long double) ramp_iters)
+                                          : ONE;
+        if (lambda_final > lambda_max) lambda_final = lambda_max;
+        compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &prev_pq);
+        compute_steger_sorenson  (nx, ny, 0, coeffs, dgrid, d2grid, &pq);
+        for (i = 0; i < nx; i++)
+        {
+            for (j = 0; j < ny; j++)
+            {
+                pq[i][j].x              = ((ONE - lambda_final) * prev_pq[i][j].x) + (lambda_final * pq[i][j].x);
+                pq[i][j].y              = ((ONE - lambda_final) * prev_pq[i][j].y) + (lambda_final * pq[i][j].y);
+            }
+        }
+    }
+    psn_construct_newton_rhs_vector (nx, ny, grid, dgrid, coeffs, d2grid, pq, &fu);
+    /* Normalize per-point |F| by the local diagonal coefficient g so the
+       residual is on the same scale as the step-norm (max-norm over
+       interior). Without normalization F has alpha/dxi^2 magnitude and
+       fires false-positive warnings near step-norm convergence. */
+    fu_norm                             = ZERO;
+    for (i = 1; i < nx - 1; i++)
+    {
+        for (j = 1; j < ny - 1; j++)
+        {
+            long double         g_ij, norm_ij;
+            int                 k = i + (j * nx);
+            g_ij                        = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
+                                                 (coeffs[i][j].gamma/(deta * deta)));
+            norm_ij                     = sqrtl ((fu[k].x * fu[k].x) + (fu[k].y * fu[k].y))/g_ij;
+            if (norm_ij > fu_norm) fu_norm = norm_ij;
+        }
+    }
+    if (fu_norm > tol_resid)
+        fprintf (stderr, "Warning: poisson_grid_2D equation residual %.6Le above tol %.6Le after %d iterations\n",
+                 fu_norm, tol_resid, iiter + 1);
+
+    snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
     write_point_2D_to_vts (file1, nx, ny, grid, "pq", pq);  // Write final (p, q) to a Paraview file
+    write_2D_singleblock_plot3D ("final_grid.x", nx, ny, grid); // Write final grid to PLOT3D file
     write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid); // Write final grid to .dat files
     fclose (fptr);  // Close residual output file
 
@@ -2287,13 +2531,11 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     free_2D_coeffs_1_array ("coeffs", nx, coeffs);
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
     free_2D_point_2D_array ("pq", nx, pq);
+    free_2D_point_2D_array ("prev_pq", nx, prev_pq);
 
     /* Free memory from Newton's method arrays */
     free_2D_ell_jacobian_2D_array ("dFdu", nx * ny, dFdu);
     free_1D_point_2D_array ("fu", fu);
-    free_2D_long_double_array ("lhs_array", 2 * nx * ny, lhs_array);
-    free_1D_long_double_array ("rhs_array", rhs_array);
-    free_1D_long_double_array ("update", update);
     free_1D_point_2D_array ("del_u", del_u);
 
 
@@ -2307,12 +2549,19 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
 
 /*
    Elliptic grid generation with non-zero control
-   functions using pointwise iteration
+   functions (Thomas-Middlecoff) using pointwise
+   (Gauss-Seidel) iteration
+
+   Convergence: in-loop break when the max step-norm divided by
+   the bounding-box diagonal falls below tol_step (= 1e-8L).
+   Post-loop equation residual is checked against tol_resid
+   (= 1e-6L); a warning is emitted to stderr if the iteration
+   did not reduce the residual below it.
 
    Input parameters: nx         - number of x points
                      ny         - number of y points
                      init_grid  - initial (x, y) grid
-                     niter      - number of Newton iterations
+                     niter      - maximum number of iterations
 */
 point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int niter)
 {
@@ -2323,12 +2572,16 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
     grid_der_2D             **dgrid;
     coeffs_1                **coeffs;
     grid_dder_2D            **d2grid;
-    long double             dxi, deta, res_norm, g, g1, g2, g3, g4;
+    long double             dxi, deta, res_norm, L_ref, fu_norm, g, g1, g2, g3, g4;
     const long double       omega = 1;
     point_2D                *del_u, **prev_grid, **pq;
     char                    file1[256];
-    //FILE                    *fptr;
+    FILE                    *fptr;
     int                     iiter, i, j, k;
+
+    /* Convergence parameters */
+    const long double       tol_step  = 1.0E-8L;   /* relative step-norm tolerance */
+    const long double       tol_resid = 1.0E-6L;   /* equation-residual warning threshold */
 
 
     /* Allocate memory for grid arrays */
@@ -2350,7 +2603,12 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
     deta                                = ONE/((long double) (ny - 1));
 
 
-    /* Solve for elliptic grid with control functions */
+    /* Reference length for non-dimensional convergence test */
+    L_ref                               = compute_bbox_diagonal_2D (nx, ny, grid);
+
+
+    /* Solve for Poisson grid via pointwise iteration */
+    fptr                                = fopen ("residuals.dat", "w");
     write_2D_point_2D ("init_x.dat", "init_y.dat", nx, ny, grid);   // Write initial grid to .dat files
     for (iiter = 0; iiter < niter; iiter++)
     {
@@ -2364,7 +2622,7 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
 
         /* Compute control functions (p, q) */
         compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &pq);
-        //compute_steger_sorenson (nx, ny, dgrid, d2grid, &pq);
+        //compute_steger_sorenson (nx, ny, 0, coeffs, dgrid, d2grid, &pq);
         if (iiter == 0)
             write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "pq", pq);   // Write initial (p, q) to a Paraview file
 
@@ -2376,7 +2634,7 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
                 g                       = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
                                                  (coeffs[i][j].gamma/(deta * deta)));
                 g1                      = coeffs[i][j].alpha/g;
-                g2                      = (TWO * coeffs[i][j].beta)/g;
+                //g2                      = (TWO * coeffs[i][j].beta)/g;
                 g2                      = 0.0;
                 g3                      = coeffs[i][j].gamma/g;
                 g4                      = (coeffs[i][j].J * coeffs[i][j].J)/g;
@@ -2392,27 +2650,70 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
             }
         }
 
-        /* Under-relaxation */
+        /* Under-relaxation and step-vector population */
         for (k = 0; k < nx * ny; k++)
         {
             i                           = k%nx;
             j                           = k/nx;
             grid[i][j].x                = (omega * grid[i][j].x) + ((ONE - omega) * prev_grid[i][j].x);
             grid[i][j].y                = (omega * grid[i][j].y) + ((ONE - omega) * prev_grid[i][j].y);
+            del_u[k].x                  = grid[i][j].x - prev_grid[i][j].x;
+            del_u[k].y                  = grid[i][j].y - prev_grid[i][j].y;
+        }
 
-            /* Final iteration update vector */
-            if (iiter == niter - 1)
-            {
-                del_u[k].x                  = grid[i][j].x - prev_grid[i][j].x;
-                del_u[k].y                  = grid[i][j].y - prev_grid[i][j].y;
-            }
+        /* Step-norm convergence check (relative to bbox diagonal) */
+        res_norm                        = compute_residual_norm (nx, ny, del_u);
+        fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
+
+        /* Break if step is small relative to domain size */
+        if (res_norm/L_ref < tol_step)
+            break;
+    }
+
+    /* Post-loop equation-residual diagnostic. Evaluates the
+       beta = 0 simplified Poisson system that the iteration
+       actually solves:
+           F = alpha r_xixi + gamma r_etaeta + J^2 (P r_xi + Q r_eta)
+       Per-point F is divided by the iteration's diagonal coefficient
+       g = 2 (alpha/dxi^2 + gamma/deta^2), yielding a residual whose
+       scale matches the step-norm metric (since at each pointwise
+       step |F| ~ g * |step|). Max-norm taken over interior points
+       only; boundaries are Dirichlet and never moved by the iteration */
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    first_der_coefficients (nx, ny, dgrid, &coeffs);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &pq);
+    fu_norm                             = ZERO;
+    for (i = 1; i < nx - 1; i++)
+    {
+        for (j = 1; j < ny - 1; j++)
+        {
+            long double         F_x, F_y, src_x, src_y, norm_ij, g_ij;
+            g_ij                        = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
+                                                 (coeffs[i][j].gamma/(deta * deta)));
+            src_x                       = (pq[i][j].x * dgrid[i][j].x_der.x) +
+                                          (pq[i][j].y * dgrid[i][j].y_der.x);
+            src_y                       = (pq[i][j].x * dgrid[i][j].x_der.y) +
+                                          (pq[i][j].y * dgrid[i][j].y_der.y);
+            F_x                         = (coeffs[i][j].alpha * d2grid[i][j].x_der.x) +
+                                          (coeffs[i][j].gamma * d2grid[i][j].y_der.x) +
+                                          (coeffs[i][j].J * coeffs[i][j].J * src_x);
+            F_y                         = (coeffs[i][j].alpha * d2grid[i][j].x_der.y) +
+                                          (coeffs[i][j].gamma * d2grid[i][j].y_der.y) +
+                                          (coeffs[i][j].J * coeffs[i][j].J * src_y);
+            norm_ij                     = sqrtl ((F_x * F_x) + (F_y * F_y))/g_ij;
+            if (norm_ij > fu_norm) fu_norm = norm_ij;
         }
     }
-    res_norm                                = compute_residual_norm (nx, ny, del_u); // Final iteration residual
-    printf ("res_norm = %22.16LF\n", res_norm);
-    snprintf (file1, 256, "final_pq_%d.vts", iiter);
+    if (fu_norm > tol_resid)
+        fprintf (stderr, "Warning: poisson_grid_2D_point equation residual %.6Le above tol %.6Le after %d iterations\n",
+                 fu_norm, tol_resid, iiter + 1);
+
+    snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
     write_point_2D_to_vts (file1, nx, ny, grid, "pq", pq);  // Write final (p, q) to a Paraview file
+    write_2D_singleblock_plot3D ("final_grid.x", nx, ny, grid); // Write final grid to PLOT3D file
     write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid); // Write final grid to .dat files
+    fclose (fptr);
 
 
     /* Free memory */
@@ -2433,15 +2734,20 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
 
 
 /*
-   Elliptic grid generation with non-zero control
-   functions using pointwise iteration. Uses the
-   (\phi, \psi) formulation of the control functions
-   rather than (p, q)
+   Elliptic grid generation with non-zero control functions
+   using pointwise (Gauss-Seidel) iteration. Uses the (phi, psi)
+   formulation of the control functions rather than (P, Q).
+
+   Convergence: in-loop break when the max step-norm divided by
+   the bounding-box diagonal falls below tol_step (= 1e-8L).
+   Post-loop equation residual is checked against tol_resid
+   (= 1e-6L); a warning is emitted to stderr if the iteration
+   did not reduce the residual below it.
 
    Input parameters: nx         - number of x points
                      ny         - number of y points
                      init_grid  - initial (x, y) grid
-                     niter      - number of iterations
+                     niter      - maximum number of iterations
 */
 point_2D **poisson_grid_2D_point_alt (int nx, int ny, point_2D **init_grid, int niter)
 {
@@ -2452,12 +2758,16 @@ point_2D **poisson_grid_2D_point_alt (int nx, int ny, point_2D **init_grid, int 
     grid_der_2D             **dgrid;
     coeffs_1                **coeffs;
     grid_dder_2D            **d2grid;
-    long double             dxi, deta, res_norm, g, g1, g2, g3;
-    const long double       omega = 0.001;
+    long double             dxi, deta, res_norm, L_ref, fu_norm, g, g1, g2, g3;
+    const long double       omega = 1;
     point_2D                *del_u, **prev_grid, **phipsi;
     char                    file1[256];
-    //FILE                    *fptr;
+    FILE                    *fptr;
     int                     iiter, i, j, k;
+
+    /* Convergence parameters */
+    const long double       tol_step  = 1.0E-8L;   /* relative step-norm tolerance */
+    const long double       tol_resid = 1.0E-6L;   /* equation-residual warning threshold */
 
 
     /* Allocate memory for grid arrays */
@@ -2479,7 +2789,12 @@ point_2D **poisson_grid_2D_point_alt (int nx, int ny, point_2D **init_grid, int 
     deta                                = ONE/((long double) (ny - 1));
 
 
-    /* Solve for elliptic grid with control functions */
+    /* Reference length for non-dimensional convergence test */
+    L_ref                               = compute_bbox_diagonal_2D (nx, ny, grid);
+
+
+    /* Solve for Poisson grid via pointwise iteration (alpha-phi form) */
+    fptr                                = fopen ("residuals.dat", "w");
     write_2D_point_2D ("init_x.dat", "init_y.dat", nx, ny, grid);   // Write initial grid to .dat files
     for (iiter = 0; iiter < niter; iiter++)
     {
@@ -2493,11 +2808,13 @@ point_2D **poisson_grid_2D_point_alt (int nx, int ny, point_2D **init_grid, int 
 
         /* Compute control functions (phi, psi) */
         compute_thomas_middlecoff_alt (nx, ny, dgrid, d2grid, &phipsi);
-        //compute_steger_sorenson (nx, ny, dgrid, d2grid, &phipsi);
+        //compute_steger_sorenson (nx, ny, 1, coeffs, dgrid, d2grid, &phipsi);
         if (iiter == 0)
             write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "phipsi", phipsi);   // Write initial CF to a Paraview file
 
-        /* Compute new interior grid values */
+        /* Compute new interior grid values. Source term has g1 = alpha/g
+           and g3 = gamma/g factors so that all RHS terms are correctly
+           divided by g (the diagonal coefficient of the discretized PDE). */
         for (i = 1; i < nx - 1; i++)
         {
             for (j = 1; j < ny - 1; j++)
@@ -2505,41 +2822,84 @@ point_2D **poisson_grid_2D_point_alt (int nx, int ny, point_2D **init_grid, int 
                 g                       = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
                                                  (coeffs[i][j].gamma/(deta * deta)));
                 g1                      = coeffs[i][j].alpha/g;
-                g2                      = (TWO * coeffs[i][j].beta)/g;
+                //g2                      = (TWO * coeffs[i][j].beta)/g;
+                g2                      = 0.0;
                 g3                      = coeffs[i][j].gamma/g;
 
                 grid[i][j].x            = (g1 * ((grid[i + 1][j].x + grid[i - 1][j].x)/(sqr(dxi)))) -
                                           (g2 * d2grid[i][j].xy_der.x) +
                                           (g3 * ((grid[i][j + 1].x + grid[i][j - 1].x)/(sqr(deta)))) +
-                                          (coeffs[i][j].alpha * phipsi[i][j].x * dgrid[i][j].x_der.x) +
-                                          (coeffs[i][j].gamma * phipsi[i][j].y * dgrid[i][j].y_der.x);
+                                          (g1 * phipsi[i][j].x * dgrid[i][j].x_der.x) +
+                                          (g3 * phipsi[i][j].y * dgrid[i][j].y_der.x);
                 grid[i][j].y            = (g1 * ((grid[i + 1][j].y + grid[i - 1][j].y)/(sqr(dxi)))) -
                                           (g2 * d2grid[i][j].xy_der.y) +
                                           (g3 * ((grid[i][j + 1].y + grid[i][j - 1].y)/(sqr(deta)))) +
-                                          (coeffs[i][j].alpha * phipsi[i][j].x * dgrid[i][j].x_der.y) +
-                                          (coeffs[i][j].gamma * phipsi[i][j].y * dgrid[i][j].y_der.y);
+                                          (g1 * phipsi[i][j].x * dgrid[i][j].x_der.y) +
+                                          (g3 * phipsi[i][j].y * dgrid[i][j].y_der.y);
             }
         }
 
-        /* Under-relaxation */
+        /* Under-relaxation and step-vector population */
         for (k = 0; k < nx * ny; k++)
         {
             i                           = k%nx;
             j                           = k/nx;
             grid[i][j].x                = (omega * grid[i][j].x) + ((ONE - omega) * prev_grid[i][j].x);
             grid[i][j].y                = (omega * grid[i][j].y) + ((ONE - omega) * prev_grid[i][j].y);
-
-            /* Update vector */
             del_u[k].x                  = grid[i][j].x - prev_grid[i][j].x;
             del_u[k].y                  = grid[i][j].y - prev_grid[i][j].y;
         }
 
-        res_norm                                = compute_residual_norm (nx, ny, del_u); // Iteration residual
-        printf ("Iteration %d res_norm = %22.16LF\n", iiter, res_norm);
+        /* Step-norm convergence check (relative to bbox diagonal) */
+        res_norm                        = compute_residual_norm (nx, ny, del_u);
+        fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
+
+        /* Break if step is small relative to domain size */
+        if (res_norm/L_ref < tol_step)
+            break;
     }
-    snprintf (file1, 256, "final_pq_%d.vts", iiter);
+
+    /* Post-loop equation-residual diagnostic. Evaluates the alpha-phi
+       Poisson system that the iteration solves (beta = 0 simplified):
+           F = alpha r_xixi + gamma r_etaeta
+             + alpha phi r_xi + gamma psi r_eta
+       Per-point F is divided by the iteration's diagonal coefficient
+       g = 2 (alpha/dxi^2 + gamma/deta^2), yielding a residual whose
+       scale matches the step-norm metric. Max-norm taken over interior
+       points only; boundaries are Dirichlet and never moved by the iteration */
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    first_der_coefficients (nx, ny, dgrid, &coeffs);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    compute_thomas_middlecoff_alt (nx, ny, dgrid, d2grid, &phipsi);
+    fu_norm                             = ZERO;
+    for (i = 1; i < nx - 1; i++)
+    {
+        for (j = 1; j < ny - 1; j++)
+        {
+            long double         F_x, F_y, src_x, src_y, norm_ij, g_ij;
+            g_ij                        = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
+                                                 (coeffs[i][j].gamma/(deta * deta)));
+            src_x                       = (coeffs[i][j].alpha * phipsi[i][j].x * dgrid[i][j].x_der.x) +
+                                          (coeffs[i][j].gamma * phipsi[i][j].y * dgrid[i][j].y_der.x);
+            src_y                       = (coeffs[i][j].alpha * phipsi[i][j].x * dgrid[i][j].x_der.y) +
+                                          (coeffs[i][j].gamma * phipsi[i][j].y * dgrid[i][j].y_der.y);
+            F_x                         = (coeffs[i][j].alpha * d2grid[i][j].x_der.x) +
+                                          (coeffs[i][j].gamma * d2grid[i][j].y_der.x) + src_x;
+            F_y                         = (coeffs[i][j].alpha * d2grid[i][j].x_der.y) +
+                                          (coeffs[i][j].gamma * d2grid[i][j].y_der.y) + src_y;
+            norm_ij                     = sqrtl ((F_x * F_x) + (F_y * F_y))/g_ij;
+            if (norm_ij > fu_norm) fu_norm = norm_ij;
+        }
+    }
+    if (fu_norm > tol_resid)
+        fprintf (stderr, "Warning: poisson_grid_2D_point_alt equation residual %.6Le above tol %.6Le after %d iterations\n",
+                 fu_norm, tol_resid, iiter + 1);
+
+    snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
     write_point_2D_to_vts (file1, nx, ny, grid, "phipsi", phipsi);  // Write final (phi, psi) to a Paraview file
+    write_2D_singleblock_plot3D ("final_grid.x", nx, ny, grid); // Write final grid to PLOT3D file
     write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid); // Write final grid to .dat files
+    fclose (fptr);
 
 
     /* Free memory */
@@ -2555,6 +2915,304 @@ point_2D **poisson_grid_2D_point_alt (int nx, int ny, point_2D **init_grid, int 
 }
 
 
+
+
+/*
+   Elliptic grid generation with non-zero control functions using
+   line-implicit (LIM) iteration on xi-lines. Uses the (P, Q)
+   formulation of the control functions with the J^2 P/Q convention.
+
+   Each iteration, for each j (interior eta-line), build a tridiagonal
+   system over i = 1..nx-2 with the xi-direction discretization
+   IMPLICIT and the eta-direction terms EXPLICIT (using current
+   grid values, with Gauss-Seidel ordering j = 1, 2, ..., ny-2).
+   Solving the tridiagonal couples all xi-line unknowns simultaneously
+   instead of one-at-a-time, which dramatically reduces the spectral
+   radius of the iteration matrix when the source-term coupling is
+   strong (as it is for SS control functions).
+
+   beta = 0 is forced (matches the TM and SS recipe assumption + the
+   convention in poisson_grid_2D_point). Cross-derivative term is
+   dropped from the discretization.
+
+   Convergence: in-loop break when max step-norm divided by the
+   bounding-box diagonal falls below tol_step (= 1e-8L). Post-loop
+   equation residual checked against tol_resid (= 1e-6L); a warning
+   is emitted to stderr if residual is above.
+
+   Input parameters: nx         - number of x points
+                     ny         - number of y points
+                     init_grid  - initial (x, y) grid
+                     niter      - maximum number of iterations
+*/
+point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int niter)
+{
+    /* Return grid */
+    point_2D                **grid;
+
+    /* Local variables */
+    grid_der_2D             **dgrid;
+    coeffs_1                **coeffs;
+    grid_dder_2D            **d2grid;
+    long double             dxi, deta, res_norm, L_ref, fu_norm;
+    point_2D                *del_u, **prev_grid, **pq, **prev_pq;
+    char                    file1[256];
+    FILE                    *fptr;
+    int                     iiter, i, j, k;
+
+    /* Tridiagonal work arrays for xi-line solves (length nx-2) */
+    long double             *tri_sub, *tri_diag, *tri_sup, *tri_rhs_x, *tri_rhs_y;
+    long double             *tri_sol_x, *tri_sol_y;
+    int                     nxi;
+
+    /* Convergence parameters */
+    const long double       tol_step  = 1.0E-8L;
+    const long double       tol_resid = 1.0E-6L;
+    const int               inner_niter = 10;       /* sub-iterations per (P, Q) refresh */
+    const int               ramp_iters  = 500;      /* outer iters over which to ramp from TM to SS */
+    const long double       lambda_max  = 0.2L;     /* cap on SS contribution (1.0 = pure SS, 0.0 = pure TM) */
+    int                     iiter_inner;
+    long double             lambda;                 /* TM->SS ramp parameter, 0..1 */
+
+
+    nxi                                 = nx - 2; // Number of unknowns along a xi-line
+
+
+    /* Allocate memory for grid arrays */
+    grid                                = allocate_2D_point_2D_array ("poisson_grid", nx, ny);
+    dgrid                               = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
+    coeffs                              = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
+    d2grid                              = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
+    del_u                               = allocate_1D_point_2D_array ("del_u", nx * ny);
+    prev_grid                           = allocate_2D_point_2D_array ("prev_grid", nx, ny);
+    pq                                  = allocate_2D_point_2D_array ("pq", nx, ny);
+    prev_pq                             = allocate_2D_point_2D_array ("prev_pq", nx, ny);
+
+    /* Allocate tridiagonal work arrays */
+    tri_sub                             = allocate_1D_long_double_array ("tri_sub",   nxi);
+    tri_diag                            = allocate_1D_long_double_array ("tri_diag",  nxi);
+    tri_sup                             = allocate_1D_long_double_array ("tri_sup",   nxi);
+    tri_rhs_x                           = allocate_1D_long_double_array ("tri_rhs_x", nxi);
+    tri_rhs_y                           = allocate_1D_long_double_array ("tri_rhs_y", nxi);
+    tri_sol_x                           = allocate_1D_long_double_array ("tri_sol_x", nxi);
+    tri_sol_y                           = allocate_1D_long_double_array ("tri_sol_y", nxi);
+
+
+    /* Set grid array equal to initial grid */
+    equals_2D_point_2D_array (nx, ny, init_grid, &grid);
+
+
+    /* Computational grid spacing */
+    dxi                                 = ONE/((long double) (nx - 1));
+    deta                                = ONE/((long double) (ny - 1));
+
+
+    /* Reference length for non-dimensional convergence test */
+    L_ref                               = compute_bbox_diagonal_2D (nx, ny, grid);
+
+
+    /* Solve for Poisson grid via xi-line LIM iteration */
+    fptr                                = fopen ("residuals.dat", "w");
+    write_2D_point_2D ("init_x.dat", "init_y.dat", nx, ny, grid);
+    for (iiter = 0; iiter < niter; iiter++)
+    {
+        /* Save outer-start grid for outer step-norm */
+        equals_2D_point_2D_array (nx, ny, grid, &prev_grid);
+
+        /* Compute control functions (p, q) ONCE per outer iter, ramping from TM to SS:
+              pq = (1 - lambda) * pq_TM + lambda * pq_SS
+           where lambda ramps linearly from 0 (pure TM) to 1 (pure SS) over the first
+           ramp_iters outer iterations. The ramp gives the iteration time to evolve
+           the grid toward TM's gentler target before the more aggressive SS clustering
+           kicks in. Once lambda reaches 1, the iteration runs pure SS for the
+           remainder. Coefficients dgrid / coeffs / d2grid are recomputed inside the
+           inner loop (they depend on the moving grid); the (P, Q) computed here
+           stays FROZEN throughout the inner_niter sub-iterations.
+
+           prev_pq is reused as scratch space for pq_TM here. */
+        grid_first_ders_2D (nx, ny, grid, &dgrid);
+        first_der_coefficients (nx, ny, dgrid, &coeffs);
+        grid_second_ders_2D (nx, ny, grid, &d2grid);
+
+        lambda                          = (iiter < ramp_iters)
+                                          ? ((long double) iiter)/((long double) ramp_iters)
+                                          : ONE;
+        if (lambda > lambda_max) lambda = lambda_max;
+        compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &prev_pq); // pq_TM
+        compute_steger_sorenson  (nx, ny, 0, coeffs, dgrid, d2grid, &pq); // pq_SS
+        for (i = 0; i < nx; i++)
+        {
+            for (j = 0; j < ny; j++)
+            {
+                pq[i][j].x              = ((ONE - lambda) * prev_pq[i][j].x) + (lambda * pq[i][j].x);
+                pq[i][j].y              = ((ONE - lambda) * prev_pq[i][j].y) + (lambda * pq[i][j].y);
+            }
+        }
+        if (iiter == 0)
+            write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "pq", pq);
+
+        /* Inner sub-iteration: inner_niter LIM steps with FROZEN (P, Q).
+           Geometric coefficients (alpha, beta, gamma, J) ARE recomputed each
+           inner step since they depend on the (moving) grid; only (P, Q) is
+           held fixed. This is the iteration that the user-facing niter
+           controls effectively up to (niter * inner_niter) total LIM steps. */
+        for (iiter_inner = 0; iiter_inner < inner_niter; iiter_inner++)
+        {
+            /* Recompute geometric coefficients from current grid */
+            grid_first_ders_2D (nx, ny, grid, &dgrid);
+            first_der_coefficients (nx, ny, dgrid, &coeffs);
+            grid_second_ders_2D (nx, ny, grid, &d2grid);
+
+            /* xi-line LIM sweep: for each j, build and solve a tridiagonal
+               in i = 1..nx-2. Ordering j = 1, 2, ..., ny-2 gives Gauss-Seidel
+               coupling between adjacent eta-lines */
+            for (j = 1; j < ny - 1; j++)
+            {
+                /* Build tridiagonal coefficients along the xi-line at this j.
+                   Discretization (beta = 0): solving
+                       alpha r_xixi + gamma r_etaeta + J^2 (P r_xi + Q r_eta) = 0
+                   Collect r_{i,j} terms on the diagonal. For each i = 1..nx-2:
+                       sub[idx] = -alpha/dxi^2 + J^2 P/(2 dxi)
+                       diag[idx] = g = 2(alpha/dxi^2 + gamma/deta^2)
+                       sup[idx] = -alpha/dxi^2 - J^2 P/(2 dxi)
+                       rhs[idx] = (gamma/deta^2 - J^2 Q/(2 deta)) r_{i,j-1}
+                                + (gamma/deta^2 + J^2 Q/(2 deta)) r_{i,j+1}     */
+                for (i = 1; i < nx - 1; i++)
+                {
+                    int idx                 = i - 1;
+                    long double Jsq         = coeffs[i][j].J * coeffs[i][j].J;
+                    long double a_dxi2      = coeffs[i][j].alpha/(dxi * dxi);
+                    long double g_deta2     = coeffs[i][j].gamma/(deta * deta);
+                    long double JsqP_2dxi   = (Jsq * pq[i][j].x)/(TWO * dxi);
+                    long double JsqQ_2deta  = (Jsq * pq[i][j].y)/(TWO * deta);
+                    long double rhs_coef_jm = g_deta2 - JsqQ_2deta;
+                    long double rhs_coef_jp = g_deta2 + JsqQ_2deta;
+
+                    tri_sub[idx]            = -a_dxi2 + JsqP_2dxi;
+                    tri_diag[idx]           = TWO * (a_dxi2 + g_deta2);
+                    tri_sup[idx]            = -a_dxi2 - JsqP_2dxi;
+                    tri_rhs_x[idx]          = (rhs_coef_jm * grid[i][j - 1].x) +
+                                              (rhs_coef_jp * grid[i][j + 1].x);
+                    tri_rhs_y[idx]          = (rhs_coef_jm * grid[i][j - 1].y) +
+                                              (rhs_coef_jp * grid[i][j + 1].y);
+                }
+
+                /* Apply Dirichlet BCs at i=0 (folded into rhs[0]) and i=nx-1
+                   (folded into rhs[nxi-1]). After folding, sub[0] = sup[nxi-1] = 0 */
+                tri_rhs_x[0]               -= tri_sub[0]      * grid[0][j].x;
+                tri_rhs_y[0]               -= tri_sub[0]      * grid[0][j].y;
+                tri_sub[0]                  = 0.0L;
+                tri_rhs_x[nxi - 1]         -= tri_sup[nxi - 1] * grid[nx - 1][j].x;
+                tri_rhs_y[nxi - 1]         -= tri_sup[nxi - 1] * grid[nx - 1][j].y;
+                tri_sup[nxi - 1]            = 0.0L;
+
+                /* Solve tridiagonal for x and y components simultaneously */
+                tridiag_solve_2rhs (nxi, tri_sub, tri_diag, tri_sup,
+                                    tri_rhs_x, tri_rhs_y, tri_sol_x, tri_sol_y);
+
+                /* Write solution back to grid (Gauss-Seidel: in-place update) */
+                for (i = 1; i < nx - 1; i++)
+                {
+                    grid[i][j].x            = tri_sol_x[i - 1];
+                    grid[i][j].y            = tri_sol_y[i - 1];
+                }
+            }
+        }
+
+        /* Outer step-vector population (grid - outer-start grid) */
+        for (k = 0; k < nx * ny; k++)
+        {
+            i                           = k%nx;
+            j                           = k/nx;
+            del_u[k].x                  = grid[i][j].x - prev_grid[i][j].x;
+            del_u[k].y                  = grid[i][j].y - prev_grid[i][j].y;
+        }
+
+        /* Step-norm convergence check (relative to bbox diagonal) */
+        res_norm                        = compute_residual_norm (nx, ny, del_u);
+        fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
+
+        /* Break if step is small relative to domain size */
+        if (res_norm/L_ref < tol_step)
+            break;
+    }
+
+    /* Post-loop equation-residual diagnostic (beta=0 simplified Poisson).
+       Use the SAME blended (P, Q) the iteration solved with — at the final
+       lambda (capped at lambda_max). Computing residual against pure SS
+       would give a misleading warning since the iteration's fixed point
+       is the blended-target one, not the pure-SS target. */
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    first_der_coefficients (nx, ny, dgrid, &coeffs);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    {
+        long double lambda_final        = (iiter < ramp_iters)
+                                          ? ((long double) iiter)/((long double) ramp_iters)
+                                          : ONE;
+        if (lambda_final > lambda_max) lambda_final = lambda_max;
+        compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &prev_pq);
+        compute_steger_sorenson  (nx, ny, 0, coeffs, dgrid, d2grid, &pq);
+        for (i = 0; i < nx; i++)
+        {
+            for (j = 0; j < ny; j++)
+            {
+                pq[i][j].x              = ((ONE - lambda_final) * prev_pq[i][j].x) + (lambda_final * pq[i][j].x);
+                pq[i][j].y              = ((ONE - lambda_final) * prev_pq[i][j].y) + (lambda_final * pq[i][j].y);
+            }
+        }
+    }
+    fu_norm                             = ZERO;
+    for (i = 1; i < nx - 1; i++)
+    {
+        for (j = 1; j < ny - 1; j++)
+        {
+            long double         F_x, F_y, src_x, src_y, norm_ij, g_ij;
+            g_ij                        = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
+                                                 (coeffs[i][j].gamma/(deta * deta)));
+            src_x                       = (pq[i][j].x * dgrid[i][j].x_der.x) +
+                                          (pq[i][j].y * dgrid[i][j].y_der.x);
+            src_y                       = (pq[i][j].x * dgrid[i][j].x_der.y) +
+                                          (pq[i][j].y * dgrid[i][j].y_der.y);
+            F_x                         = (coeffs[i][j].alpha * d2grid[i][j].x_der.x) +
+                                          (coeffs[i][j].gamma * d2grid[i][j].y_der.x) +
+                                          (coeffs[i][j].J * coeffs[i][j].J * src_x);
+            F_y                         = (coeffs[i][j].alpha * d2grid[i][j].x_der.y) +
+                                          (coeffs[i][j].gamma * d2grid[i][j].y_der.y) +
+                                          (coeffs[i][j].J * coeffs[i][j].J * src_y);
+            norm_ij                     = sqrtl ((F_x * F_x) + (F_y * F_y))/g_ij;
+            if (norm_ij > fu_norm) fu_norm = norm_ij;
+        }
+    }
+    if (fu_norm > tol_resid)
+        fprintf (stderr, "Warning: poisson_grid_2D_point_lim equation residual %.6Le above tol %.6Le after %d iterations\n",
+                 fu_norm, tol_resid, iiter + 1);
+
+    snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
+    write_point_2D_to_vts (file1, nx, ny, grid, "pq", pq);
+    write_2D_singleblock_plot3D ("final_grid.x", nx, ny, grid);
+    write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid);
+    fclose (fptr);
+
+
+    /* Free memory */
+    free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
+    free_2D_coeffs_1_array ("coeffs", nx, coeffs);
+    free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
+    free_1D_point_2D_array ("del_u", del_u);
+    free_2D_point_2D_array ("prev_grid", nx, prev_grid);
+    free_2D_point_2D_array ("pq", nx, pq);
+    free_2D_point_2D_array ("prev_pq", nx, prev_pq);
+    free_1D_long_double_array ("tri_sub",   tri_sub);
+    free_1D_long_double_array ("tri_diag",  tri_diag);
+    free_1D_long_double_array ("tri_sup",   tri_sup);
+    free_1D_long_double_array ("tri_rhs_x", tri_rhs_x);
+    free_1D_long_double_array ("tri_rhs_y", tri_rhs_y);
+    free_1D_long_double_array ("tri_sol_x", tri_sol_x);
+    free_1D_long_double_array ("tri_sol_y", tri_sol_y);
+
+
+    return grid;
+}
 
 
 

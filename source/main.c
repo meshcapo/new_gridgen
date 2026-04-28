@@ -75,17 +75,19 @@ int main (int argc, char *argv[] )
     //                                                        (int)niter);
     //final_grid.grid                     = elliptic_grid_2D_point ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
     //                                                              (int)niter);
-    //final_grid.grid                     = poisson_grid_2D ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
-    //                                                       (int)niter);
-    final_grid.grid                     = poisson_grid_2D_point ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
-                                                                 (int)niter);
+    final_grid.grid                     = poisson_grid_2D ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
+                                                            (int)niter);
+    //final_grid.grid                     = poisson_grid_2D_point ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
+    //                                                             (int)niter);
     //final_grid.grid                     = poisson_grid_2D_point_alt ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
     //                                                                 (int)niter);
-    //write_2D_singleblock_plot3D ("final_grid.x", (int) init_grid.nx, (int) init_grid.ny, final_grid.grid);
+    //final_grid.grid                     = poisson_grid_2D_point_lim ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
+    //                                                                 (int)niter);
+    write_2D_singleblock_plot3D ("final_grid.x", (int) init_grid.nx, (int) init_grid.ny, final_grid.grid);
 
 
     /* Free memory from final grid */
-    //free_2D_point_2D_array ("final_grid", final_grid.nx, final_grid.grid);
+    free_2D_point_2D_array ("final_grid", final_grid.nx, final_grid.grid);
 
     /* Free memory from initial grid */
     free_2D_point_2D_array ("init_grid_x_bounds", 2, init_grid.x_bounds);

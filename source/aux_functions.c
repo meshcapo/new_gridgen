@@ -1929,7 +1929,16 @@ void convert_ell_jacobian_2D (int n, ell_jacobian_2D **mat, long double ***array
 /*
    Convert a 2D array of type ell_jacobian_2D
    to an array of type gsl_spmatrix. Used for
-   solving linear system using GMRES
+   solving linear system using GMRES.
+
+   Skips structural zeros: each ell_jacobian_2D block has at most
+   four nonzero entries (ddx.x, ddx.y, ddy.x, ddy.y); for any block
+   that's all-zero (the vast majority on a 9-stencil grid) we skip
+   the four gsl_spmatrix_set calls entirely. For partially-nonzero
+   blocks, each entry is independently checked. This brings
+   build cost from O(n^2) down to O(NNZ) ~ O(9n) and avoids
+   storing zero entries in the COO structure (which would otherwise
+   make GMRES MVMs effectively dense)
 */
 void convert_to_gsl_spmatrix_2D (int n, ell_jacobian_2D **mat, gsl_spmatrix **array)
 {
@@ -1939,10 +1948,14 @@ void convert_to_gsl_spmatrix_2D (int n, ell_jacobian_2D **mat, gsl_spmatrix **ar
         for (int k2 = 0; k2 < n; k2++)
         {
             int l2                      = 2 * k2;
-            gsl_spmatrix_set (*array, l1, l2, (double) mat[k1][k2].ddx.x);
-            gsl_spmatrix_set (*array, l1, l2 + 1, (double) mat[k1][k2].ddy.x);
-            gsl_spmatrix_set (*array, l1 + 1, l2, (double) mat[k1][k2].ddx.y);
-            gsl_spmatrix_set (*array, l1 + 1, l2 + 1, (double) mat[k1][k2].ddy.y);
+            if (mat[k1][k2].ddx.x != 0.0L)
+                gsl_spmatrix_set (*array, l1,     l2,     (double) mat[k1][k2].ddx.x);
+            if (mat[k1][k2].ddy.x != 0.0L)
+                gsl_spmatrix_set (*array, l1,     l2 + 1, (double) mat[k1][k2].ddy.x);
+            if (mat[k1][k2].ddx.y != 0.0L)
+                gsl_spmatrix_set (*array, l1 + 1, l2,     (double) mat[k1][k2].ddx.y);
+            if (mat[k1][k2].ddy.y != 0.0L)
+                gsl_spmatrix_set (*array, l1 + 1, l2 + 1, (double) mat[k1][k2].ddy.y);
         }
     }
 }

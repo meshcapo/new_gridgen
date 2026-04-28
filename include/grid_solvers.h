@@ -67,6 +67,7 @@ point_2D **elliptic_grid_2D_point (int, int, point_2D **, int);
 point_2D **poisson_grid_2D (int, int, point_2D **, int);
 point_2D **poisson_grid_2D_point (int, int, point_2D **, int);
 point_2D **poisson_grid_2D_point_alt (int, int, point_2D **, int);
+point_2D **poisson_grid_2D_point_lim (int, int, point_2D **, int);
 
 /* Compute 2D biharmonic grid */
 point_2D **biharmonic_grid_2D (int, int, point_2D **, int);
