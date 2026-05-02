@@ -51,7 +51,6 @@ void print_normals (int, int, grid_der_2D **);
 
 /* Compute Thomas-Middlecoff control functions */
 void compute_thomas_middlecoff (int, int, grid_der_2D **, grid_dder_2D **, point_2D ***);
-void compute_thomas_middlecoff_alt (int, int, grid_der_2D **, grid_dder_2D **, point_2D ***);
 
 /* Compute Steger-Sorenson control functions */
 void compute_steger_sorenson (int, int, int, coeffs_1 **, grid_der_2D **, grid_dder_2D **, point_2D ***);
@@ -66,7 +65,6 @@ point_2D **elliptic_grid_2D_point (int, int, point_2D **, int);
 /* Compute 2D Poisson grid */
 point_2D **poisson_grid_2D (int, int, point_2D **, int);
 point_2D **poisson_grid_2D_point (int, int, point_2D **, int);
-point_2D **poisson_grid_2D_point_alt (int, int, point_2D **, int);
 point_2D **poisson_grid_2D_point_lim (int, int, point_2D **, int);
 
 /* Compute 2D biharmonic grid */
