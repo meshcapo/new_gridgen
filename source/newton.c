@@ -695,48 +695,27 @@ void ell_construct_newton_matrix (int nx, int ny, long double dxi, long double d
 {
     /* Local variables */
     int                     i1, j1, i2, j2, k1, k2;
+    const int               nxi = nx - 2;
+    const int               nyi = ny - 2;
+    const int               n_int = nxi * nyi;
 
 
-    /* k1 is used to traverse the rows of
-       the newton method matrix */
-    for (k1 = 0; k1 < nx * ny; k1++)
+    /* The Newton system is over interior unknowns only; boundary points are
+       Dirichlet constants and are not part of the linear system. Indexing:
+       interior (i, j) with i in [1, nx-2], j in [1, ny-2] maps to
+       k = (i - 1) + (j - 1) * (nx - 2), inverse: i = k%nxi + 1, j = k/nxi + 1. */
+    for (k1 = 0; k1 < n_int; k1++)
     {
-        i1                              = k1%nx;
-        j1                              = k1/nx;
+        i1                              = (k1 % nxi) + 1;
+        j1                              = (k1 / nxi) + 1;
 
-        /* For interior points */
-        if ((i1 >= 1 && i1 <= nx - 2) &&
-            (j1 >= 1 && j1 <= ny - 2))
+        for (k2 = 0; k2 < n_int; k2++)
         {
-            /* k2 is used to traverse the columns of
-               the newton method matrix */
-            for (k2 = 0; k2 < nx * ny; k2++)
-            {
-                i2                      = k2%nx;
-                j2                      = k2/nx;
+            i2                          = (k2 % nxi) + 1;
+            j2                          = (k2 / nxi) + 1;
 
-                (*dFdu)[k1][k2]         = ell_interior_point_ders (i1, j1, i2, j2, dxi, deta, dgrid[i1][j1],
+            (*dFdu)[k1][k2]             = ell_interior_point_ders (i1, j1, i2, j2, dxi, deta, dgrid[i1][j1],
                                                                    coeffs[i1][j1], d2grid[i1][j1]);
-            }
-        }
-        else /* For boundary points */
-        {
-            for (k2 = 0; k2 < nx * ny; k2++)
-            {
-                i2                      = k2%nx;
-                j2                      = k2/nx;
-
-                /* The derivatives are non-zero only
-                   when i2 == i1 and j2 == j1 */
-                if (i2 == i1 && j2 == j1)
-                {
-                    (*dFdu)[k1][k2]     = identity_ders_ell ();
-                }
-                else
-                {
-                    (*dFdu)[k1][k2]     = zero (ell_jacobian_2D);
-                }
-            }
         }
     }
 }
@@ -762,51 +741,27 @@ void ell_construct_newton_rhs_vector (int nx, int ny, point_2D **grid, coeffs_1 
 {
     /* Local variables */
     int                     i, j, k;
-    point_2D                **x_bounds, **y_bounds;
+    const int               nxi = nx - 2;
+    const int               nyi = ny - 2;
+    const int               n_int = nxi * nyi;
+
+    (void) grid;       /* boundary points no longer enter the system; grid kept in signature for now */
+    (void) print_from; /* legacy parameter, no longer used */
 
 
-    /* Read coordinates along all boundaries */
-    x_bounds                            = read_x_bounds_2D (nx);
-    y_bounds                            = read_y_bounds_2D (ny);
-
-
-    /* Compute F(x(i, j)) and F(y(i, j)) */
-    for (k = 0; k < nx * ny; k++)
+    /* Build interior-only RHS = -F(u). Boundary stencil contributions enter
+       F implicitly through grid[i][j] reads inside ell_compute_interior_fx_fy_2D
+       at boundary indices, since the boundary points are pinned constants. */
+    for (k = 0; k < n_int; k++)
     {
-        i                               = k%nx;
-        j                               = k/nx;
+        i                               = (k % nxi) + 1;
+        j                               = (k / nxi) + 1;
 
-        /* Domain interior */
-        if ((i >= 1 && i <= nx - 2) &&
-            (j >= 1 && j <= ny - 2))
-        {
-            (*rhs)[k]                   = ell_compute_interior_fx_fy_2D (coeffs[i][j], d2grid[i][j]);
-        }
+        (*rhs)[k]                       = ell_compute_interior_fx_fy_2D (coeffs[i][j], d2grid[i][j]);
 
-        /* xi = 0, 1 boundaries */
-        if ((i == 0 || i == nx - 1) &&
-            (j >= 1 && j <= ny - 2))
-        {
-            (*rhs)[k].x                 = grid[i][j].x - y_bounds[i/(nx - 1)][j].x;
-            (*rhs)[k].y                 = grid[i][j].y - y_bounds[i/(nx - 1)][j].y;
-        }
-
-        /* eta = 0, 1 boundaries */
-        if (j == 0 || j == ny - 1)
-        {
-            (*rhs)[k].x                 = grid[i][j].x - x_bounds[j/(ny - 1)][i].x;
-            (*rhs)[k].y                 = grid[i][j].y - x_bounds[j/(ny - 1)][i].y;
-        }
-
-        /* Compute -F(u) since this is the RHS */
-        (*rhs)[k].x                 *= -ONE;
-        (*rhs)[k].y                 *= -ONE;
+        (*rhs)[k].x                     *= -ONE;
+        (*rhs)[k].y                     *= -ONE;
     }
-
-
-    /* Free array memory */
-    free_2D_point_2D_array ("x_bounds", 2, x_bounds);
-    free_2D_point_2D_array ("y_bounds", 2, y_bounds);
 }
 
 
@@ -826,10 +781,17 @@ void ell_construct_newton_rhs_vector (int nx, int ny, point_2D **grid, coeffs_1 
 */
 void ell_update_solution (int nx, int ny, point_2D *update, point_2D ***grid)
 {
-    for (int k = 0; k < nx * ny; k++)
+    /* Newton step is over interior unknowns only; boundary points are
+       Dirichlet constants and untouched. Indexing: interior (i, j) with
+       i in [1, nx-2], j in [1, ny-2] maps to k = (i - 1) + (j - 1) * (nx - 2). */
+    const int               nxi = nx - 2;
+    const int               nyi = ny - 2;
+    const int               n_int = nxi * nyi;
+
+    for (int k = 0; k < n_int; k++)
     {
-        int i                           = k%nx;
-        int j                           = k/nx;
+        int i                           = (k % nxi) + 1;
+        int j                           = (k / nxi) + 1;
 
         (*grid)[i][j].x                 += update[k].x;
         (*grid)[i][j].y                 += update[k].y;
@@ -910,48 +872,26 @@ void psn_construct_newton_matrix (int nx, int ny, long double dxi, long double d
 {
     /* Local variables */
     int                     i1, j1, i2, j2, k1, k2;
+    const int               nxi = nx - 2;
+    const int               nyi = ny - 2;
+    const int               n_int = nxi * nyi;
 
 
-    /* k1 is used to traverse the rows of
-       the newton method matrix */
-    for (k1 = 0; k1 < nx * ny; k1++)
+    /* Interior-only Newton system; boundary points are Dirichlet constants
+       and not part of the linear system. Indexing: interior (i, j) with
+       i in [1, nx-2], j in [1, ny-2] maps to k = (i - 1) + (j - 1) * (nx - 2). */
+    for (k1 = 0; k1 < n_int; k1++)
     {
-        i1                              = k1%nx;
-        j1                              = k1/nx;
+        i1                              = (k1 % nxi) + 1;
+        j1                              = (k1 / nxi) + 1;
 
-        /* For interior points */
-        if ((i1 >= 1 && i1 <= nx - 2) &&
-            (j1 >= 1 && j1 <= ny - 2))
+        for (k2 = 0; k2 < n_int; k2++)
         {
-            /* k2 is used to traverse the columns of
-            the newton method matrix */
-            for (k2 = 0; k2 < nx * ny; k2++)
-            {
-                i2                      = k2%nx;
-                j2                      = k2/nx;
+            i2                          = (k2 % nxi) + 1;
+            j2                          = (k2 / nxi) + 1;
 
-                (*dFdu)[k1][k2]         = psn_interior_point_ders (i1, j1, i2, j2, dxi, deta, dgrid[i1][j1],
+            (*dFdu)[k1][k2]             = psn_interior_point_ders (i1, j1, i2, j2, dxi, deta, dgrid[i1][j1],
                                                                    coeffs[i1][j1], d2grid[i1][j1], pq[i1][j1]);
-            }
-        }
-        else /* For boundary points */
-        {
-            for (k2 = 0; k2 < nx * ny; k2++)
-            {
-                i2                      = k2%nx;
-                j2                      = k2/nx;
-
-                /* The derivatives are non-zero only
-                   when i2 == i1 and j2 == j1 */
-                if (i2 == i1 && j2 == j1)
-                {
-                    (*dFdu)[k1][k2]     = identity_ders_ell ();
-                }
-                else
-                {
-                    (*dFdu)[k1][k2]     = zero (ell_jacobian_2D);
-                }
-            }
         }
     }
 }
@@ -981,50 +921,25 @@ void psn_construct_newton_rhs_vector (int nx, int ny, point_2D **grid, grid_der_
 {
     /* Local variables */
     int                     i, j, k;
-    point_2D                **x_bounds, **y_bounds;
+    const int               nxi = nx - 2;
+    const int               nyi = ny - 2;
+    const int               n_int = nxi * nyi;
+
+    (void) grid; /* boundary points no longer enter the system; grid kept in signature for now */
 
 
-    /* Read coordinates along all boundaries */
-    x_bounds                            = read_x_bounds_2D (nx);
-    y_bounds                            = read_y_bounds_2D (ny);
-
-
-    /* Compute F(x(i, j)) and F(y(i, j)) */
-    for (k = 0; k < nx * ny; k++)
+    /* Build interior-only RHS = -F(u). Boundary stencil contributions enter F
+       implicitly through dgrid/d2grid (computed from the full grid before this
+       call), since boundary grid values are pinned constants. */
+    for (k = 0; k < n_int; k++)
     {
-        i                               = k%nx;
-        j                               = k/nx;
+        i                               = (k % nxi) + 1;
+        j                               = (k / nxi) + 1;
 
-        /* Domain interior */
-        if ((i >= 1 && i <= nx - 2) &&
-            (j >= 1 && j <= ny - 2))
-        {
-            (*rhs)[k]                   = psn_compute_interior_fx_fy_2D (dgrid[i][j], coeffs[i][j], d2grid[i][j],
+        (*rhs)[k]                       = psn_compute_interior_fx_fy_2D (dgrid[i][j], coeffs[i][j], d2grid[i][j],
                                                                          pq[i][j]);
-        }
 
-        /* xi = 0, 1 boundaries */
-        if ((i == 0 || i == nx - 1) &&
-            (j >= 1 && j <= ny - 2))
-        {
-            (*rhs)[k].x                 = grid[i][j].x - y_bounds[i/(nx - 1)][j].x;
-            (*rhs)[k].y                 = grid[i][j].y - y_bounds[i/(nx - 1)][j].y;
-        }
-
-        /* eta = 0, 1 boundaries */
-        if (j == 0 || j == ny - 1)
-        {
-            (*rhs)[k].x                 = grid[i][j].x - x_bounds[j/(ny - 1)][i].x;
-            (*rhs)[k].y                 = grid[i][j].y - x_bounds[j/(ny - 1)][i].y;
-        }
-
-        /* Compute -F(u) since this is the RHS */
         (*rhs)[k].x                     *= -ONE;
         (*rhs)[k].y                     *= -ONE;
     }
-
-
-    /* Free memory */
-    free_2D_point_2D_array ("x_bounds", 2, x_bounds);
-    free_2D_point_2D_array ("y_bounds", 2, y_bounds);
 }

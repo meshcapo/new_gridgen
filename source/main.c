@@ -75,14 +75,14 @@ int main (int argc, char *argv[] )
     //                                                        (int)niter);
     //final_grid.grid                     = elliptic_grid_2D_point ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
     //                                                              (int)niter);
-    final_grid.grid                     = poisson_grid_2D ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
-                                                            (int)niter);
+    //final_grid.grid                     = poisson_grid_2D ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
+    //                                                        (int)niter);
     //final_grid.grid                     = poisson_grid_2D_point ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
     //                                                             (int)niter);
     //final_grid.grid                     = poisson_grid_2D_point_alt ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
     //                                                                 (int)niter);
-    //final_grid.grid                     = poisson_grid_2D_point_lim ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
-    //                                                                 (int)niter);
+    final_grid.grid                     = poisson_grid_2D_point_lim ((int)init_grid.nx, (int)init_grid.ny, init_grid.grid,
+                                                                     (int)niter);
     write_2D_singleblock_plot3D ("final_grid.x", (int) init_grid.nx, (int) init_grid.ny, final_grid.grid);
 
 

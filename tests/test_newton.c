@@ -110,15 +110,21 @@ Test(newton, ell_construct_newton_matrix_fd)
     grid_second_ders_2D (nx, ny, grid, &d2grid);
 
 
-    // Compute analytic Jacobian dFdu
-    dFdu = allocate_2D_ell_jacobian_2D_array ("dFdu", nx * ny, nx * ny);
+    // Compute analytic Jacobian dFdu (interior-only Newton system:
+    // boundary points are Dirichlet constants and not part of the matrix).
+    // Index map for interior (i, j) with i in [1, nx-2], j in [1, ny-2]:
+    //     k = (i - 1) + (j - 1) * (nx - 2)
+    int n_int = (nx - 2) * (ny - 2);
+    dFdu = allocate_2D_ell_jacobian_2D_array ("dFdu", n_int, n_int);
     ell_construct_newton_matrix (nx, ny, dxi, deta, dgrid, coeffs, d2grid, &dFdu);
 
 
-    // Test point and its flat index
+    // Test point — center of a 5x5 grid is i1=2, j1=2 (an interior point).
+    // The 9-point stencil around it stays entirely in the interior, so all
+    // stencil neighbors have columns in the interior-only matrix.
     i1 = 2;
     j1 = 2;
-    k1 = i1 + (j1 * nx);
+    k1 = (i1 - 1) + ((j1 - 1) * (nx - 2));
 
 
     // Sweep the 9-point stencil around (i1, j1)
@@ -128,7 +134,7 @@ Test(newton, ell_construct_newton_matrix_fd)
         {
             i2 = i1 + di;
             j2 = j1 + dj;
-            k2 = i2 + (j2 * nx);
+            k2 = (i2 - 1) + ((j2 - 1) * (nx - 2));
 
             orig_x = grid[i2][j2].x;
             orig_y = grid[i2][j2].y;
@@ -194,143 +200,8 @@ Test(newton, ell_construct_newton_matrix_fd)
     free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
     free_2D_coeffs_1_array ("coeffs", nx, coeffs);
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
-    free_2D_ell_jacobian_2D_array ("dFdu", nx * ny, dFdu);
+    free_2D_ell_jacobian_2D_array ("dFdu", n_int, dFdu);
 }
 
 
 
-
-/*
-    Boundary-row check for ell_construct_newton_matrix on the same
-    clustered quadratic test grid.
-
-    Boundary points have Dirichlet conditions in this Newton system.
-    The corresponding rows of dFdu encode the constraint
-    "u(boundary) is fixed", which gives:
-
-        dFdu[k1][k1] = identity_ders_ell ()    (= [[1, 0], [0, 1]])
-        dFdu[k1][k2] = zero ell_jacobian_2D    for all k2 != k1
-
-    where k1 corresponds to a boundary index (i1 = 0, nx-1, or
-    j1 = 0, ny-1).
-
-    This test asserts that pattern at every boundary row across all
-    columns. Catches errors in the boundary branch of the matrix
-    constructor (loop bounds, mis-set diagonal, missed off-diagonals).
-
-    Tolerance is tight (1e-15L) since the values are exact constants
-    coming from identity_ders_ell () and zero (ell_jacobian_2D), not
-    derived from any FD computation.
-*/
-Test(newton, ell_construct_newton_matrix_boundary)
-{
-    // Grid and discretization parameters
-    int                     nx = 5, ny = 5, i, j;
-    long double             a = 0.3L, b, c = 0.1L;
-    long double             dxi, deta;
-    long double             xi, eta;
-
-    // Grid arrays and analytic Jacobian
-    point_2D                **grid;
-    grid_der_2D             **dgrid;
-    coeffs_1                **coeffs;
-    grid_dder_2D            **d2grid;
-    ell_jacobian_2D         **dFdu;
-
-    // Loop indices
-    int                     k1, k2, i1, j1;
-
-
-    // Setup
-    b = -a;
-    dxi = 1.0L/(long double) (nx - 1);
-    deta = 1.0L/(long double) (ny - 1);
-
-
-    // Build the clustered quadratic grid
-    grid = allocate_2D_point_2D_array ("grid", nx, ny);
-    for (i = 0; i < nx; i++)
-    {
-        xi = (long double) i/(long double) (nx - 1);
-        for (j = 0; j < ny; j++)
-        {
-            eta = (long double) j/(long double) (ny - 1);
-            grid[i][j].x = xi  + (a * xi  * xi)  + (c * eta * eta);
-            grid[i][j].y = eta + (b * eta * eta) + (c * xi  * xi);
-        }
-    }
-
-
-    // Compute first derivatives, coefficients, second derivatives
-    dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
-    grid_first_ders_2D (nx, ny, grid, &dgrid);
-
-    coeffs = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
-    first_der_coefficients (nx, ny, dgrid, &coeffs);
-
-    d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
-    grid_second_ders_2D (nx, ny, grid, &d2grid);
-
-
-    // Compute analytic Jacobian dFdu
-    dFdu = allocate_2D_ell_jacobian_2D_array ("dFdu", nx * ny, nx * ny);
-    ell_construct_newton_matrix (nx, ny, dxi, deta, dgrid, coeffs, d2grid, &dFdu);
-
-
-    // Sweep all rows; check boundary ones
-    for (k1 = 0; k1 < nx * ny; k1++)
-    {
-        i1 = k1 % nx;
-        j1 = k1/nx;
-
-        // Skip strictly interior rows
-        if (i1 >= 1 && i1 <= nx - 2 && j1 >= 1 && j1 <= ny - 2)
-        {
-            continue;
-        }
-
-        // Boundary row: every column k2 must be either identity (k2 == k1)
-        // or zero (k2 != k1)
-        for (k2 = 0; k2 < nx * ny; k2++)
-        {
-            if (k2 == k1)
-            {
-                cr_assert_float_eq (dFdu[k1][k2].ddx.x, 1.0L, 1e-15L,
-                                    "Boundary diagonal at k1=%d (i1=%d, j1=%d) ddx.x not 1",
-                                    k1, i1, j1);
-                cr_assert_float_eq (dFdu[k1][k2].ddy.y, 1.0L, 1e-15L,
-                                    "Boundary diagonal at k1=%d (i1=%d, j1=%d) ddy.y not 1",
-                                    k1, i1, j1);
-                cr_assert_float_eq (dFdu[k1][k2].ddx.y, 0.0L, 1e-15L,
-                                    "Boundary diagonal at k1=%d (i1=%d, j1=%d) ddx.y not 0",
-                                    k1, i1, j1);
-                cr_assert_float_eq (dFdu[k1][k2].ddy.x, 0.0L, 1e-15L,
-                                    "Boundary diagonal at k1=%d (i1=%d, j1=%d) ddy.x not 0",
-                                    k1, i1, j1);
-            }
-            else
-            {
-                cr_assert_float_eq (dFdu[k1][k2].ddx.x, 0.0L, 1e-15L,
-                                    "Boundary off-diagonal k1=%d, k2=%d ddx.x not 0",
-                                    k1, k2);
-                cr_assert_float_eq (dFdu[k1][k2].ddx.y, 0.0L, 1e-15L,
-                                    "Boundary off-diagonal k1=%d, k2=%d ddx.y not 0",
-                                    k1, k2);
-                cr_assert_float_eq (dFdu[k1][k2].ddy.x, 0.0L, 1e-15L,
-                                    "Boundary off-diagonal k1=%d, k2=%d ddy.x not 0",
-                                    k1, k2);
-                cr_assert_float_eq (dFdu[k1][k2].ddy.y, 0.0L, 1e-15L,
-                                    "Boundary off-diagonal k1=%d, k2=%d ddy.y not 0",
-                                    k1, k2);
-            }
-        }
-    }
-
-
-    // Cleanup
-    free_2D_point_2D_array ("grid", nx, grid);
-    free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
-    free_2D_coeffs_1_array ("coeffs", nx, coeffs);
-    free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
-    free_2D_ell_jacobian_2D_array ("dFdu", nx * ny, dFdu);
-}

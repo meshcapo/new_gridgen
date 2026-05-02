@@ -2288,7 +2288,11 @@ void gmres_linear_system_solve (int debug, int nx, int ny, ell_jacobian_2D **dFd
                                 point_2D **del_u)
 {
     /* Local variables */
-    const int                           dim = 2 * nx * ny;
+    /* Newton system is over interior unknowns only (boundaries are
+       Dirichlet constants, handled outside the system) — dim is 2 (x, y)
+       times the number of interior grid points (nx-2)*(ny-2) */
+    const int                           n_int = (nx - 2) * (ny - 2);
+    const int                           dim = 2 * n_int;
     gsl_spmatrix                        *M, *C;
     gsl_vector                          *b, *x;
     const double                        tol = 10E-6;
@@ -2310,11 +2314,11 @@ void gmres_linear_system_solve (int debug, int nx, int ny, ell_jacobian_2D **dFd
 
     /* Convert incoming ell_jacobian_2D lhs
        array to a sparse matrix needed by GSL */
-    convert_to_gsl_spmatrix_2D (nx * ny, dFdu, &M);
+    convert_to_gsl_spmatrix_2D (n_int, dFdu, &M);
 
     /* Convert incoming point_2D rhs array to
        a vector needed by GSL GMRES routine */
-    convert_to_gsl_vector_2D (nx * ny, fu, &b);
+    convert_to_gsl_vector_2D (n_int, fu, &b);
 
     /* Convert to compressed column format */
     C                                   = gsl_spmatrix_ccs (M);
@@ -2339,7 +2343,7 @@ void gmres_linear_system_solve (int debug, int nx, int ny, ell_jacobian_2D **dFd
     if (debug) printf ("GMRES iterations = %zu    %22.16LF\n", iter, (long double) residual);
 
     /* Convert solution to a point_2D array */
-    convert_gsl_vector_2D (nx * ny, x, del_u);
+    convert_gsl_vector_2D (n_int, x, del_u);
 
 
     /* Free memory */

@@ -2150,10 +2150,12 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     coeffs  = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
     d2grid  = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
 
-    /* Allocate memory for Newton's method arrays */
-    dFdu    = allocate_2D_ell_jacobian_2D_array ("dFdu", nx * ny, nx * ny);
-    fu      = allocate_1D_point_2D_array ("fu", nx * ny);
-    del_u   = allocate_1D_point_2D_array ("del_u", nx * ny);
+    /* Allocate Newton's method arrays — interior unknowns only.
+       Boundaries are Dirichlet constants and do not enter the linear system. */
+    const int n_int = (nx - 2) * (ny - 2);
+    dFdu    = allocate_2D_ell_jacobian_2D_array ("dFdu", n_int, n_int);
+    fu      = allocate_1D_point_2D_array ("fu", n_int);
+    del_u   = allocate_1D_point_2D_array ("del_u", n_int);
 
 
     /* Set grid array equal to initial grid */
@@ -2183,8 +2185,8 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
         ell_construct_newton_rhs_vector (nx, ny, grid, coeffs, d2grid, &fu, 0);
         gmres_linear_system_solve (0, nx, ny, dFdu, fu, &del_u);
 
-        /* Step-norm convergence check (relative to bbox diagonal) */
-        res_norm = compute_residual_norm (nx, ny, del_u);
+        /* Step-norm convergence check over interior unknowns (relative to bbox diagonal) */
+        res_norm = compute_residual_norm (nx - 2, ny - 2, del_u);
         fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
 
         /* Update 2D (x, y) arrays */
@@ -2203,14 +2205,15 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     /* Normalize per-point |F| by the local diagonal coefficient g so the
        residual is on the same scale as the step-norm (max-norm over
        interior). Without normalization F has alpha/dxi^2 magnitude and
-       fires false-positive warnings near step-norm convergence. */
+       fires false-positive warnings near step-norm convergence.
+       fu is sized (nx-2)*(ny-2); index via k = (i-1) + (j-1)*(nx-2). */
     fu_norm = ZERO;
     for (i = 1; i < nx - 1; i++)
     {
         for (j = 1; j < ny - 1; j++)
         {
             long double         g_ij, norm_ij;
-            int                 k = i + (j * nx);
+            int                 k = (i - 1) + ((j - 1) * (nx - 2));
             g_ij                        = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
                                                  (coeffs[i][j].gamma/(deta * deta)));
             norm_ij                     = sqrtl ((fu[k].x * fu[k].x) + (fu[k].y * fu[k].y))/g_ij;
@@ -2232,8 +2235,8 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     free_2D_coeffs_1_array ("coeffs", nx, coeffs);
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
 
-    /* Free memory from Newton's method arrays */
-    free_2D_ell_jacobian_2D_array ("dFdu", nx * ny, dFdu);
+    /* Free memory from Newton's method arrays (interior-only sized) */
+    free_2D_ell_jacobian_2D_array ("dFdu", n_int, dFdu);
     free_1D_point_2D_array ("fu", fu);
     free_1D_point_2D_array ("del_u", del_u);
 
@@ -2404,10 +2407,12 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     pq                                  = allocate_2D_point_2D_array ("pq", nx, ny);
     prev_pq                             = allocate_2D_point_2D_array ("prev_pq", nx, ny);
 
-    /* Allocate memory for Newton's method arrays */
-    dFdu                                = allocate_2D_ell_jacobian_2D_array ("dFdu", nx * ny, nx * ny);
-    fu                                  = allocate_1D_point_2D_array ("fu", nx * ny);
-    del_u                               = allocate_1D_point_2D_array ("del_u", nx * ny);
+    /* Allocate Newton's method arrays — interior unknowns only.
+       Boundaries are Dirichlet constants and do not enter the linear system. */
+    const int n_int = (nx - 2) * (ny - 2);
+    dFdu                                = allocate_2D_ell_jacobian_2D_array ("dFdu", n_int, n_int);
+    fu                                  = allocate_1D_point_2D_array ("fu", n_int);
+    del_u                               = allocate_1D_point_2D_array ("del_u", n_int);
 
 
     /* Set grid array equal to initial grid */
@@ -2462,8 +2467,8 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
         psn_construct_newton_rhs_vector (nx, ny, grid, dgrid, coeffs, d2grid, pq, &fu);
         gmres_linear_system_solve (0, nx, ny, dFdu, fu, &del_u);
 
-        /* Step-norm convergence check (relative to bbox diagonal) */
-        res_norm                        = compute_residual_norm (nx, ny, del_u);
+        /* Step-norm convergence check over interior unknowns (relative to bbox diagonal) */
+        res_norm                        = compute_residual_norm (nx - 2, ny - 2, del_u);
         fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
 
         /* Update 2D (x, y) arrays */
@@ -2501,14 +2506,15 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     /* Normalize per-point |F| by the local diagonal coefficient g so the
        residual is on the same scale as the step-norm (max-norm over
        interior). Without normalization F has alpha/dxi^2 magnitude and
-       fires false-positive warnings near step-norm convergence. */
+       fires false-positive warnings near step-norm convergence.
+       fu is sized (nx-2)*(ny-2); index via k = (i-1) + (j-1)*(nx-2). */
     fu_norm                             = ZERO;
     for (i = 1; i < nx - 1; i++)
     {
         for (j = 1; j < ny - 1; j++)
         {
             long double         g_ij, norm_ij;
-            int                 k = i + (j * nx);
+            int                 k = (i - 1) + ((j - 1) * (nx - 2));
             g_ij                        = TWO * ((coeffs[i][j].alpha/(dxi * dxi)) +
                                                  (coeffs[i][j].gamma/(deta * deta)));
             norm_ij                     = sqrtl ((fu[k].x * fu[k].x) + (fu[k].y * fu[k].y))/g_ij;
@@ -2533,8 +2539,8 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     free_2D_point_2D_array ("pq", nx, pq);
     free_2D_point_2D_array ("prev_pq", nx, prev_pq);
 
-    /* Free memory from Newton's method arrays */
-    free_2D_ell_jacobian_2D_array ("dFdu", nx * ny, dFdu);
+    /* Free memory from Newton's method arrays (interior-only sized) */
+    free_2D_ell_jacobian_2D_array ("dFdu", n_int, dFdu);
     free_1D_point_2D_array ("fu", fu);
     free_1D_point_2D_array ("del_u", del_u);
 
@@ -2622,7 +2628,6 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
 
         /* Compute control functions (p, q) */
         compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &pq);
-        //compute_steger_sorenson (nx, ny, 0, coeffs, dgrid, d2grid, &pq);
         if (iiter == 0)
             write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "pq", pq);   // Write initial (p, q) to a Paraview file
 
@@ -2808,7 +2813,6 @@ point_2D **poisson_grid_2D_point_alt (int nx, int ny, point_2D **init_grid, int 
 
         /* Compute control functions (phi, psi) */
         compute_thomas_middlecoff_alt (nx, ny, dgrid, d2grid, &phipsi);
-        //compute_steger_sorenson (nx, ny, 1, coeffs, dgrid, d2grid, &phipsi);
         if (iiter == 0)
             write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "phipsi", phipsi);   // Write initial CF to a Paraview file
 
