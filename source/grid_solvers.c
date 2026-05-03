@@ -2352,7 +2352,10 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
             }
         }
         if (iiter == 0)
-            write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "pq", pq); // Write initial (p, q) to a Paraview file
+        {
+            write_2D_singleblock_vts ("initial_pq.vts", nx, ny, grid, 0);
+            write_point_2D_to_vts ("initial_pq.vts", nx, ny, "pq", pq, 1); // Write initial (p, q) to a Paraview file
+        }
 
         /* Newton's method */
         psn_construct_newton_matrix (nx, ny, dxi, deta, dgrid, coeffs, d2grid, pq, &dFdu);
@@ -2418,7 +2421,8 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
                  fu_norm, tol_resid, iiter + 1);
 
     snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
-    write_point_2D_to_vts (file1, nx, ny, grid, "pq", pq);  // Write final (p, q) to a Paraview file
+    write_2D_singleblock_vts (file1, nx, ny, grid, 0);
+    write_point_2D_to_vts (file1, nx, ny, "pq", pq, 1);  // Write final (p, q) to a Paraview file
     write_2D_singleblock_plot3D ("final_grid.x", nx, ny, grid); // Write final grid to PLOT3D file
     write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid); // Write final grid to .dat files
     fclose (fptr);  // Close residual output file
@@ -2522,7 +2526,10 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
         /* Compute control functions (p, q) */
         compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &pq);
         if (iiter == 0)
-            write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "pq", pq);   // Write initial (p, q) to a Paraview file
+        {
+            write_2D_singleblock_vts ("initial_pq.vts", nx, ny, grid, 0);
+            write_point_2D_to_vts ("initial_pq.vts", nx, ny, "pq", pq, 1);   // Write initial (p, q) to a Paraview file
+        }
 
         /* Compute new interior grid values */
         for (i = 1; i < nx - 1; i++)
@@ -2608,7 +2615,8 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
                  fu_norm, tol_resid, iiter + 1);
 
     snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
-    write_point_2D_to_vts (file1, nx, ny, grid, "pq", pq);  // Write final (p, q) to a Paraview file
+    write_2D_singleblock_vts (file1, nx, ny, grid, 0);
+    write_point_2D_to_vts (file1, nx, ny, "pq", pq, 1);  // Write final (p, q) to a Paraview file
     write_2D_singleblock_plot3D ("final_grid.x", nx, ny, grid); // Write final grid to PLOT3D file
     write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid); // Write final grid to .dat files
     fclose (fptr);
@@ -2763,7 +2771,10 @@ point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int 
             }
         }
         if (iiter == 0)
-            write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "pq", pq);
+        {
+            write_2D_singleblock_vts ("initial_pq.vts", nx, ny, grid, 0);
+            write_point_2D_to_vts ("initial_pq.vts", nx, ny, "pq", pq, 1);
+        }
 
         /* Inner sub-iteration: inner_niter LIM steps with FROZEN (P, Q).
            Geometric coefficients (alpha, beta, gamma, J) ARE recomputed each
@@ -2902,7 +2913,8 @@ point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int 
                  fu_norm, tol_resid, iiter + 1);
 
     snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
-    write_point_2D_to_vts (file1, nx, ny, grid, "pq", pq);
+    write_2D_singleblock_vts (file1, nx, ny, grid, 0);
+    write_point_2D_to_vts (file1, nx, ny, "pq", pq, 1);
     write_2D_singleblock_plot3D ("final_grid.x", nx, ny, grid);
     write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid);
     fclose (fptr);
@@ -2926,6 +2938,116 @@ point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int 
 
 
     return grid;
+}
+
+
+
+
+
+/*
+    Compute three grid quality metrics:
+
+    - Orthogonality metric for each point as 
+      |\beta|/sqrt(\alpha * \gamma) and statistics to 
+      summarize grid quality post-run. The metric is 
+      the cosine of the angle between r_\xi and 
+      r_\eta: 0 implies full orthogonality and 1 
+      implies a folded or coincident grid 
+    - Aspect ratio: max(sqrt(\gamma/\alpha), 
+      sqrt(\alpha/\gamma)) for each point. This should 
+      always be >= 1, with 1 being isotropic. The value 
+      for a degenerate point is set as 0 
+    - Jacobian: minimum, maximum and number of folded 
+      cells
+
+    Input parameters: nx     - number of xi points 
+                      ny     - number of eta points 
+                      coeffs - array containing first derivative 
+                               based coefficients 
+*/
+grid_quality_2D compute_grid_quality_2D (int nx, int ny, coeffs_1 **coeffs) 
+{
+    /* Return q */  
+    grid_quality_2D         q;
+
+    // Local variables 
+    int                     i, j, is_interior;
+    long double             ag, ortho_val, aspect_val, ratio, weight, 
+                            sum_weighted, weight_sum, J; 
+
+
+    // Allocate q component array 
+    q.ortho = allocate_2D_long_double_array ("q.ortho", nx, ny);
+    q.aspect_ratio = allocate_2D_long_double_array ("q.aspect_ratio", nx, ny);
+
+    // Initialize diagnostic summary quantities
+    q.ortho_max = ZERO;
+    q.ortho_mean = ZERO; 
+    q.n_degenerate = 0;
+
+    q.aspect_ratio_max = ZERO;
+    q.aspect_ratio_min = HUGE_VALL;
+
+    q.J_min = HUGE_VALL;
+    q.J_max = -HUGE_VALL;
+    q.n_folded = 0;
+
+    // Initialize local quantities 
+    sum_weighted = ZERO;
+    weight_sum = ZERO;
+
+
+    // Loop over all points 
+    for (i = 0; i < nx; i++)
+    {
+        for (j = 0; j < ny; j++)
+        {
+            is_interior = (i > 0) && (i < nx - 1) && (j > 0) && (j < ny - 1);
+            ag = coeffs[i][j].alpha * coeffs[i][j].gamma;
+            J = coeffs[i][j].J;
+
+            // Jacobian stats 
+            if (is_interior)
+            {
+                if (J < q.J_min) q.J_min = J;
+                if (J > q.J_max) q.J_max = J;
+                if (J <= ZERO) q.n_folded += 1;
+            }
+
+            if (ag <= ZERO)     // Degenerate point
+            {
+                q.ortho[i][j] = ONE; 
+                q.aspect_ratio[i][j] = ZERO;
+                if (is_interior) q.n_degenerate += 1;
+            }
+            else
+            {
+                ortho_val = fabsl (coeffs[i][j].beta)/sqrtl (ag);
+
+                // Symmetric aspect ratio 
+                ratio = coeffs[i][j].gamma/coeffs[i][j].alpha;
+                if (ratio < ONE) ratio = ONE/ratio;
+                aspect_val = sqrtl (ratio);
+
+                q.ortho[i][j] = ortho_val;
+                q.aspect_ratio[i][j] = aspect_val;
+
+                if (is_interior)
+                {
+                    weight = fabsl (J);
+                    sum_weighted += ortho_val * weight;
+                    weight_sum += weight;
+                    if (ortho_val > q.ortho_max) q.ortho_max = ortho_val;
+                    if (aspect_val > q.aspect_ratio_max) q.aspect_ratio_max = aspect_val;
+                    if (aspect_val < q.aspect_ratio_min) q.aspect_ratio_min = aspect_val;
+                }
+            }
+        }
+    }
+
+    if (weight_sum > ZERO) q.ortho_mean = sum_weighted/weight_sum;
+
+    return q;
 }
 
 
@@ -2976,7 +3098,8 @@ point_2D **biharmonic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
        and 1st derivative related coefficients */
     initial_pq_2D (1, nx, ny, cxi, ceta, grid, &pq);
     initial_pq_2D_laplace (nx, ny, cxi, ceta, grid, &pq);
-    write_point_2D_to_vts ("initial_pq.vts", nx, ny, grid, "pq", pq);
+    write_2D_singleblock_vts ("initial_pq.vts", nx, ny, grid, 0);
+    write_point_2D_to_vts ("initial_pq.vts", nx, ny, "pq", pq, 1);
     grid_first_ders_2D (nx, ny, grid, &dgrid);
     first_der_coefficients (nx, ny, dgrid, &coeffs);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
@@ -3009,7 +3132,8 @@ point_2D **biharmonic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
         pq_second_ders_2D (nx, ny, pq, &d2pq);
     }
     snprintf (file1, 256, "final_pq_%d.vts", iiter);
-    write_point_2D_to_vts (file1, nx, ny, grid, "pq", pq);  // Write final (p, q) to a Paraview file
+    write_2D_singleblock_vts (file1, nx, ny, grid, 0);
+    write_point_2D_to_vts (file1, nx, ny, "pq", pq, 1);  // Write final (p, q) to a Paraview file
     write_2D_point_2D ("final_x.dat", "final_y.dat", nx, ny, grid); // Write final grid to .dat files
 
 

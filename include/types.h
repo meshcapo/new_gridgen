@@ -89,6 +89,46 @@ typedef struct
 
 
 
+/* 
+    Data type to store grid quality metrics 
+
+    grid_quality_2D.ortho - 2D array containing orthogonality 
+                            values for all grid points
+    grid_quality_2D.ortho_max - maximum deviation from orthogonality
+    grid_quality_2D.ortho_mean - area weighted over all valid points 
+    grid_quality_2D.n_degenerate - number of points where 
+                                   (\alpha \gamma <= 0)
+
+    grid_quality_2D.aspect_ratio - 2D array containing aspect ratio 
+                                   values for all grid points
+    grid_quality_2D.aspect_ratio_max - maximum value of aspect ratio
+    grid_quality_2D.aspect_ratio_min - minimum value of aspect ratio
+
+    grid_quality_2D.J_min - minimum value of Jacobian
+    grid_quality_2D.J_max - maximum value of Jacobian
+    n_folded - number of points where grid is folded
+*/
+typedef struct
+{
+    // Orthogonality
+    long double             **ortho;
+    long double             ortho_max;
+    long double             ortho_mean; 
+    int                     n_degenerate;
+
+    // Aspect ratio 
+    long double             **aspect_ratio;
+    long double             aspect_ratio_max;
+    long double             aspect_ratio_min;
+
+    // Jacobian stats 
+    long double             J_min;
+    long double             J_max;
+    int                     n_folded;
+} grid_quality_2D;
+
+
+
 /*
    Data type to store all components of
    the Jacobian of a elliptic grid

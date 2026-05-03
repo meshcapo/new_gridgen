@@ -571,6 +571,7 @@ void write_2D_singleblock_vts (char *filename, int nx, int ny, point_2D **grid, 
     {
         /* Close file without ending piece field to
            enable writing scalar/vector data */
+        fprintf (fptr, "            <PointData>\n");
         fclose (fptr);
     }
     else
@@ -589,6 +590,34 @@ void write_2D_singleblock_vts (char *filename, int nx, int ny, point_2D **grid, 
 
 
 
+/* 
+    Close an open .vts ''
+*/ 
+void close_vts (char *filename)
+{
+    /* Local variables */ 
+    FILE                    *fptr;
+
+
+    /* Open file in append mode and write the closing
+       tags. Used when all field write calls were made
+       with write_data = 0 */
+    fptr = fopen (filename, "a");
+
+    fprintf (fptr, "            </PointData>\n");
+    fprintf (fptr, "        </Piece>\n");
+    fprintf (fptr, "    </StructuredGrid>\n");
+    fprintf (fptr, "</VTKFile>");
+        
+    /* Close file */
+    fclose (fptr);
+}
+
+
+
+
+
+
 /*
    Write a scalar 2D array to a .vts file
 
@@ -599,22 +628,18 @@ void write_2D_singleblock_vts (char *filename, int nx, int ny, point_2D **grid, 
                                   containing x and y coordinates
                      array      - scalar array to be written to file
 */
-void write_long_double_to_vts (char *filename, int nx, int ny, point_2D **grid,
-                               char *fieldname, long double **array)
+void write_long_double_to_vts (char *filename, int nx, int ny, 
+                               char *fieldname, long double **array, int write_data)
 {
     /* Local variables */
     FILE                    *fptr;
     int                     i, j;
 
 
-    /* Write grid point data to file */
-    write_2D_singleblock_vts (filename, nx, ny, grid, 0);
-
     /* Open file to append */
     fptr                                = fopen (filename, "a");
 
     /* Write scalar data to file */
-    fprintf (fptr, "            <PointData Scalars=\"%s\">\n", fieldname);
     fprintf (fptr, "                <DataArray type=\"Float32\" Name=\"%s\" NumberOfComponents=\"1\" format=\"ascii\">\n", fieldname);
     for (j = 0; j < ny; j++)
     {
@@ -624,12 +649,15 @@ void write_long_double_to_vts (char *filename, int nx, int ny, point_2D **grid,
         }
     }
     fprintf (fptr, "                </DataArray>\n");
-    fprintf (fptr, "            </PointData>\n");
 
-    /* End piece field */
-    fprintf (fptr, "        </Piece>\n");
-    fprintf (fptr, "    </StructuredGrid>\n");
-    fprintf (fptr, "</VTKFile>");
+    if (write_data != 0)
+    {
+        /* Close scalar/vector field and the file structure */
+        fprintf (fptr, "            </PointData>\n");
+        fprintf (fptr, "        </Piece>\n");
+        fprintf (fptr, "    </StructuredGrid>\n");
+        fprintf (fptr, "</VTKFile>");
+    }
 
     /* Close file */
     fclose (fptr);
@@ -650,22 +678,18 @@ void write_long_double_to_vts (char *filename, int nx, int ny, point_2D **grid,
                                   containing x and y coordinates
                      array      - point_2D array to be written to file
 */
-void write_point_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
-                            char *fieldname, point_2D **array)
+void write_point_2D_to_vts (char *filename, int nx, int ny, 
+                            char *fieldname, point_2D **array, int write_data)
 {
     /* Local variables */
     FILE                    *fptr;
     int                     i, j;
 
 
-    /* Write grid point data to file */
-    write_2D_singleblock_vts (filename, nx, ny, grid, 0);
-
     /* Open file to append */
     fptr                                = fopen (filename, "a");
 
     /* Write scalar data to file */
-    fprintf (fptr, "            <PointData Vectors=\"%s\">\n", fieldname);
     fprintf (fptr, "                <DataArray type=\"Float32\" Name=\"%s\" NumberOfComponents=\"3\" format=\"ascii\">\n", fieldname);
     for (j = 0; j < ny; j++)
     {
@@ -675,12 +699,15 @@ void write_point_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
         }
     }
     fprintf (fptr, "                </DataArray>\n");
-    fprintf (fptr, "            </PointData>\n");
 
-    /* End piece field */
-    fprintf (fptr, "        </Piece>\n");
-    fprintf (fptr, "    </StructuredGrid>\n");
-    fprintf (fptr, "</VTKFile>");
+    if (write_data != 0)
+    {
+        /* Close scalar/vector field and the file structure */ 
+        fprintf (fptr, "            </PointData>\n");
+        fprintf (fptr, "        </Piece>\n");
+        fprintf (fptr, "    </StructuredGrid>\n");
+        fprintf (fptr, "</VTKFile>");
+    }
 
     /* Close file */
     fclose (fptr);
@@ -704,22 +731,20 @@ void write_point_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
                                   containing the derivatives of x and y with respect to
                                   xi and eta
 */
-void write_grid_der_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
-                               grid_der_2D **dgrid)
+void write_grid_der_2D_to_vts (char *filename, int nx, int ny,
+                               grid_der_2D **dgrid, int write_data)
 {
     /* Local variables */
     FILE                    *fptr;
     int                     i, j;
 
 
-    /* Write grid point data to file */
-    write_2D_singleblock_vts (filename, nx, ny, grid, 0);
+    /* Open file in append mode. File must already be in the open
+       state (header + grid points + <PointData> tag written by a
+       previous write_2D_singleblock_vts call with write_data = 0) */
+    fptr = fopen (filename, "a");
 
-    /* Open file to append */
-    fptr                                = fopen (filename, "a");
-
-    /* Write xi derivatives to file */
-    fprintf (fptr, "            <PointData Vectors=\"xi_ders eta_ders\">\n");
+    /* Append xi derivatives DataArray */
     fprintf (fptr, "                <DataArray type=\"Float32\" Name=\"xi_ders\" NumberOfComponents=\"3\" format=\"ascii\">\n");
     for (j = 0; j < ny; j++)
     {
@@ -730,7 +755,7 @@ void write_grid_der_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
     }
     fprintf (fptr, "                </DataArray>\n");
 
-    /* Write eta derivatives to file */
+    /* Append eta derivatives DataArray */
     fprintf (fptr, "                <DataArray type=\"Float32\" Name=\"eta_ders\" NumberOfComponents=\"3\" format=\"ascii\">\n");
     for (j = 0; j < ny; j++)
     {
@@ -740,12 +765,15 @@ void write_grid_der_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
         }
     }
     fprintf (fptr, "                </DataArray>\n");
-    fprintf (fptr, "            </PointData>\n");
 
-    /* End piece field */
-    fprintf (fptr, "        </Piece>\n");
-    fprintf (fptr, "    </StructuredGrid>\n");
-    fprintf (fptr, "</VTKFile>");
+    if (write_data != 0)
+    {
+        /* Close <PointData> and the file structure */
+        fprintf (fptr, "            </PointData>\n");
+        fprintf (fptr, "        </Piece>\n");
+        fprintf (fptr, "    </StructuredGrid>\n");
+        fprintf (fptr, "</VTKFile>");
+    }
 
     /* Close file */
     fclose (fptr);
@@ -769,22 +797,20 @@ void write_grid_der_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
                                   containing the derivatives of x and y with respect to
                                   xi and eta
 */
-void write_grid_dder_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
-                                grid_dder_2D **d2grid)
+void write_grid_dder_2D_to_vts (char *filename, int nx, int ny,
+                                grid_dder_2D **d2grid, int write_data)
 {
     /* Local variables */
     FILE                    *fptr;
     int                     i, j;
 
 
-    /* Write grid point data to file */
-    write_2D_singleblock_vts (filename, nx, ny, grid, 0);
+    /* Open file in append mode. File must already be in the open
+       state (header + grid points + <PointData> tag written by a
+       previous write_2D_singleblock_vts call with write_data = 0) */
+    fptr = fopen (filename, "a");
 
-    /* Open file to append */
-    fptr                                = fopen (filename, "a");
-
-    /* Write xi 2nd derivatives to file */
-    fprintf (fptr, "            <PointData Vectors=\"ddxi2 ddxideta ddeta2\">\n");
+    /* Append xi 2nd derivatives DataArray */
     fprintf (fptr, "                <DataArray type=\"Float32\" Name=\"ddxi2\" NumberOfComponents=\"3\" format=\"ascii\">\n");
     for (j = 0; j < ny; j++)
     {
@@ -795,7 +821,7 @@ void write_grid_dder_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
     }
     fprintf (fptr, "                </DataArray>\n");
 
-    /* Write eta 2nd derivatives to file */
+    /* Append eta 2nd derivatives DataArray */
     fprintf (fptr, "                <DataArray type=\"Float32\" Name=\"ddeta2\" NumberOfComponents=\"3\" format=\"ascii\">\n");
     for (j = 0; j < ny; j++)
     {
@@ -806,7 +832,7 @@ void write_grid_dder_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
     }
     fprintf (fptr, "                </DataArray>\n");
 
-    /* Write mixed derivatives to file */
+    /* Append mixed derivatives DataArray */
     fprintf (fptr, "                <DataArray type=\"Float32\" Name=\"dxideta\" NumberOfComponents=\"3\" format=\"ascii\">\n");
     for (j = 0; j < ny; j++)
     {
@@ -816,12 +842,15 @@ void write_grid_dder_2D_to_vts (char *filename, int nx, int ny, point_2D **grid,
         }
     }
     fprintf (fptr, "                </DataArray>\n");
-    fprintf (fptr, "            </PointData>\n");
 
-    /* End piece field */
-    fprintf (fptr, "        </Piece>\n");
-    fprintf (fptr, "    </StructuredGrid>\n");
-    fprintf (fptr, "</VTKFile>");
+    if (write_data != 0)
+    {
+        /* Close <PointData> and the file structure */
+        fprintf (fptr, "            </PointData>\n");
+        fprintf (fptr, "        </Piece>\n");
+        fprintf (fptr, "    </StructuredGrid>\n");
+        fprintf (fptr, "</VTKFile>");
+    }
 
     /* Close file */
     fclose (fptr);

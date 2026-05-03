@@ -70,6 +70,9 @@ point_2D **poisson_grid_2D_point_lim (int, int, point_2D **, int);
 /* Compute 2D biharmonic grid */
 point_2D **biharmonic_grid_2D (int, int, point_2D **, int);
 
+/* Compute 2D grid quality metrics */
+grid_quality_2D compute_grid_quality_2D (int, int, coeffs_1 **);
+
 
 
 #endif // GRID_SOLVERS_H_

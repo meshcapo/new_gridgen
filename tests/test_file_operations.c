@@ -807,8 +807,9 @@ Test(file_operations, write_point_2D_to_vts)
     char vts_file[PATH_MAX];
     snprintf(vts_file, sizeof(vts_file), "%s/vector.vts", tmpdir);
 
-    // Write vector field to .vts file
-    write_point_2D_to_vts(vts_file, nx, ny, grid, "f", array);
+    // Write grid + vector field to .vts file (refactored two-call pattern)
+    write_2D_singleblock_vts(vts_file, nx, ny, grid, 0);
+    write_point_2D_to_vts(vts_file, nx, ny, "f", array, 1);
     cr_assert_eq(access(vts_file, R_OK), 0, "Output file not created: %s", vts_file);
 
     // Parse the XML output file
@@ -827,15 +828,18 @@ Test(file_operations, write_point_2D_to_vts)
     xmlNodePtr point_data = find_child(piece, "PointData");
     cr_assert_not_null(point_data, "PointData node not found");
 
-    // Verify the Vectors attribute contains the correct field name
-    xmlChar *vectors_attr = xmlGetProp(point_data, (const xmlChar *)"Vectors");
-    cr_assert_not_null(vectors_attr, "Vectors attribute not found on PointData node");
-    cr_assert_str_eq((char *)vectors_attr, "f", 
-                     "Vectors attribute: expected 'f', got '%s'", (char *)vectors_attr);
-    xmlFree(vectors_attr);
+    // Note: refactored writer no longer emits Scalars/Vectors attributes
+    // on <PointData> (multi-field support — no single default field).
+    // Verify the DataArray itself carries the field name instead.
 
     xmlNodePtr data_array = find_child(point_data, "DataArray");
     cr_assert_not_null(data_array, "DataArray node not found in PointData");
+
+    xmlChar *name_attr = xmlGetProp(data_array, (const xmlChar *)"Name");
+    cr_assert_not_null(name_attr, "Name attribute not found on DataArray");
+    cr_assert_str_eq((char *)name_attr, "f",
+                     "DataArray Name: expected 'f', got '%s'", (char *)name_attr);
+    xmlFree(name_attr);
 
     // Parse vector values from DataArray and compare against
     // manufactured field

@@ -55,14 +55,20 @@ void write_2D_singleblock_plot3D (char *, int, int, point_2D **);
 void write_2D_singleblock_vts (char *, int, int, point_2D **, int);
 
 /*
-   Write either scalar or vector data related to
-   a 2D structured grid to XML structured VTK
-   (.vts) file
+   Append per-point scalar / vector field DataArrays to a .vts file
+   in the open state (file already started by write_2D_singleblock_vts
+   with write_data = 0). Pass write_data = 1 on the final call to
+   close the file structure, or use close_vts explicitly
 */
-void write_long_double_to_vts (char *, int, int, point_2D **, char *, long double **);
-void write_point_2D_to_vts (char *, int, int, point_2D **, char *, point_2D **);
-void write_grid_der_2D_to_vts (char *, int, int, point_2D **, grid_der_2D **);
-void write_grid_dder_2D_to_vts (char *, int, int, point_2D **, grid_dder_2D **);
+void write_long_double_to_vts (char *, int, int, char *, long double **, int);
+void write_point_2D_to_vts (char *, int, int, char *, point_2D **, int);
+void write_grid_der_2D_to_vts (char *, int, int, grid_der_2D **, int);
+void write_grid_dder_2D_to_vts (char *, int, int, grid_dder_2D **, int);
+
+/*
+   Close a .vts file (writes </PointData> + closing structure tags)
+*/
+void close_vts (char *);
 
 /*
    Functions to write 2D arrays to .dat files
