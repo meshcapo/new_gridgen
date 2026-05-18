@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<VTKFile type="vtkMultiBlockDataSet" version="1.0" byte_order="LittleEndian">
+  <vtkMultiBlockDataSet>
+    <Block index="0" name="ogrid_3">
+      <DataSet index="0" file="stacked_3d/ogrid_3.vts"/>
+    </Block>
+    <Block index="1" name="top.left">
+      <DataSet index="0" file="stacked_3d/top_left.vts"/>
+    </Block>
+    <Block index="2" name="top.center">
+      <DataSet index="0" file="stacked_3d/top_center.vts"/>
+    </Block>
+    <Block index="3" name="top.right">
+      <DataSet index="0" file="stacked_3d/top_right.vts"/>
+    </Block>
+    <Block index="4" name="bot.left">
+      <DataSet index="0" file="stacked_3d/bot_left.vts"/>
+    </Block>
+    <Block index="5" name="bot.center">
+      <DataSet index="0" file="stacked_3d/bot_center.vts"/>
+    </Block>
+    <Block index="6" name="bot.right">
+      <DataSet index="0" file="stacked_3d/bot_right.vts"/>
+    </Block>
+    <Block index="7" name="middle.left">
+      <DataSet index="0" file="stacked_3d/middle_left.vts"/>
+    </Block>
+    <Block index="8" name="middle.right">
+      <DataSet index="0" file="stacked_3d/middle_right.vts"/>
+    </Block>
+  </vtkMultiBlockDataSet>
+</VTKFile>

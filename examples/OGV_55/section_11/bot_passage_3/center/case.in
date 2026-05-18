@@ -1,0 +1,17 @@
+# ============================================================================
+# gridexec input -- section_11/bot_passage_3/center (93 x 41)
+# ============================================================================
+
+mode             = 2D
+niter            = 200
+nblocks          = 1
+npts_x           = 93
+npts_y           = 41
+
+solver           = newton
+
+lambda_max       = 0.02
+ramp_iters       = 20
+
+tol_step         = 1.0e-8
+tol_resid        = 1.0e-6
