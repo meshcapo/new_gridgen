@@ -1,0 +1,16 @@
+# Valid 2D config exercising comment stripping and whitespace handling
+# Used by test_config.c::comments_and_whitespace
+# - leading/trailing whitespace around keys, values, and `=`
+# - inline comments mid-line
+# - blank lines
+
+   mode    =    2D       # 2D run
+niter=  250
+   nblocks   =1
+
+
+npts_x=  61
+   npts_y =   17
+
+solver  =    psn_tm           # pointwise Poisson with TM
+omega = 0.9   # under-relaxation

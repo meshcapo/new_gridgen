@@ -1,0 +1,16 @@
+# Valid 2D config with every optional field set to a non-default value
+# Used by test_config.c::valid_with_all_optionals
+
+mode = 2D
+niter = 1000
+nblocks = 1
+npts_x = 51
+npts_y = 21
+solver = newton
+
+lambda_max = 0.07
+ramp_iters = 33
+inner_niter = 7
+omega = 0.85
+tol_step = 1.5e-9
+tol_resid = 2.5e-7

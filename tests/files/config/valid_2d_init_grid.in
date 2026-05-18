@@ -1,0 +1,9 @@
+# Valid 2D config with init_grid_file (no explicit npts)
+# Used by test_config.c::valid_2d_init_grid
+# Parser leaves nblocks=0 and npts_x/y/z = NULL; main fills these
+# from the PLOT3D header
+
+mode = 2D
+niter = 100
+init_grid_file = some_grid.x
+solver = ell_newton

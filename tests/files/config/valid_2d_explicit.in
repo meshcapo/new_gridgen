@@ -1,0 +1,9 @@
+# Valid 2D config with explicit npts (no init_grid_file)
+# Used by test_config.c::valid_2d_explicit
+
+mode = 2D
+niter = 500
+nblocks = 1
+npts_x = 101
+npts_y = 31
+solver = psn_lim

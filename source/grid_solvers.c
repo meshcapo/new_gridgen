@@ -2014,8 +2014,9 @@ static void tridiag_solve_2rhs (int n, long double *sub, long double *diag, long
                      ny         - number of y points
                      init_grid  - initial grid
                      niter      - number of Newton iterations
+                     params     - solver tunables (uses tol_step, tol_resid)
 */
-point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
+point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter, solver_params params)
 {
     /* Return grid */
     point_2D                **grid;
@@ -2030,10 +2031,6 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     char                    file1[256];
     FILE                    *fptr;
     int                     iiter, i, j;
-
-    /* Newton convergence parameters */
-    const long double       tol_step  = 1.0E-8L;   /* relative step-norm tolerance */
-    const long double       tol_resid = 1.0E-6L;   /* equation-residual warning threshold */
 
 
     /* Allocate memory for grid arrays */
@@ -2085,7 +2082,7 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
         ell_update_solution (nx, ny, del_u, &grid);
 
         /* Break if Newton step is small relative to domain size */
-        if (res_norm/L_ref < tol_step)
+        if (res_norm/L_ref < params.tol_step)
             break;
     }
 
@@ -2112,9 +2109,9 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
             if (norm_ij > fu_norm) fu_norm = norm_ij;
         }
     }
-    if (fu_norm > tol_resid)
+    if (fu_norm > params.tol_resid)
         fprintf (stderr, "Warning: elliptic_grid_2D equation residual %.6Le above tol %.6Le after %d iterations\n",
-                 fu_norm, tol_resid, iiter + 1);
+                 fu_norm, params.tol_resid, iiter + 1);
 
     snprintf (file1, 256, "final_grid_%d.vts", iiter + 1);
     write_2D_singleblock_vts (file1, nx, ny, grid, 1); // Write final grid to Paraview file
@@ -2149,8 +2146,9 @@ point_2D **elliptic_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
                      ny         - number of y points
                      init_grid  - initial (x, y) grid
                      niter      - number of Newton iterations
+                     params     - solver tunables (uses omega)
 */
-point_2D **elliptic_grid_2D_point (int nx, int ny, point_2D **init_grid, int niter)
+point_2D **elliptic_grid_2D_point (int nx, int ny, point_2D **init_grid, int niter, solver_params params)
 {
     /* Return grid */
     point_2D                **grid;
@@ -2160,7 +2158,6 @@ point_2D **elliptic_grid_2D_point (int nx, int ny, point_2D **init_grid, int nit
     coeffs_1                **coeffs;
     grid_dder_2D            **d2grid;
     long double             dxi, deta, res_norm, g, g1, g2, g3;
-    const long double       omega = 1.0;
     point_2D                *del_u, **prev_grid;
     char                    file1[256];
     //FILE                    *fptr;
@@ -2223,8 +2220,8 @@ point_2D **elliptic_grid_2D_point (int nx, int ny, point_2D **init_grid, int nit
         {
             i                           = k%nx;
             j                           = k/nx;
-            grid[i][j].x                = (omega * grid[i][j].x) + ((ONE - omega) * prev_grid[i][j].x);
-            grid[i][j].y                = (omega * grid[i][j].y) + ((ONE - omega) * prev_grid[i][j].y);
+            grid[i][j].x                = (params.omega * grid[i][j].x) + ((ONE - params.omega) * prev_grid[i][j].x);
+            grid[i][j].y                = (params.omega * grid[i][j].y) + ((ONE - params.omega) * prev_grid[i][j].y);
 
             /* Final iteration update vector */
             if (iiter == niter - 1)
@@ -2266,8 +2263,10 @@ point_2D **elliptic_grid_2D_point (int nx, int ny, point_2D **init_grid, int nit
                      ny         - number of y points
                      init_grid  - initial (x, y) grid
                      niter      - number of Newton iterations
+                     params     - solver tunables (uses tol_step, tol_resid,
+                                  ramp_iters, lambda_max)
 */
-point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
+point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter, solver_params params)
 {
     /* Return grid */
     point_2D                **grid;
@@ -2282,13 +2281,7 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     char                    file1[256];
     FILE                    *fptr;
     int                     iiter, i, j;
-
-    /* Newton convergence parameters */
-    const long double       tol_step    = 1.0E-8L;   /* relative step-norm tolerance */
-    const long double       tol_resid   = 1.0E-6L;   /* equation-residual warning threshold */
-    const int               ramp_iters  = 20;        /* outer iters to ramp lambda from 0 to its cap */
-    const long double       lambda_max  = 0.1L;      /* cap on SS contribution; 1.0 = pure SS, 0.0 = pure TM */
-    long double             lambda;                  /* TM->SS ramp parameter, 0..1 */
+    long double             lambda;   /* TM->SS ramp parameter, 0..1 */
 
 
     /* Allocate memory for grid arrays */
@@ -2337,10 +2330,10 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
            keeps the iteration short of the full SS target, which is unreachable
            on some geometries (e.g. re-entrant corners). prev_pq is reused as
            scratch for pq_TM. */
-        lambda                          = (iiter < ramp_iters)
-                                          ? ((long double) iiter)/((long double) ramp_iters)
+        lambda                          = (iiter < params.ramp_iters)
+                                          ? ((long double) iiter)/((long double) params.ramp_iters)
                                           : ONE;
-        if (lambda > lambda_max) lambda = lambda_max;
+        if (lambda > params.lambda_max) lambda = params.lambda_max;
         compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &prev_pq);                /* pq_TM */
         compute_steger_sorenson  (nx, ny, 0, coeffs, dgrid, d2grid, &pq);           /* pq_SS */
         for (i = 0; i < nx; i++)
@@ -2370,7 +2363,7 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
         ell_update_solution (nx, ny, del_u, &grid);
 
         /* Break if Newton step is small relative to domain size */
-        if (res_norm/L_ref < tol_step)
+        if (res_norm/L_ref < params.tol_step)
             break;
     }
 
@@ -2382,10 +2375,10 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
     first_der_coefficients (nx, ny, dgrid, &coeffs);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
     {
-        long double lambda_final        = (iiter < ramp_iters)
-                                          ? ((long double) iiter)/((long double) ramp_iters)
+        long double lambda_final        = (iiter < params.ramp_iters)
+                                          ? ((long double) iiter)/((long double) params.ramp_iters)
                                           : ONE;
-        if (lambda_final > lambda_max) lambda_final = lambda_max;
+        if (lambda_final > params.lambda_max) lambda_final = params.lambda_max;
         compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &prev_pq);
         compute_steger_sorenson  (nx, ny, 0, coeffs, dgrid, d2grid, &pq);
         for (i = 0; i < nx; i++)
@@ -2416,9 +2409,9 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
             if (norm_ij > fu_norm) fu_norm = norm_ij;
         }
     }
-    if (fu_norm > tol_resid)
+    if (fu_norm > params.tol_resid)
         fprintf (stderr, "Warning: poisson_grid_2D equation residual %.6Le above tol %.6Le after %d iterations\n",
-                 fu_norm, tol_resid, iiter + 1);
+                 fu_norm, params.tol_resid, iiter + 1);
 
     snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
     write_2D_singleblock_vts (file1, nx, ny, grid, 0);
@@ -2450,23 +2443,24 @@ point_2D **poisson_grid_2D (int nx, int ny, point_2D **init_grid, int niter)
 
 
 /*
-   Elliptic grid generation with Thomas-Middlecoff 
-   control functions using Gauss-Seidel iteration. 
-   Steger-Sorenson control functions should not 
+   Elliptic grid generation with Thomas-Middlecoff
+   control functions using Gauss-Seidel iteration.
+   Steger-Sorenson control functions should not
    be used here (see poisson_grid_2D_point_lim)
 
    Convergence: in-loop break when the max step-norm divided by
-   the bounding-box diagonal falls below tol_step (= 1e-8L).
-   Post-loop equation residual is checked against tol_resid
-   (= 1e-6L); a warning is emitted to stderr if the iteration
-   did not reduce the residual below it.
+   the bounding-box diagonal falls below params.tol_step (default
+   1e-8L). Post-loop equation residual is checked against
+   params.tol_resid (default 1e-6L); a warning is emitted to
+   stderr if the iteration did not reduce the residual below it.
 
    Input parameters: nx         - number of x points
                      ny         - number of y points
                      init_grid  - initial (x, y) grid
                      niter      - maximum number of iterations
+                     params     - solver tunables (uses omega, tol_step, tol_resid)
 */
-point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int niter)
+point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int niter, solver_params params)
 {
     /* Return grid */
     point_2D                **grid;
@@ -2476,15 +2470,10 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
     coeffs_1                **coeffs;
     grid_dder_2D            **d2grid;
     long double             dxi, deta, res_norm, L_ref, fu_norm, g, g1, g2, g3, g4;
-    const long double       omega = 1;
     point_2D                *del_u, **prev_grid, **pq;
     char                    file1[256];
     FILE                    *fptr;
     int                     iiter, i, j, k;
-
-    /* Convergence parameters */
-    const long double       tol_step  = 1.0E-8L;   /* relative step-norm tolerance */
-    const long double       tol_resid = 1.0E-6L;   /* equation-residual warning threshold */
 
 
     /* Allocate memory for grid arrays */
@@ -2560,8 +2549,8 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
         {
             i                           = k%nx;
             j                           = k/nx;
-            grid[i][j].x                = (omega * grid[i][j].x) + ((ONE - omega) * prev_grid[i][j].x);
-            grid[i][j].y                = (omega * grid[i][j].y) + ((ONE - omega) * prev_grid[i][j].y);
+            grid[i][j].x                = (params.omega * grid[i][j].x) + ((ONE - params.omega) * prev_grid[i][j].x);
+            grid[i][j].y                = (params.omega * grid[i][j].y) + ((ONE - params.omega) * prev_grid[i][j].y);
             del_u[k].x                  = grid[i][j].x - prev_grid[i][j].x;
             del_u[k].y                  = grid[i][j].y - prev_grid[i][j].y;
         }
@@ -2571,7 +2560,7 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
         fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
 
         /* Break if step is small relative to domain size */
-        if (res_norm/L_ref < tol_step)
+        if (res_norm/L_ref < params.tol_step)
             break;
     }
 
@@ -2610,9 +2599,9 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
             if (norm_ij > fu_norm) fu_norm = norm_ij;
         }
     }
-    if (fu_norm > tol_resid)
+    if (fu_norm > params.tol_resid)
         fprintf (stderr, "Warning: poisson_grid_2D_point equation residual %.6Le above tol %.6Le after %d iterations\n",
-                 fu_norm, tol_resid, iiter + 1);
+                 fu_norm, params.tol_resid, iiter + 1);
 
     snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
     write_2D_singleblock_vts (file1, nx, ny, grid, 0);
@@ -2658,16 +2647,19 @@ point_2D **poisson_grid_2D_point (int nx, int ny, point_2D **init_grid, int nite
    dropped from the discretization.
 
    Convergence: in-loop break when max step-norm divided by the
-   bounding-box diagonal falls below tol_step (= 1e-8L). Post-loop
-   equation residual checked against tol_resid (= 1e-6L); a warning
-   is emitted to stderr if residual is above.
+   bounding-box diagonal falls below params.tol_step (default
+   1e-8L). Post-loop equation residual checked against
+   params.tol_resid (default 1e-6L); a warning is emitted to
+   stderr if residual is above.
 
    Input parameters: nx         - number of x points
                      ny         - number of y points
                      init_grid  - initial (x, y) grid
                      niter      - maximum number of iterations
+                     params     - solver tunables (uses tol_step, tol_resid,
+                                  inner_niter, ramp_iters, lambda_max)
 */
-point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int niter)
+point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int niter, solver_params params)
 {
     /* Return grid */
     point_2D                **grid;
@@ -2687,14 +2679,8 @@ point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int 
     long double             *tri_sol_x, *tri_sol_y;
     int                     nxi;
 
-    /* Convergence parameters */
-    const long double       tol_step  = 1.0E-8L;
-    const long double       tol_resid = 1.0E-6L;
-    const int               inner_niter = 10;       /* sub-iterations per (P, Q) refresh */
-    const int               ramp_iters  = 500;      /* outer iters over which to ramp from TM to SS */
-    const long double       lambda_max  = 0.2L;     /* cap on SS contribution (1.0 = pure SS, 0.0 = pure TM) */
     int                     iiter_inner;
-    long double             lambda;                 /* TM->SS ramp parameter, 0..1 */
+    long double             lambda;   /* TM->SS ramp parameter, 0..1 */
 
 
     nxi                                 = nx - 2; // Number of unknowns along a xi-line
@@ -2756,10 +2742,10 @@ point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int 
         first_der_coefficients (nx, ny, dgrid, &coeffs);
         grid_second_ders_2D (nx, ny, grid, &d2grid);
 
-        lambda                          = (iiter < ramp_iters)
-                                          ? ((long double) iiter)/((long double) ramp_iters)
+        lambda                          = (iiter < params.ramp_iters)
+                                          ? ((long double) iiter)/((long double) params.ramp_iters)
                                           : ONE;
-        if (lambda > lambda_max) lambda = lambda_max;
+        if (lambda > params.lambda_max) lambda = params.lambda_max;
         compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &prev_pq); // pq_TM
         compute_steger_sorenson  (nx, ny, 0, coeffs, dgrid, d2grid, &pq); // pq_SS
         for (i = 0; i < nx; i++)
@@ -2781,7 +2767,7 @@ point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int 
            inner step since they depend on the (moving) grid; only (P, Q) is
            held fixed. This is the iteration that the user-facing niter
            controls effectively up to (niter * inner_niter) total LIM steps. */
-        for (iiter_inner = 0; iiter_inner < inner_niter; iiter_inner++)
+        for (iiter_inner = 0; iiter_inner < params.inner_niter; iiter_inner++)
         {
             /* Recompute geometric coefficients from current grid */
             grid_first_ders_2D (nx, ny, grid, &dgrid);
@@ -2858,23 +2844,23 @@ point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int 
         fprintf (fptr, "%d  %22.16LE\n", iiter + 1, res_norm/L_ref);
 
         /* Break if step is small relative to domain size */
-        if (res_norm/L_ref < tol_step)
+        if (res_norm/L_ref < params.tol_step)
             break;
     }
 
     /* Post-loop equation-residual diagnostic (beta=0 simplified Poisson).
        Use the SAME blended (P, Q) the iteration solved with — at the final
-       lambda (capped at lambda_max). Computing residual against pure SS
-       would give a misleading warning since the iteration's fixed point
-       is the blended-target one, not the pure-SS target. */
+       lambda (capped at params.lambda_max). Computing residual against
+       pure SS would give a misleading warning since the iteration's
+       fixed point is the blended-target one, not the pure-SS target. */
     grid_first_ders_2D (nx, ny, grid, &dgrid);
     first_der_coefficients (nx, ny, dgrid, &coeffs);
     grid_second_ders_2D (nx, ny, grid, &d2grid);
     {
-        long double lambda_final        = (iiter < ramp_iters)
-                                          ? ((long double) iiter)/((long double) ramp_iters)
+        long double lambda_final        = (iiter < params.ramp_iters)
+                                          ? ((long double) iiter)/((long double) params.ramp_iters)
                                           : ONE;
-        if (lambda_final > lambda_max) lambda_final = lambda_max;
+        if (lambda_final > params.lambda_max) lambda_final = params.lambda_max;
         compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &prev_pq);
         compute_steger_sorenson  (nx, ny, 0, coeffs, dgrid, d2grid, &pq);
         for (i = 0; i < nx; i++)
@@ -2908,9 +2894,9 @@ point_2D **poisson_grid_2D_point_lim (int nx, int ny, point_2D **init_grid, int 
             if (norm_ij > fu_norm) fu_norm = norm_ij;
         }
     }
-    if (fu_norm > tol_resid)
+    if (fu_norm > params.tol_resid)
         fprintf (stderr, "Warning: poisson_grid_2D_point_lim equation residual %.6Le above tol %.6Le after %d iterations\n",
-                 fu_norm, tol_resid, iiter + 1);
+                 fu_norm, params.tol_resid, iiter + 1);
 
     snprintf (file1, 256, "final_pq_%d.vts", iiter + 1);
     write_2D_singleblock_vts (file1, nx, ny, grid, 0);

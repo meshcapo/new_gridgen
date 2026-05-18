@@ -59,13 +59,13 @@ void compute_steger_sorenson (int, int, int, coeffs_1 **, grid_der_2D **, grid_d
 long double compute_residual_norm (int, int, point_2D *);
 
 /* Compute 2D elliptic grid */
-point_2D **elliptic_grid_2D (int, int, point_2D **, int);
-point_2D **elliptic_grid_2D_point (int, int, point_2D **, int);
+point_2D **elliptic_grid_2D (int, int, point_2D **, int, solver_params);
+point_2D **elliptic_grid_2D_point (int, int, point_2D **, int, solver_params);
 
 /* Compute 2D Poisson grid */
-point_2D **poisson_grid_2D (int, int, point_2D **, int);
-point_2D **poisson_grid_2D_point (int, int, point_2D **, int);
-point_2D **poisson_grid_2D_point_lim (int, int, point_2D **, int);
+point_2D **poisson_grid_2D (int, int, point_2D **, int, solver_params);
+point_2D **poisson_grid_2D_point (int, int, point_2D **, int, solver_params);
+point_2D **poisson_grid_2D_point_lim (int, int, point_2D **, int, solver_params);
 
 /* Compute 2D biharmonic grid */
 point_2D **biharmonic_grid_2D (int, int, point_2D **, int);

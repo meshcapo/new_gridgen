@@ -25,6 +25,7 @@ pkg_check_modules(CRITERION criterion)
 # Source files
 set(LIB_SOURCES
     source/errors.c
+    source/config.c
     source/aux_functions.c
     source/file_operations.c
     source/geometry.c

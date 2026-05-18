@@ -176,4 +176,34 @@ typedef struct
 
 
 
+/*
+   Runtime tunables consumed by the grid solvers. Sourced from
+   the run_args config struct in main; passed by value into each
+   solver. Each solver uses only the subset of fields applicable
+   to it (see apply_solver_defaults in source/config.c for the
+   per-solver applicability table)
+
+   omega        - under-relaxation factor (ELL, PSN_TM)
+   lambda_max   - cap on SS contribution in the TM->SS blend
+                  (PSN_LIM, NEWTON)
+   ramp_iters   - outer iters over which lambda ramps from 0 to
+                  lambda_max (PSN_LIM, NEWTON)
+   inner_niter  - sub-iterations per (P, Q) refresh (PSN_LIM)
+   tol_step     - relative step-norm tolerance for in-loop break
+                  (ELL_NEWTON, PSN_TM, PSN_LIM, NEWTON)
+   tol_resid    - post-loop equation-residual warning threshold
+                  (ELL_NEWTON, PSN_TM, PSN_LIM, NEWTON)
+*/
+typedef struct
+{
+    long double             omega;
+    long double             lambda_max;
+    int                     ramp_iters;
+    int                     inner_niter;
+    long double             tol_step;
+    long double             tol_resid;
+} solver_params;
+
+
+
 #endif  // TYPES_H_

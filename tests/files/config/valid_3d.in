@@ -1,0 +1,10 @@
+# Valid 3D config with explicit npts
+# Used by test_config.c::valid_3d
+
+mode = 3D
+niter = 200
+nblocks = 1
+npts_x = 41
+npts_y = 21
+npts_z = 11
+solver = ell
