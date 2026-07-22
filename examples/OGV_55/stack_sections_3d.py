@@ -22,6 +22,10 @@ Usage:
         [--vts-name final_grid.vts] [--le-idx 120]
 
 Writes <output_dir>/stacked_3d.vtm referencing 9 stacked .vts files.
+
+With --per-section IA, transforms ONLY section IA into single-section Cartesian
+.vts files (k-extent 1) in <output_dir> plus a section_IA_xyz.vtm, instead of
+stacking. This reproduces the per-section xyz/ grids.
 """
 import os
 import sys
@@ -220,6 +224,11 @@ def main():
                         "from build_9block_topology). Default 120 for 240-pt blades.")
     p.add_argument("--blade-glob", default="blade.{ia}.*",
                    help="Glob inside section_{ia} for the blade file. Use {ia}.")
+    p.add_argument("--per-section", type=int, default=None, metavar="IA",
+                   help="Instead of stacking, transform ONLY section IA into "
+                        "single-section Cartesian .vts files (k-extent 1) in "
+                        "output_dir, plus a section_IA_xyz.vtm. Used to "
+                        "reproduce the per-section xyz/ grids.")
     args = p.parse_args()
 
     cfg = parse_3dbgbinput(args.input_path)
@@ -259,6 +268,45 @@ def main():
         if ia == 1 or ia == nsl:
             print(f"  section {ia}: msle={msle:.4f}, m'_blade_LE={m_blade_LE:.4f}, "
                   f"dmp={dmp:.4f}, delta_theta={delta_theta:.4e}")
+
+    # Per-section mode: transform ONE section into single-section Cartesian
+    # blocks (k-extent 1) instead of stacking. Reuses transform_section.
+    if args.per_section is not None:
+        ia = args.per_section
+        if not (1 <= ia <= nsl):
+            raise ValueError(f"--per-section {ia} out of range 1..{nsl}")
+        os.makedirs(args.output_dir, exist_ok=True)
+        sd = sec_data[ia - 1]
+        block_files = []
+        for label, subdir in BLOCKS:
+            path = os.path.join(args.sections_root, f"section_{ia}", subdir,
+                                 args.vts_name)
+            pts_2d, fields, dims = read_vts(path)
+            nx, ny, _ = dims
+            cart = transform_section(pts_2d, sd["dmp"], sd["delta_theta"],
+                                      sd["x_spl"], sd["r_spl"])
+            out_name = f"{label.replace('.', '_')}.vts"
+            out_path = os.path.join(args.output_dir, out_name)
+            write_vts(out_path, cart, fields, (nx, ny, 1))
+            block_files.append((label, out_name))
+            print(f"  wrote {out_path}: {nx}x{ny}x1")
+        blocks_xml = [
+            f'    <Block index="{k}" name="{label}">\n'
+            f'      <DataSet index="0" file="{fn}"/>\n'
+            f'    </Block>'
+            for k, (label, fn) in enumerate(block_files)]
+        vtm = (f'<?xml version="1.0"?>\n'
+               f'<VTKFile type="vtkMultiBlockDataSet" version="1.0" '
+               f'byte_order="LittleEndian">\n'
+               f'  <vtkMultiBlockDataSet>\n'
+               + "\n".join(blocks_xml) + "\n"
+               f'  </vtkMultiBlockDataSet>\n'
+               f'</VTKFile>\n')
+        vtm_path = os.path.join(args.output_dir, f"section_{ia}_xyz.vtm")
+        with open(vtm_path, "w") as f:
+            f.write(vtm)
+        print(f"\nwrote {vtm_path}")
+        return
 
     # For each block, stack 21 sections into a 3D grid
     os.makedirs(args.output_dir, exist_ok=True)
