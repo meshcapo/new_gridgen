@@ -39,71 +39,56 @@ from scipy.optimize import brentq
 # ============================================================================
 
 # --- Geometry ---
-OFFSET_FRAC          = 0.02      # ogrid contour offset = OFFSET_FRAC * chord
-INFLATE_DIST_TOP     = 0.10      # offset of inflated upperSS lid
-INFLATE_DIST_BOT     = 0.10      # offset of inflated lowerPS lid (must stay below R_min ~ 0.131 for OGV55)
-M_LEFT_END           = -0.35     # left wall in m' (vertical wall at xi=0 of LEFT blocks)
-M_RIGHT_END          =  0.46     # right wall in m'
+OFFSET_FRAC = 0.02       # ogrid contour offset = OFFSET_FRAC * chord
+INFLATE_DIST_TOP = 0.10  # offset of inflated upperSS lid
+INFLATE_DIST_BOT = 0.10  # offset of inflated lowerPS lid (< R_min ~ 0.131 for OGV55)
+M_LEFT_END = -0.35       # left wall in m' (vertical wall at xi=0 of LEFT blocks)
+M_RIGHT_END = 0.46       # right wall in m'
 
-# --- Anchor selection (PER-SIDE ADAPTIVE) ---
-# Default symmetric anchors are tried first (A_uLE = N/2 - LE_OFFSET_DEFAULT,
-# A_lLE = N/2 + LE_OFFSET_DEFAULT). The LE arc theta range is checked against
-# the anchor thetas; if either side's margin is more negative than
-# LE_INTERSECTION_TOL_FRAC * chord, ONLY that side is adapted by walking to
-# the nearest local theta extremum. This preserves the OGV55 midspan baseline
-# byte-identically (its tiny -4e-5 dip is below tolerance) while fixing
-# heavily cambered sections like hub. After adaptation, the snapped anchor is
-# nudged to keep LE arc length odd (so TE_OFFSET = (arc_len-1)/2 is integer).
-LE_OFFSET_DEFAULT       = 20      # default anchor offset from i_LE_topo
-LE_OFFSET_MIN           = 5       # adapt search starts here
-LE_OFFSET_MAX           = 40      # adapt search bound
-LE_INTERSECTION_TOL_FRAC = 1e-3   # tolerance as fraction of chord
-LE_GEOM_TOPO_TOL        = 10      # warn if |argmin(o_m) - N/2| exceeds this
+# --- Adaptive anchor selection ---
+# LE_INTERSECTION_TOL_FRAC decides whether adaptation fires at all. At
+# 1e-3 * chord OGV55 midspan does not trigger (stays byte-identical); hub does.
+LE_OFFSET_DEFAULT = 20           # anchor offset from i_LE_topo before adaptation
+LE_OFFSET_MIN = 5                # extremum search starts here
+LE_OFFSET_MAX = 40               # extremum search bound
+LE_INTERSECTION_TOL_FRAC = 1e-3  # anchor-band tolerance, as fraction of chord
+LE_GEOM_TOPO_TOL = 10            # warn if |argmin(o_m) - N/2| exceeds this
 
-# Sharp ds-ratio jumps in the offset-contour near the TE-tip (T-Blade3 puts
-# fine clustering at the TE rounded tip, then transitions to coarser SS/PS
-# nodes). When A_uTE / A_lTE land at the transition node, inflate_arc with
-# INFLATE_DIST=0.10 amplifies the local metric jump and folds the centers.
-# Walk te_offset outward (parity-preserving, +2 per step) to skip the
-# transition; cap at TE_OFFSET_WALK_MAX. The walker requires not just A_uTE
-# itself but also TE_KINK_BUFFER consecutive nodes interior to it (toward the
-# closure) to be smooth — this puts the kink mid-wall in middle.right rather
-# than adjacent to its corner, where corner clustering can't absorb it.
-TE_DS_RATIO_TOL         = 1.4     # max(ds_left, ds_right)/min < this is "smooth"
-TE_OFFSET_WALK_MAX      = 15      # walk up to this many nodes past LE-derived te_offset
-TE_KINK_BUFFER          = 2       # require this many smooth nodes interior to A_uTE
+# --- TE anchor smoothness ---
+# T-Blade3 clusters finely at the TE tip then jumps to coarser SS/PS nodes;
+# an anchor on that jump makes inflate_arc fold the centers. A buffer of 2
+# keeps the kink mid-wall in middle.right, away from the corner clustering.
+TE_DS_RATIO_TOL = 1.4    # max(ds_left, ds_right)/min < this is "smooth"
+TE_OFFSET_WALK_MAX = 15  # walk up to this many nodes past LE-derived te_offset
+TE_KINK_BUFFER = 2       # require this many smooth nodes interior to A_uTE
 
 # --- Block grid sizes ---
-N_OGRID_RADIAL       = 5         # eta points in O-grid block (xi count = blade pts after closure)
-DS_OGRID_FIRST       = 0.0018    # first radial spacing in O-grid (eta=0 -> eta=1)
-N_X_LR               = 31        # xi-pts in LEFT/RIGHT L-blocks of top/bot passages
-                                 # (n_y_passage is now derived from the adaptive
-                                 # LE arc length; flows through find_anchors.)
+N_OGRID_RADIAL = 5       # eta points in O-grid block (xi count = blade pts after closure)
+DS_OGRID_FIRST = 0.0018  # first radial spacing in O-grid (eta=0 -> eta=1)
+N_X_LR = 31              # xi-pts in LEFT/RIGHT L-blocks of top/bot passages
+                         # (n_y_passage is derived from the adaptive LE arc
+                         # length; flows through find_anchors.)
 
 # --- Shared L-block clustering (LE/TE corner first-segment scales) ---
-# Working OGV55 values. Independently re-tune per blade section if needed
-# (smaller -> tighter clustering near the LE/TE corner). The build scripts'
-# original comments described these as "avg of upperSS + lowerPS smoothed_ds
-# at the LE corner" / "TE-side smoothed_ds (top only, bot is cusp artifact)",
-# but the recorded values do not reproduce from a fresh smoothed_ds(k=5)
-# evaluation against the current ogrid contour — they were hand-tuned. The
-# OGV55 baseline (0 folds, 9 blocks) was achieved with these.
-SHARED_LE_DS         = 0.002635  # cluster scale at LE corner of L-blocks
-SHARED_TE_DS         = 0.000716  # cluster scale at TE corner of L-blocks
+# Hand-tuned for OGV55, not derived — the old build scripts' smoothed_ds
+# recipe does not reproduce them. Smaller -> tighter clustering at the corner.
+# Re-tune per section if the L-block corners look wrong.
+SHARED_LE_DS = 0.002635  # cluster scale at LE corner of L-blocks
+SHARED_TE_DS = 0.000716  # cluster scale at TE corner of L-blocks
 
 # --- Per-block Newton tunables (working OGV55 values) ---
-LAMBDA_TOP   = {"left": 0.10, "center": 0.05, "right": 0.10}
-LAMBDA_BOT   = {"left": 0.10, "center": 0.02, "right": 0.05}
-LAMBDA_MID   = {"left": 0.10, "right": 0.10}
-LAMBDA_OGRID = 0.10              # used by the psn_lim solver in the O-grid block
+LAMBDA_TOP = {"left": 0.10, "center": 0.05, "right": 0.10}
+LAMBDA_BOT = {"left": 0.10, "center": 0.02, "right": 0.05}
+LAMBDA_MID = {"left": 0.10, "right": 0.10}
+LAMBDA_OGRID = 0.10  # used by the psn_lim solver in the O-grid block
 
 RAMP_ITERS_NEWTON = 20
-NITER_NEWTON      = 200
-RAMP_ITERS_OGRID  = 100
+NITER_NEWTON = 200
+RAMP_ITERS_OGRID = 100
 INNER_NITER_OGRID = 10
-NITER_OGRID       = 500
+NITER_OGRID = 500
 
-TOL_STEP  = 1.0e-8
+TOL_STEP = 1.0e-8
 TOL_RESID = 1.0e-6
 
 
@@ -120,14 +105,14 @@ def read_tblade3_blade(path):
         pitch  : float (header field 4)
     """
     with open(path) as f:
-        f.readline()                                          # case name
+        f.readline()    # case name
         header = [float(x) for x in f.readline().split()]
     chord = header[3]
     pitch = header[4]
     raw = np.loadtxt(path, skiprows=2)
     if raw.shape[1] != 2:
         raise ValueError(f"expected 2 columns, got {raw.shape[1]}")
-    m = raw[:-1, 0]                                           # drop closing duplicate
+    m = raw[:-1, 0]     # drop closing duplicate
     t = raw[:-1, 1]
     return m, t, chord, pitch
 
@@ -137,15 +122,15 @@ def read_tblade3_blade(path):
 # ============================================================================
 
 def signed_area(closed):
-    """Signed polygon area; > 0 for CCW orientation."""
+    """Signed polygon area; > 0 for counter-clockwise orientation."""
     return 0.5 * np.sum(closed[:-1, 0] * closed[1:, 1] -
                         closed[1:, 0] * closed[:-1, 1])
 
 
 def build_ogrid_contour(m, t, offset_dist):
     """Offset the closed blade outward by offset_dist along the local outward
-    normal (computed via index-parametrised periodic cubic spline). Returns
-    the (N+1, 2) closed contour."""
+    normal (computed via index parametrised periodic cubic spline). Returns
+    the (N + 1, 2) closed contour."""
     N = len(m)
     idx = np.arange(N + 1)
     cs_m = CubicSpline(idx, np.r_[m, m[0]], bc_type='periodic')
@@ -169,16 +154,22 @@ def build_ogrid_contour(m, t, offset_dist):
 
 def find_anchors(ogrid_closed, chord, le_offset_default, le_offset_min,
                  le_offset_max, le_intersection_tol_frac, le_geom_topo_tol):
-    """Per-side adaptive anchor selection.
+    """Pick the four contour anchors A_uTE, A_uLE, A_lLE, A_lTE.
 
-    Returns (i_LE_geom, i_LE_topo, A_uTE, A_uLE, A_lLE, A_lTE, N, n_y_passage).
+    Returns (i_LE_geom, i_LE_topo, A_uTE, A_uLE, A_lLE, A_lTE, N, le_arc_len);
+    le_arc_len is the caller's n_y_passage.
 
-    Starts with default symmetric anchors (offset = le_offset_default). Checks
-    whether the LE arc theta range fits inside [theta(A_lLE), theta(A_uLE)].
-    For each side that violates by more than chord*tol_frac, walks the
-    contour to the nearest local theta extremum and snaps to the anchor with
-    parity preserving an odd LE arc length. Sides that pass the check stay
-    untouched — keeps the OGV55 midspan baseline byte-identical."""
+    1. Start symmetric: A_uLE = N/2 - le_offset_default, A_lLE = N/2 +
+       le_offset_default.
+    2. Check each side's LE arc theta margin against chord * tol_frac.
+    3. Adapt only a violating side: walk out from le_offset_min to the first
+       local theta extremum, bounded by le_offset_max, then snap by one node
+       to keep the LE arc odd. A violation surviving this raises.
+    4. te_offset = (le_arc_len - 1) // 2; find_smooth_te_offset may walk it
+       outward past the TE-tip kink.
+    5. If it walked, grow the LE arc by 2*delta on the side not adapted in 3.
+    6. A_uTE = te_offset, A_lTE = N - te_offset. TE band violations 
+       only warn"""
     if (ogrid_closed.shape[0] - 1) % 2 != 0:
         raise RuntimeError("expected even number of unique contour points "
                            "(T-Blade3 convention).")
@@ -214,7 +205,7 @@ def find_anchors(ogrid_closed, chord, le_offset_default, le_offset_min,
                   f"nodes; clamping at le_offset_max.")
         # Snap to keep LE arc length odd (matches A_uLE parity)
         if (k - A_uLE) % 2 != 0:
-            k += 1                                            # forward = larger arc, more LE resolution
+            k += 1  # forward = larger arc, more LE resolution
             if k >= i_LE_topo + le_offset_max:
                 k -= 2
         A_lLE = k
@@ -232,7 +223,7 @@ def find_anchors(ogrid_closed, chord, le_offset_default, le_offset_min,
             print(f"  WARNING: no local SS theta max within {le_offset_max} "
                   f"nodes; clamping at le_offset_max.")
         if (A_lLE - k) % 2 != 0:
-            k -= 1                                            # backward = larger arc
+            k -= 1  # backward = larger arc
             if k <= i_LE_topo - le_offset_max:
                 k += 2
         A_uLE = k
@@ -255,7 +246,6 @@ def find_anchors(ogrid_closed, chord, le_offset_default, le_offset_min,
     le_arc_len = A_lLE - A_uLE + 1
     te_offset = (le_arc_len - 1) // 2
 
-    # Walk te_offset outward to skip TE-tip ds-ratio kinks (see TE_DS_RATIO_TOL).
     te_offset_smooth = find_smooth_te_offset(
         o_m, o_t, te_offset, TE_DS_RATIO_TOL, TE_OFFSET_WALK_MAX, TE_KINK_BUFFER)
     if te_offset_smooth > te_offset:
@@ -263,11 +253,11 @@ def find_anchors(ogrid_closed, chord, le_offset_default, le_offset_min,
         # Grow LE arc by 2*delta. Distribute on the side that did NOT adapt
         # during LE per-side adapt (preserves the local-extremum lock).
         if 'bot' in adapted and 'top' not in adapted:
-            A_uLE -= 2 * delta                                # grow on top side
+            A_uLE -= 2 * delta  # grow on top side
         elif 'top' in adapted and 'bot' not in adapted:
-            A_lLE += 2 * delta                                # grow on bot side
+            A_lLE += 2 * delta  # grow on bot side
         else:
-            A_uLE -= delta; A_lLE += delta                    # symmetric
+            A_uLE -= delta; A_lLE += delta  # symmetric
         print(f"  TE anchor smoothness adapt: te_offset {te_offset} -> "
               f"{te_offset_smooth}; LE arc grown by {2*delta} nodes "
               f"(A_uLE={A_uLE}, A_lLE={A_lLE}).")
@@ -385,6 +375,7 @@ def one_sided_tanh(N, L, ds_target, which):
     if which == 'last':
         if ds_target >= L / (N - 1) - 1e-12:
             return np.linspace(0.0, L, N)
+
         def constraint(tau):
             x = positions(tau)
             return (x[-1] - x[-2]) - ds_target
@@ -393,6 +384,7 @@ def one_sided_tanh(N, L, ds_target, which):
         # ds_target > L/(N-1) (otherwise the clustering is the wrong sign).
         if ds_target <= L / (N - 1) + 1e-12:
             return np.linspace(0.0, L, N)
+
         def constraint(tau):
             x = positions(tau)
             return (x[1] - x[0]) - ds_target
@@ -489,7 +481,7 @@ def build_ogrid(blade_closed, ogrid_closed):
     """O-grid block (single cut). xi=0 and xi=1 walls are identical, going
     from ogrid[0] (eta=0, outer, TE) to blade[0] (eta=1, inner, TE)."""
     assert blade_closed.shape == ogrid_closed.shape
-    n_xi = blade_closed.shape[0]                              # closed count
+    n_xi = blade_closed.shape[0]    # closed count
     n_eta = N_OGRID_RADIAL
 
     P_outer = ogrid_closed[0].copy()
@@ -586,10 +578,10 @@ def build_top_passage(d):
     # ----- LEFT -----
     L_top_L = m_lid_LE - M_LEFT_END
     L_bot_L = m_LE     - M_LEFT_END
-    left_top  = np.column_stack([M_LEFT_END + u_LE * L_top_L,
-                                 np.full(N_X_LR, th_lid_LE)])
-    left_bot  = np.column_stack([M_LEFT_END + u_LE * L_bot_L,
-                                 np.full(N_X_LR, th_LE)])
+    left_top = np.column_stack([M_LEFT_END + u_LE * L_top_L,
+                                np.full(N_X_LR, th_lid_LE)])
+    left_bot = np.column_stack([M_LEFT_END + u_LE * L_bot_L,
+                                np.full(N_X_LR, th_LE)])
     left_wall = np.column_stack([np.full(n_y_passage, M_LEFT_END),
                                  np.linspace(th_LE, th_lid_LE, n_y_passage)])
     red_curve = np.column_stack([np.linspace(m_LE, m_lid_LE, n_y_passage),
@@ -598,20 +590,20 @@ def build_top_passage(d):
     # ----- CENTER -----
     # upperSS goes A_uTE -> A_uLE; reverse so xi=0 is at the LE side, matching
     # LEFT.right and RIGHT.left.
-    center_bot  = d['upperSS'][::-1].copy()
-    center_top  = d['inflated_top'][::-1].copy()
+    center_bot = d['upperSS'][::-1].copy()
+    center_top = d['inflated_top'][::-1].copy()
     center_left = red_curve.copy()
-    blue_curve  = np.column_stack([np.linspace(m_TE, m_lid_TE, n_y_passage),
-                                   np.linspace(th_TE, th_lid_TE, n_y_passage)])
+    blue_curve = np.column_stack([np.linspace(m_TE, m_lid_TE, n_y_passage),
+                                  np.linspace(th_TE, th_lid_TE, n_y_passage)])
 
     # ----- RIGHT -----
     u_TE_rev = 1.0 - u_TE[::-1]                               # cluster at i=0 (TE corner)
     L_top_R = M_RIGHT_END - m_lid_TE
     L_bot_R = M_RIGHT_END - m_TE
-    right_top  = np.column_stack([m_lid_TE + u_TE_rev * L_top_R,
-                                  np.full(N_X_LR, th_lid_TE)])
-    right_bot  = np.column_stack([m_TE     + u_TE_rev * L_bot_R,
-                                  np.full(N_X_LR, th_TE)])
+    right_top = np.column_stack([m_lid_TE + u_TE_rev * L_top_R,
+                                 np.full(N_X_LR, th_lid_TE)])
+    right_bot = np.column_stack([m_TE     + u_TE_rev * L_bot_R,
+                                 np.full(N_X_LR, th_TE)])
     right_left = blue_curve.copy()
     right_wall = np.column_stack([np.full(n_y_passage, M_RIGHT_END),
                                   np.linspace(th_TE, th_lid_TE, n_y_passage)])
@@ -636,10 +628,10 @@ def build_bot_passage(d):
     # ----- LEFT -----
     L_bot_L = m_lid_LE - M_LEFT_END
     L_top_L = m_lLE    - M_LEFT_END
-    left_bot  = np.column_stack([M_LEFT_END + u_LE * L_bot_L,
-                                 np.full(N_X_LR, th_lid_LE)])
-    left_top  = np.column_stack([M_LEFT_END + u_LE * L_top_L,
-                                 np.full(N_X_LR, th_lLE)])
+    left_bot = np.column_stack([M_LEFT_END + u_LE * L_bot_L,
+                                np.full(N_X_LR, th_lid_LE)])
+    left_top = np.column_stack([M_LEFT_END + u_LE * L_top_L,
+                                np.full(N_X_LR, th_lLE)])
     left_wall = np.column_stack([np.full(n_y_passage, M_LEFT_END),
                                  np.linspace(th_lid_LE, th_lLE, n_y_passage)])
     red_curve = np.column_stack([np.linspace(m_lid_LE, m_lLE, n_y_passage),
@@ -647,20 +639,20 @@ def build_bot_passage(d):
 
     # ----- CENTER -----
     # inflated_bot already runs A_lLE -> A_lTE; lowerPS too.
-    center_bot  = d['inflated_bot'].copy()
-    center_top  = d['lowerPS'].copy()
+    center_bot = d['inflated_bot'].copy()
+    center_top = d['lowerPS'].copy()
     center_left = red_curve.copy()
-    blue_curve  = np.column_stack([np.linspace(m_lid_TE, m_lTE, n_y_passage),
-                                   np.linspace(th_lid_TE, th_lTE, n_y_passage)])
+    blue_curve = np.column_stack([np.linspace(m_lid_TE, m_lTE, n_y_passage),
+                                  np.linspace(th_lid_TE, th_lTE, n_y_passage)])
 
     # ----- RIGHT -----
     u_TE_rev = 1.0 - u_TE[::-1]
     L_bot_R = M_RIGHT_END - m_lid_TE
     L_top_R = M_RIGHT_END - m_lTE
-    right_bot  = np.column_stack([m_lid_TE + u_TE_rev * L_bot_R,
-                                  np.full(N_X_LR, th_lid_TE)])
-    right_top  = np.column_stack([m_lTE    + u_TE_rev * L_top_R,
-                                  np.full(N_X_LR, th_lTE)])
+    right_bot = np.column_stack([m_lid_TE + u_TE_rev * L_bot_R,
+                                 np.full(N_X_LR, th_lid_TE)])
+    right_top = np.column_stack([m_lTE    + u_TE_rev * L_top_R,
+                                 np.full(N_X_LR, th_lTE)])
     right_left = blue_curve.copy()
     right_wall = np.column_stack([np.full(n_y_passage, M_RIGHT_END),
                                   np.linspace(th_lid_TE, th_lTE, n_y_passage)])
