@@ -916,3 +916,145 @@ Test(grid_solvers, control_steger_sorenson_phipsi)
     free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
     free_2D_point_2D_array ("phipsi", nx, phipsi);
 }
+
+/*
+    Verify that compute_thomas_middlecoff depends ONLY on 
+    boundary grid points 
+
+    Why it matters: boundaries are Dirichlet and never move, 
+    so a boundary deterined control function is constant 
+    across the outer iteration. Point (2, 1) is in the interior 
+    and lies inside the one-sided normal direction stencils of 
+    both the j = 0 and i = 0 boundaries, so it is a point TM 
+    would notice if it read anything off-boundary
+*/
+Test (grid_solvers, thomas_middlecoff_boundary_determined)
+{
+    // Grid dimensions and constants 
+    int             nx = 5, ny = 5, i, j;
+    long double     a = 0.3L, b, c = 0.1L, delta = 1.0E-3L;
+    long double     xi, eta;
+    point_2D        **grid, **pq_base, **pq_pert;
+    grid_der_2D     **dgrid; 
+    grid_dder_2D    **d2grid; 
+
+    b = -a; 
+
+    // Build test grid 
+    grid = allocate_2D_point_2D_array ("grid", nx, ny);
+    for (i = 0; i < nx; i++)
+    {
+        xi = (long double) i/(long double) (nx - 1);
+        for (j = 0; j < ny; j++)
+        {
+            eta = (long double) j/(long double) (ny - 1);
+            grid[i][j].x = xi + (a * xi * xi) + (c * eta * eta);
+            grid[i][j].y = eta + (b * eta * eta) + (c * xi * xi);
+        }
+    }
+
+    dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
+    d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
+
+    // Baseline control functions from the unperturbed grid 
+    pq_base = allocate_2D_point_2D_array ("pq_base", nx, ny);
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &pq_base);
+
+    // Perturb one interior point; every boundary point stays fixed 
+    grid[2][1].x += delta;
+    grid[2][1].y += delta;
+
+    // Recompute control functions from the perturbed grid
+    pq_pert = allocate_2D_point_2D_array ("pq_pert", nx, ny);
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    compute_thomas_middlecoff (nx, ny, dgrid, d2grid, &pq_pert);
+
+    // The whole field must be unchanged, bit for bit 
+    for (i = 0; i < nx; i++)
+    {
+        for (j = 0; j < ny; j++)
+        {
+            cr_assert (pq_base[i][j].x == pq_pert[i][j].x, "TM P changed at (%d, %d): %.18Le vs %.18Le",
+                       i, j, pq_base[i][j].x, pq_pert[i][j].x);
+            cr_assert (pq_base[i][j].y == pq_pert[i][j].y, "TM Q changed at (%d, %d): %.18Le vs %.18Le",
+                       i, j, pq_base[i][j].y, pq_pert[i][j].y);
+        }
+    }
+
+    // Cleanup 
+    free_2D_point_2D_array ("grid", nx, grid);
+    free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
+    free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
+    free_2D_point_2D_array ("pq_base", nx, pq_base);
+    free_2D_point_2D_array ("pq_pert", nx, pq_pert);
+}
+
+/*
+    Verify that compute_steger_sorenson doesn't depend ONLY on
+    boundary grid points
+*/
+Test (grid_solvers, thompson_interior_dependent)
+{
+    // Grid dimensions and constants 
+    int             nx = 5, ny = 5, i, j;
+    long double     a = 0.3L, b, c = 0.1L, delta = 1.0E-3L;
+    long double     xi, eta;
+    point_2D        **grid, **pq_base, **pq_pert;
+    grid_der_2D     **dgrid; 
+    grid_dder_2D    **d2grid; 
+    coeffs_1        **coeffs;
+
+    b = -a; 
+
+    // Build test grid 
+    grid = allocate_2D_point_2D_array ("grid", nx, ny);
+    for (i = 0; i < nx; i++)
+    {
+        xi = (long double) i/(long double) (nx - 1);
+        for (j = 0; j < ny; j++)
+        {
+            eta = (long double) j/(long double) (ny - 1);
+            grid[i][j].x = xi + (a * xi * xi) + (c * eta * eta);
+            grid[i][j].y = eta + (b * eta * eta) + (c * xi * xi);
+        }
+    }
+
+    dgrid = allocate_2D_grid_der_2D_array ("dgrid", nx, ny);
+    d2grid = allocate_2D_grid_dder_2D_array ("d2grid", nx, ny);
+    coeffs = allocate_2D_coeffs_1_array ("coeffs", nx, ny);
+
+    // Baseline control functions from the unperturbed grid
+    pq_base = allocate_2D_point_2D_array ("pq_base", nx, ny);
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    first_der_coefficients (nx, ny, dgrid, &coeffs);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    compute_steger_sorenson (nx, ny, 0, coeffs, dgrid, d2grid, &pq_base);
+
+    // Perturb one interior point; every boundary point stays fixed 
+    grid[2][1].x += delta;
+    grid[2][1].y += delta;
+
+    // Recompute control functions from the perturbed grid
+    pq_pert = allocate_2D_point_2D_array ("pq_pert", nx, ny);
+    grid_first_ders_2D (nx, ny, grid, &dgrid);
+    first_der_coefficients (nx, ny, dgrid, &coeffs);
+    grid_second_ders_2D (nx, ny, grid, &d2grid);
+    compute_steger_sorenson (nx, ny, 0, coeffs, dgrid, d2grid, &pq_pert);
+
+    // Control function P should change
+    cr_assert (pq_base[2][0].x != pq_pert[2][0].x,
+               "SS P at (2, 0) unchanged after interior perturbation (%.18Le) "
+               "- SS was expected to depend on r_etaeta at the boundary",
+               pq_base[2][0].x);
+
+    // Cleanup 
+    free_2D_point_2D_array ("grid", nx, grid);
+    free_2D_grid_der_2D_array ("dgrid", nx, dgrid);
+    free_2D_coeffs_1_array ("coeffs", nx, coeffs);
+    free_2D_grid_dder_2D_array ("d2grid", nx, d2grid);
+    free_2D_point_2D_array ("pq_base", nx, pq_base);
+    free_2D_point_2D_array ("pq_pert", nx, pq_pert);
+}
